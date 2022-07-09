@@ -4,14 +4,14 @@ using Stepping.Core;
 
 namespace Stepping.DbProviders.MongoDb;
 
-public class EfCoreDbBarrierInserter : IDbBarrierInserter
+public class MongoDbBarrierInserter : IDbBarrierInserter
 {
-    private ILogger<EfCoreDbBarrierInserter> Logger { get; }
+    private ILogger<MongoDbBarrierInserter> Logger { get; }
     protected IBarrierCollectionProvider BarrierCollectionProvider { get; }
     protected IDbInitializer DbInitializer { get; }
 
-    public EfCoreDbBarrierInserter(
-        ILogger<EfCoreDbBarrierInserter> logger,
+    public MongoDbBarrierInserter(
+        ILogger<MongoDbBarrierInserter> logger,
         IBarrierCollectionProvider barrierCollectionProvider,
         IDbInitializer dbInitializer)
     {
