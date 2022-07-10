@@ -1,14 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.Core", "Stepping.Core\Stepping.Core.csproj", "{B498BC14-E20A-439D-840F-076CA2C40E31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.Core", "src\Stepping.Core\Stepping.Core.csproj", "{B498BC14-E20A-439D-840F-076CA2C40E31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm", "Stepping.TmProviders.Dtm\Stepping.TmProviders.Dtm.csproj", "{55116019-F0FA-46C7-BC0F-FCC550AE2881}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm", "src\Stepping.TmProviders.Dtm\Stepping.TmProviders.Dtm.csproj", "{55116019-F0FA-46C7-BC0F-FCC550AE2881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.SelfTm", "Stepping.TmProviders.SelfTm\Stepping.TmProviders.SelfTm.csproj", "{5AC4B579-20B2-4BA5-B624-8C329CBD5B47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.SelfTm", "src\Stepping.TmProviders.SelfTm\Stepping.TmProviders.SelfTm.csproj", "{5AC4B579-20B2-4BA5-B624-8C329CBD5B47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.EfCore", "Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj", "{F37B3C40-7D66-4E40-9FB2-F722CECB953E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.EfCore", "src\Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj", "{F37B3C40-7D66-4E40-9FB2-F722CECB953E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.MongoDb", "Stepping.DbProviders.MongoDb\Stepping.DbProviders.MongoDb.csproj", "{A61DA92F-A16E-471C-97A9-4D60D4C7F15E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.MongoDb", "src\Stepping.DbProviders.MongoDb\Stepping.DbProviders.MongoDb.csproj", "{A61DA92F-A16E-471C-97A9-4D60D4C7F15E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6C260B44-F5E0-4E03-8C37-0CC479C592F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +38,12 @@ Global
 		{A61DA92F-A16E-471C-97A9-4D60D4C7F15E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A61DA92F-A16E-471C-97A9-4D60D4C7F15E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A61DA92F-A16E-471C-97A9-4D60D4C7F15E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B498BC14-E20A-439D-840F-076CA2C40E31} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{F37B3C40-7D66-4E40-9FB2-F722CECB953E} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{A61DA92F-A16E-471C-97A9-4D60D4C7F15E} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{55116019-F0FA-46C7-BC0F-FCC550AE2881} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{5AC4B579-20B2-4BA5-B624-8C329CBD5B47} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
 	EndGlobalSection
 EndGlobal
