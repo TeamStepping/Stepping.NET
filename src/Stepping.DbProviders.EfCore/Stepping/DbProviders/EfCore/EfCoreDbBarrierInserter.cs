@@ -12,14 +12,16 @@ namespace Stepping.DbProviders.EfCore;
 
 public class EfCoreDbBarrierInserter : IDbBarrierInserter
 {
+    public string DbProviderName => SteppingDbProviderEfCoreConsts.DbProviderName;
+
     private ILogger<EfCoreDbBarrierInserter> Logger { get; }
     protected SteppingOptions Options { get; }
-    protected IDbInitializer DbInitializer { get; }
+    protected EfCoreDbInitializer DbInitializer { get; }
 
     public EfCoreDbBarrierInserter(
         ILogger<EfCoreDbBarrierInserter> logger,
         IOptions<SteppingOptions> options,
-        IDbInitializer dbInitializer)
+        EfCoreDbInitializer dbInitializer)
     {
         Logger = logger;
         Options = options.Value;
@@ -92,11 +94,6 @@ public class EfCoreDbBarrierInserter : IDbBarrierInserter
     protected virtual async Task<int> InsertBarrierAsync(BarrierInfoModel barrierInfoModel,
         EfCoreSteppingDbContext dbContext, CancellationToken cancellationToken = default)
     {
-        if (dbContext.DbContext.Database.CurrentTransaction is null)
-        {
-            throw new SteppingException("A barrier is worthless for non-transactional DbContext.");
-        }
-
         await DbInitializer.TryInitializeAsync(new EfCoreDbInitializingInfoModel(dbContext));
 
         BarrierSqlTemplates.DbProviderSpecialMapping.TryGetValue(dbContext.DbContext.Database.ProviderName!,
@@ -122,7 +119,7 @@ public class EfCoreDbBarrierInserter : IDbBarrierInserter
                 barrier_id = barrierInfoModel.BarrierId,
                 reason = barrierInfoModel.Reason
             },
-            dbContext.DbContext.Database.CurrentTransaction.GetDbTransaction());
+            dbContext.DbContext.Database.CurrentTransaction?.GetDbTransaction());
 
         return affected;
     }

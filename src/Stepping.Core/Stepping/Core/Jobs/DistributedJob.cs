@@ -1,5 +1,7 @@
-﻿using Stepping.Core.Databases;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Stepping.Core.Databases;
 using Stepping.Core.Exceptions;
+using Stepping.Core.Steps;
 using Stepping.Core.TransactionManagers;
 
 namespace Stepping.Core.Jobs;
@@ -7,12 +9,12 @@ namespace Stepping.Core.Jobs;
 public class DistributedJob : IAdvancedDistributedJob
 {
     public string Gid { get; }
-    public List<IDistributedJobStep> Steps { get; } = new();
+    public List<StepInfoModel> Steps { get; } = new();
     public IDbTransactionContext? DbTransactionContext { get; }
 
     protected IServiceProvider ServiceProvider { get; }
     protected ITmClient TmClient { get; }
-    protected IDbBarrierInserter DbBarrierInserter { get; }
+    protected IDbBarrierInserterResolver DbBarrierInserterResolver { get; }
     protected IBarrierInfoModelFactory BarrierInfoModelFactory { get; }
 
     /// <summary>
@@ -27,15 +29,21 @@ public class DistributedJob : IAdvancedDistributedJob
         Gid = gid;
         DbTransactionContext = dbTransactionContext;
         ServiceProvider = serviceProvider;
-        TmClient = (ITmClient)serviceProvider.GetService(typeof(ITmClient))!;
-        DbBarrierInserter = (IDbBarrierInserter)serviceProvider.GetService(typeof(IDbBarrierInserter))!;
-        BarrierInfoModelFactory =
-            (IBarrierInfoModelFactory)serviceProvider.GetService(typeof(IBarrierInfoModelFactory))!;
+        TmClient = serviceProvider.GetRequiredService<ITmClient>();
+        DbBarrierInserterResolver = serviceProvider.GetRequiredService<IDbBarrierInserterResolver>();
+        BarrierInfoModelFactory = serviceProvider.GetRequiredService<IBarrierInfoModelFactory>();
     }
 
-    public virtual Task AddStepAsync<TArgs>(Func<IServiceProvider, TArgs, Task> action, TArgs args)
+    public virtual Task AddStepAsync<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class
     {
-        Steps.Add(new DistributedJobStep<TArgs>(action, args));
+        Steps.Add(new StepInfoModel(typeof(TStep), args));
+
+        return Task.CompletedTask;
+    }
+
+    public virtual Task AddStepAsync<TStep>() where TStep : IStep
+    {
+        Steps.Add(new StepInfoModel(typeof(TStep), null));
 
         return Task.CompletedTask;
     }
@@ -82,8 +90,10 @@ public class DistributedJob : IAdvancedDistributedJob
             throw new SteppingException("DB Transaction not set.");
         }
 
-        await DbBarrierInserter.MustInsertBarrierAsync(
-            await BarrierInfoModelFactory.CreateForCommitAsync(this),
+        var dbBarrierInserter = await DbBarrierInserterResolver.ResolveAsync(DbTransactionContext.DbContext);
+
+        await dbBarrierInserter.MustInsertBarrierAsync(
+            await BarrierInfoModelFactory.CreateForCommitAsync(Gid),
             DbTransactionContext.DbContext,
             cancellationToken);
     }

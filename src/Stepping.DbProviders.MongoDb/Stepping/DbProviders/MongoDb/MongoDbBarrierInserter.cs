@@ -8,14 +8,16 @@ namespace Stepping.DbProviders.MongoDb;
 
 public class MongoDbBarrierInserter : IDbBarrierInserter
 {
+    public string DbProviderName => SteppingDbProviderMongoDbConsts.DbProviderName;
+
     private ILogger<MongoDbBarrierInserter> Logger { get; }
     protected IBarrierCollectionProvider BarrierCollectionProvider { get; }
-    protected IDbInitializer DbInitializer { get; }
+    protected MongoDbInitializer DbInitializer { get; }
 
     public MongoDbBarrierInserter(
         ILogger<MongoDbBarrierInserter> logger,
         IBarrierCollectionProvider barrierCollectionProvider,
-        IDbInitializer dbInitializer)
+        MongoDbInitializer dbInitializer)
     {
         Logger = logger;
         BarrierCollectionProvider = barrierCollectionProvider;
@@ -26,11 +28,6 @@ public class MongoDbBarrierInserter : IDbBarrierInserter
         CancellationToken cancellationToken = default)
     {
         var mongoDbContext = (MongoDbSteppingDbContext)dbContext;
-
-        if (mongoDbContext.SessionHandle is null)
-        {
-            throw new SteppingException("A barrier is worthless for non-transactional DbContext.");
-        }
 
         var mongoCollection = await BarrierCollectionProvider.GetAsync(mongoDbContext);
 
@@ -46,10 +43,19 @@ public class MongoDbBarrierInserter : IDbBarrierInserter
                 barrierId: barrierInfoModel.BarrierId,
                 reason: barrierInfoModel.Reason);
 
-            await mongoCollection.InsertOneAsync(
-                mongoDbContext.SessionHandle,
-                document,
-                cancellationToken: cancellationToken);
+            if (mongoDbContext.SessionHandle is null)
+            {
+                await mongoCollection.InsertOneAsync(
+                    document,
+                    cancellationToken: cancellationToken);
+            }
+            else
+            {
+                await mongoCollection.InsertOneAsync(
+                    mongoDbContext.SessionHandle,
+                    document,
+                    cancellationToken: cancellationToken);
+            }
         }
         catch (Exception e)
         {
