@@ -21,7 +21,7 @@ Stepping requires transaction managers. You can choose an implementation you lik
 
 ### DTM Server
 
-DTM Server is a mature transaction manager that can be used with Stepping. By using DTM, you can use many other distributed transaction modes like SAGA, TCC, and XA.
+DTM Server is a mature transaction manager that can be used with Stepping. By using DTM, you also get many other distributed transaction modes like SAGA, TCC, and XA.
 
 See DTM's [document](https://en.dtm.pub/guide/install.html) to learn how to install the DTM Server.
 
