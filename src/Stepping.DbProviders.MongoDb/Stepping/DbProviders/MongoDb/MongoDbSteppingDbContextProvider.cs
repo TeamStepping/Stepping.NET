@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Stepping.Core.Databases;
-using Stepping.Core.Secrets;
+using Stepping.Core.Infrastructures;
 
 namespace Stepping.DbProviders.MongoDb;
 

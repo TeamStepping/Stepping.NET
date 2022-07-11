@@ -1,4 +1,4 @@
-﻿namespace Stepping.Core.Secrets;
+﻿namespace Stepping.Core.Infrastructures;
 
 public interface IConnectionStringEncryptor
 {

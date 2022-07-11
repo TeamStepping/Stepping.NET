@@ -10,10 +10,12 @@ public class DistributedJob : IAdvancedDistributedJob
 {
     public string Gid { get; }
     public List<StepInfoModel> Steps { get; } = new();
+    public ITmJobConfigurations? TmOptions { get; set; }
     public IDbTransactionContext? DbTransactionContext { get; }
 
     protected IServiceProvider ServiceProvider { get; }
     protected ITmClient TmClient { get; }
+    protected IStepNameProvider StepNameProvider { get; }
     protected IDbBarrierInserterResolver DbBarrierInserterResolver { get; }
     protected IBarrierInfoModelFactory BarrierInfoModelFactory { get; }
 
@@ -30,22 +32,19 @@ public class DistributedJob : IAdvancedDistributedJob
         DbTransactionContext = dbTransactionContext;
         ServiceProvider = serviceProvider;
         TmClient = serviceProvider.GetRequiredService<ITmClient>();
+        StepNameProvider = serviceProvider.GetRequiredService<IStepNameProvider>();
         DbBarrierInserterResolver = serviceProvider.GetRequiredService<IDbBarrierInserterResolver>();
         BarrierInfoModelFactory = serviceProvider.GetRequiredService<IBarrierInfoModelFactory>();
     }
 
-    public virtual Task AddStepAsync<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class
+    public virtual async Task AddStepAsync<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class
     {
-        Steps.Add(new StepInfoModel(typeof(TStep), args));
-
-        return Task.CompletedTask;
+        Steps.Add(new StepInfoModel(await StepNameProvider.GetAsync<TStep>(), args));
     }
 
-    public virtual Task AddStepAsync<TStep>() where TStep : IStep
+    public virtual async Task AddStepAsync<TStep>() where TStep : IStep
     {
-        Steps.Add(new StepInfoModel(typeof(TStep), null));
-
-        return Task.CompletedTask;
+        Steps.Add(new StepInfoModel(await StepNameProvider.GetAsync<TStep>(), null));
     }
 
     public virtual async Task ExecuteAsync(CancellationToken cancellationToken = default)

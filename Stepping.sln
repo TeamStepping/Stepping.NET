@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.Core", "src\Stepping.Core\Stepping.Core.csproj", "{B498BC14-E20A-439D-840F-076CA2C40E31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm", "src\Stepping.TmProviders.Dtm\Stepping.TmProviders.Dtm.csproj", "{55116019-F0FA-46C7-BC0F-FCC550AE2881}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm.Grpc", "src\Stepping.TmProviders.Dtm.Grpc\Stepping.TmProviders.Dtm.Grpc.csproj", "{55116019-F0FA-46C7-BC0F-FCC550AE2881}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.SelfTm", "src\Stepping.TmProviders.SelfTm\Stepping.TmProviders.SelfTm.csproj", "{5AC4B579-20B2-4BA5-B624-8C329CBD5B47}"
 EndProject

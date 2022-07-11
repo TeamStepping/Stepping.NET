@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stepping.Core.Databases;
-using Stepping.Core.Secrets;
+using Stepping.Core.Infrastructures;
 
 namespace Stepping.DbProviders.EfCore;
 
