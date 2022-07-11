@@ -24,7 +24,7 @@ public class EfCoreSteppingDbContextProvider : ISteppingDbContextProvider
     {
         var dbContext = (DbContext)ActivatorUtilities.GetServiceOrCreateInstance(
             ServiceProvider,
-            Type.GetType(infoModel.DbContextType)!
+            Type.GetType(infoModel.DbContextType!)!
         );
 
         dbContext.Database.SetConnectionString(

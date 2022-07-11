@@ -24,4 +24,14 @@ public class MongoDbSteppingDbContext : ISteppingDbContext
         SessionHandle = sessionHandle;
         ConnectionString = connectionString;
     }
+    
+    public virtual Type? GetInternalDbContextTypeOrNull()
+    {
+        return null;
+    }
+
+    public string? GetInternalDatabaseNameOrNull()
+    {
+        return Database.DatabaseNamespace.DatabaseName;
+    }
 }
