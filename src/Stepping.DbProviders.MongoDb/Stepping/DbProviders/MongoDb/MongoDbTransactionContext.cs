@@ -1,5 +1,5 @@
-﻿using Stepping.Core;
-using Stepping.Core.Databases;
+﻿using Stepping.Core.Databases;
+using Stepping.Core.Exceptions;
 
 namespace Stepping.DbProviders.MongoDb;
 
@@ -14,6 +14,13 @@ public class MongoDbTransactionContext : IDbTransactionContext
 
     public virtual async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        await ((MongoDbSteppingDbContext)DbContext).SessionHandle.CommitTransactionAsync(cancellationToken);
+        var sessionHandle = ((MongoDbSteppingDbContext)DbContext).SessionHandle;
+
+        if (sessionHandle is null)
+        {
+            throw new SteppingException("This job is not with a DB transaction.");
+        }
+
+        await sessionHandle.CommitTransactionAsync(cancellationToken);
     }
 }

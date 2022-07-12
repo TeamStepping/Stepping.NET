@@ -1,4 +1,5 @@
 ﻿using Stepping.Core.Databases;
+using Stepping.Core.Steps;
 
 namespace Stepping.Core.Jobs;
 
@@ -6,14 +7,19 @@ public interface IDistributedJob
 {
     string Gid { get; }
 
-    List<IDistributedJobStep> Steps { get; }
+    List<StepInfoModel> Steps { get; }
 
     IDbTransactionContext? DbTransactionContext { get; }
 
     /// <summary>
     /// Add a step for the job to do in order.
     /// </summary>
-    Task AddStepAsync<TArgs>(Func<IServiceProvider, TArgs, Task> action, TArgs args);
+    Task AddStepAsync<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class;
+
+    /// <summary>
+    /// Add a step for the job to do in order.
+    /// </summary>
+    Task AddStepAsync<TStep>() where TStep : IStep;
 
     /// <summary>
     /// Send "prepare" to TM, insert a barrier record to DB, commit the DB transaction, and send "submit" to TM.

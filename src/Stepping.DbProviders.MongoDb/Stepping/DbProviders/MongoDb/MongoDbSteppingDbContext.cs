@@ -6,16 +6,18 @@ namespace Stepping.DbProviders.MongoDb;
 
 public class MongoDbSteppingDbContext : ISteppingDbContext
 {
+    public string DbProviderName => SteppingDbProviderMongoDbConsts.DbProviderName;
+
     public IMongoDatabase Database { get; }
-    
+
     public IMongoClient Client { get; }
 
-    public IClientSessionHandle SessionHandle { get; }
+    public IClientSessionHandle? SessionHandle { get; }
 
     public string ConnectionString { get; }
 
     public MongoDbSteppingDbContext(
-        IMongoDatabase database, IMongoClient client, IClientSessionHandle sessionHandle, string connectionString)
+        IMongoDatabase database, IMongoClient client, IClientSessionHandle? sessionHandle, string connectionString)
     {
         Database = database;
         Client = client;

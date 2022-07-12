@@ -1,20 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\..\common.props"/>
+    <Import Project="..\..\common.props" />
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace/>
+        <RootNamespace />
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Stepping.Core\Stepping.Core.csproj"/>
+        <ProjectReference Include="..\Stepping.Core\Stepping.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MongoDB.Driver" Version="2.16.*"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.16.*" />
     </ItemGroup>
 
 </Project>
