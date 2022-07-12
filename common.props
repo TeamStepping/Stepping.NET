@@ -5,7 +5,7 @@
         <NoWarn>$(NoWarn);CS1591</NoWarn>
         <Authors>Stepping</Authors>
         <Company>Stepping</Company>
-        <Description>Stepping is a distributed BASE jobs implementation with decentralization transaction managers.</Description>
+        <Description>Stepping is a distributed BASE jobs implementation. You can use it as a workflow engine, event outbox/inbox, and more.</Description>
         <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageProjectUrl>https://github.com/TeamStepping</PackageProjectUrl>
