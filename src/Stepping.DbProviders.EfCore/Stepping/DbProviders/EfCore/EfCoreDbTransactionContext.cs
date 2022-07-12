@@ -1,5 +1,5 @@
-﻿using Stepping.Core;
-using Stepping.Core.Databases;
+﻿using Stepping.Core.Databases;
+using Stepping.Core.Exceptions;
 
 namespace Stepping.DbProviders.EfCore;
 
@@ -14,6 +14,13 @@ public class EfCoreDbTransactionContext : IDbTransactionContext
 
     public virtual async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        await ((EfCoreSteppingDbContext)DbContext).DbContext.Database.CommitTransactionAsync(cancellationToken);
+        var efDbContext = ((EfCoreSteppingDbContext)DbContext).DbContext;
+
+        if (efDbContext.Database.CurrentTransaction is null)
+        {
+            throw new SteppingException("This job is not with a DB transaction.");
+        }
+
+        await efDbContext.Database.CommitTransactionAsync(cancellationToken);
     }
 }
