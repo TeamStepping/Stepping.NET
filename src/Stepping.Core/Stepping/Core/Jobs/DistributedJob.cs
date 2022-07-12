@@ -8,10 +8,12 @@ namespace Stepping.Core.Jobs;
 
 public class DistributedJob : IAdvancedDistributedJob
 {
-    public string Gid { get; }
-    public List<StepInfoModel> Steps { get; } = new();
-    public ITmJobConfigurations? TmOptions { get; set; }
-    public IDbTransactionContext? DbTransactionContext { get; }
+    public virtual string Gid { get; }
+    public virtual List<StepInfoModel> Steps { get; } = new();
+    public virtual ITmJobConfigurations? TmOptions { get; set; }
+    public virtual IDbTransactionContext? DbTransactionContext { get; }
+    public virtual bool PrepareSent { get; protected set; }
+    public virtual bool SubmitSent { get; protected set; }
 
     protected IServiceProvider ServiceProvider { get; }
     protected ITmClient TmClient { get; }
@@ -49,14 +51,17 @@ public class DistributedJob : IAdvancedDistributedJob
 
     public virtual async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        // P1. Send "prepare" to TM.
-        await TmPrepareAsync(cancellationToken);
+        if (DbTransactionContext is not null)
+        {
+            // P1. Send "prepare" to TM.
+            await TmPrepareAsync(cancellationToken);
 
-        // P2. Insert a barrier record to DB.
-        await DbInsertBarrierAsync(cancellationToken);
+            // P2. Insert a barrier record to DB.
+            await DbInsertBarrierAsync(cancellationToken);
 
-        // P3. Commit the DB transaction.
-        await DbCommitAsync(cancellationToken);
+            // P3. Commit the DB transaction.
+            await DbCommitAsync(cancellationToken);
+        }
 
         // P4. Send "submit" to TM.
         await TmSubmitAsync(cancellationToken);
@@ -64,6 +69,11 @@ public class DistributedJob : IAdvancedDistributedJob
 
     public virtual async Task PrepareAndInsertBarrierAsync(CancellationToken cancellationToken = default)
     {
+        if (DbTransactionContext is null)
+        {
+            throw new SteppingException("DB Transaction not set.");
+        }
+
         // P1. Send "prepare" to TM.
         await TmPrepareAsync(cancellationToken);
 
@@ -79,7 +89,16 @@ public class DistributedJob : IAdvancedDistributedJob
 
     protected virtual async Task TmPrepareAsync(CancellationToken cancellationToken = default)
     {
+        CheckStepsExist();
+
+        if (PrepareSent)
+        {
+            throw new SteppingException("Duplicate sending prepare to TM.");
+        }
+
         await TmClient.PrepareAsync(this, cancellationToken);
+
+        PrepareSent = true;
     }
 
     protected virtual async Task DbInsertBarrierAsync(CancellationToken cancellationToken = default)
@@ -109,6 +128,23 @@ public class DistributedJob : IAdvancedDistributedJob
 
     protected virtual async Task TmSubmitAsync(CancellationToken cancellationToken = default)
     {
+        CheckStepsExist();
+        
+        if (SubmitSent)
+        {
+            throw new SteppingException("Duplicate sending submit to TM.");
+        }
+
         await TmClient.SubmitAsync(this, cancellationToken);
+
+        SubmitSent = true;
+    }
+
+    protected virtual void CheckStepsExist()
+    {
+        if (Steps.Count == 0)
+        {
+            throw new SteppingException("Steps not set.");
+        }
     }
 }

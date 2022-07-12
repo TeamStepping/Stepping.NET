@@ -44,6 +44,6 @@ public class DbBarrierInserterResolver : IDbBarrierInserterResolver
             throw new SteppingException("Invalid DbProviderName.");
         }
 
-        return Task.FromResult((IDbBarrierInserter)ServiceProvider.GetService(CachedTypes[dbProviderName]));
+        return Task.FromResult((IDbBarrierInserter)ServiceProvider.GetRequiredService(CachedTypes[dbProviderName]));
     }
 }
