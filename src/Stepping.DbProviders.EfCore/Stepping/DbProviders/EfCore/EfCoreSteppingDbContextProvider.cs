@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stepping.Core.Databases;
-using Stepping.Core.Secrets;
+using Stepping.Core.Infrastructures;
 
 namespace Stepping.DbProviders.EfCore;
 
@@ -24,7 +24,7 @@ public class EfCoreSteppingDbContextProvider : ISteppingDbContextProvider
     {
         var dbContext = (DbContext)ActivatorUtilities.GetServiceOrCreateInstance(
             ServiceProvider,
-            Type.GetType(infoModel.DbContextType)!
+            Type.GetType(infoModel.DbContextType!)!
         );
 
         dbContext.Database.SetConnectionString(

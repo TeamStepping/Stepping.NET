@@ -4,7 +4,7 @@ public class SteppingDbContextInfoModel
 {
     public string DbProviderName { get; set; } = null!;
 
-    public string DbContextType { get; set; } = null!;
+    public string? DbContextType { get; set; }
 
     public string? Database { get; set; }
 
@@ -16,7 +16,7 @@ public class SteppingDbContextInfoModel
 
     public SteppingDbContextInfoModel(
         string dbProviderName,
-        string dbContextType,
+        string? dbContextType,
         string? database,
         string encryptedConnectionString)
     {

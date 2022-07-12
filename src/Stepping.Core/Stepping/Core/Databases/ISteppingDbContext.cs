@@ -5,4 +5,8 @@ public interface ISteppingDbContext
     string DbProviderName { get; }
 
     string ConnectionString { get; }
+
+    Type? GetInternalDbContextTypeOrNull();
+
+    string? GetInternalDatabaseNameOrNull();
 }

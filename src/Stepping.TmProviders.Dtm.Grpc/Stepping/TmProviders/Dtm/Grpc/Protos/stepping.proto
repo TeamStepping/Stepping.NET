@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package stepping;
+
+option csharp_namespace = "Stepping.TmProviders.Dtm.Grpc.Services.Generated";
+option go_package = "./stepping";
+
+import "google/protobuf/empty.proto";
+
+message ExecuteStepRequest {
+  string StepName = 1;
+  string ArgsToByteString = 2;
+}
+
+service SteppingService {
+  rpc ExecuteStep(ExecuteStepRequest) returns (google.protobuf.Empty) {}
+  rpc QueryPrepared(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}

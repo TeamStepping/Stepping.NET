@@ -12,6 +12,10 @@ public class EfCoreSteppingDbContext : ISteppingDbContext
 
     public DbContext DbContext { get; }
 
+    public virtual Type GetInternalDbContextTypeOrNull() => DbContext.GetType();
+
+    public string? GetInternalDatabaseNameOrNull() => null;
+
     public EfCoreSteppingDbContext(DbContext dbContext)
     {
         DbContext = dbContext;

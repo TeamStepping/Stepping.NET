@@ -1,5 +1,6 @@
 ﻿using Stepping.Core.Databases;
 using Stepping.Core.Steps;
+using Stepping.Core.TransactionManagers;
 
 namespace Stepping.Core.Jobs;
 
@@ -8,6 +9,8 @@ public interface IDistributedJob
     string Gid { get; }
 
     List<StepInfoModel> Steps { get; }
+    
+    ITmJobConfigurations? TmOptions { get; set; }
 
     IDbTransactionContext? DbTransactionContext { get; }
 

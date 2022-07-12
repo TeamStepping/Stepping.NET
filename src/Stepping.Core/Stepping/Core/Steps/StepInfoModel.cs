@@ -2,7 +2,7 @@
 
 public class StepInfoModel
 {
-    public Type Type { get; set; } = null!;
+    public string StepName { get; set; } = null!;
 
     public object? Args { get; set; }
 
@@ -10,9 +10,9 @@ public class StepInfoModel
     {
     }
 
-    public StepInfoModel(Type type, object? args)
+    public StepInfoModel(string stepName, object? args)
     {
-        Type = type;
+        StepName = stepName;
         Args = args;
     }
 }
