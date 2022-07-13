@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Grpc.Core.Testing" Version="2.46.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+        <ProjectReference Include="..\..\src\Stepping.TmProviders.Dtm.Grpc\Stepping.TmProviders.Dtm.Grpc.csproj" />
+        <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj" />
+    </ItemGroup>
+
+</Project>
