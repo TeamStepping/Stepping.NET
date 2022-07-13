@@ -5,15 +5,20 @@ namespace Stepping.TmProviders.Dtm.Grpc.Secrets;
 
 public class DefaultActionApiTokenChecker : IActionApiTokenChecker
 {
-    private readonly SteppingDtmGrpcOptions _options;
+    protected SteppingDtmGrpcOptions Options { get; init; }
 
     public DefaultActionApiTokenChecker(IOptions<SteppingDtmGrpcOptions> options)
     {
-        _options = options.Value;
+        Options = options.Value;
     }
-    
-    public virtual Task<bool> IsCorrectAsync(string token)
+
+    public virtual Task<bool> IsCorrectAsync(string? token)
     {
-        return Task.FromResult(token.Equals(_options.ActionApiToken));
+        if (Options.ActionApiToken is null || Options.ActionApiToken.Equals(string.Empty))
+        {
+            return Task.FromResult(true);
+        }
+
+        return Task.FromResult(token == Options.ActionApiToken);
     }
 }

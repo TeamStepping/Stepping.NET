@@ -46,7 +46,7 @@ public class SteppingDtmGrpcOptions
         set => _queryPreparedPath = value.EnsureStartsWith('/');
     }
 
-    public string GetExecuteStepPathAddress()
+    public string GetExecuteStepAddress()
     {
         return $"{AppGrpcUrl}{ExecuteStepPath}";
     }

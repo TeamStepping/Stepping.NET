@@ -2,5 +2,5 @@
 
 public interface IActionApiTokenChecker
 {
-    Task<bool> IsCorrectAsync(string token);
+    Task<bool> IsCorrectAsync(string? token);
 }
