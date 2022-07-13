@@ -1,10 +1,13 @@
 ﻿using System.Collections.Concurrent;
+using System.Data;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Stepping.Core;
 using Stepping.Core.Databases;
+using Stepping.Core.Infrastructures;
 using Stepping.Core.Options;
 
 namespace Stepping.DbProviders.EfCore;
@@ -12,16 +15,21 @@ namespace Stepping.DbProviders.EfCore;
 public class EfCoreDbInitializer : IDbInitializer
 {
     private ILogger<EfCoreDbInitializer> Logger { get; }
-    private ConcurrentDictionary<string, bool> CreatedConnectionStrings { get; } = new();
+
+    protected static ConcurrentDictionary<string, bool> CreatedConnectionStrings { get; } = new();
+    public static bool CacheEnabled { get; set; }
 
     protected SteppingOptions Options { get; }
+    protected IServiceProvider ServiceProvider { get; }
 
     public EfCoreDbInitializer(
         ILogger<EfCoreDbInitializer> logger,
-        IOptions<SteppingOptions> options)
+        IOptions<SteppingOptions> options,
+        IServiceProvider serviceProvider)
     {
         Logger = logger;
         Options = options.Value;
+        ServiceProvider = serviceProvider;
     }
 
     public virtual async Task TryInitializeAsync(IDbInitializingInfoModel infoModel)
@@ -30,7 +38,7 @@ public class EfCoreDbInitializer : IDbInitializer
 
         var connectionString = dbContext.ConnectionString;
 
-        if (CreatedConnectionStrings.ContainsKey(connectionString!))
+        if (CacheEnabled && CreatedConnectionStrings.ContainsKey(connectionString!))
         {
             return;
         }
@@ -47,10 +55,52 @@ public class EfCoreDbInitializer : IDbInitializer
                 $"Database provider {dbContext.DbContext.Database.ProviderName} is not supported by Stepping!");
         }
 
+        // Todo: Check table exists. If so, we cache it in CreatedConnectionStrings. So we don't need to create a new scope and also support cache for IsolationLevel.Serializable.
+        // var sql = special.GetExistBarrierTableSql(Options);
+
         var sql = special.GetCreateBarrierTableSql(Options);
 
-        await dbContext.DbContext.Database.GetDbConnection().ExecuteAsync(sql);
+        var currentTransaction = dbContext.DbContext.Database.CurrentTransaction;
 
-        CreatedConnectionStrings[connectionString] = true;
+        if (currentTransaction is null)
+        {
+            await dbContext.DbContext.Database.GetDbConnection().ExecuteAsync(sql);
+            CreatedConnectionStrings[connectionString] = true;
+        }
+        else if (currentTransaction.GetDbTransaction().IsolationLevel == IsolationLevel.Serializable)
+        {
+            await dbContext.DbContext.Database.GetDbConnection().ExecuteAsync(sql);
+            // Don't set a item in CreatedConnectionStrings
+        }
+        else
+        {
+            await using var scope = ServiceProvider.CreateAsyncScope();
+
+            var newSteppingDbContext = await GetNewSteppingDbContextAsync(scope.ServiceProvider, dbContext.DbContext);
+
+            await newSteppingDbContext.DbContext.Database.GetDbConnection().ExecuteAsync(sql);
+            CreatedConnectionStrings[connectionString] = true;
+        }
+    }
+
+    protected virtual async Task<EfCoreSteppingDbContext> GetNewSteppingDbContextAsync(
+        IServiceProvider serviceProvider, DbContext originalDbContext)
+    {
+        var connectionStringEncryptor = serviceProvider.GetRequiredService<IConnectionStringEncryptor>();
+        var dbContextProviderResolver = serviceProvider.GetRequiredService<ISteppingDbContextProviderResolver>();
+
+        var dbContextProvider =
+            await dbContextProviderResolver.ResolveAsync(SteppingDbProviderEfCoreConsts.DbProviderName);
+
+        return (EfCoreSteppingDbContext)await dbContextProvider.GetAsync(
+            new SteppingDbContextInfoModel(
+                SteppingDbProviderEfCoreConsts.DbProviderName,
+                SteppingDbContextInfoModel.GetTypeFullNameWithAssemblyName(originalDbContext.GetType()),
+                null,
+                await connectionStringEncryptor.EncryptAsync(
+                    originalDbContext.Database.GetConnectionString() ?? throw new InvalidOperationException()
+                )
+            )
+        );
     }
 }

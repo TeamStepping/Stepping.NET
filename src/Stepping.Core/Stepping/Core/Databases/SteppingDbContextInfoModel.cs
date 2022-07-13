@@ -25,4 +25,9 @@ public class SteppingDbContextInfoModel
         Database = database;
         EncryptedConnectionString = encryptedConnectionString;
     }
+
+    public static string GetTypeFullNameWithAssemblyName(Type type)
+    {
+        return $"{type.FullName}, {type.Assembly.GetName().Name}";
+    }
 }

@@ -77,9 +77,9 @@ public class EfCoreDbBarrierInserter : IDbBarrierInserter
                     barrier_id = barrierInfoModel.BarrierId
                 });
 
-            if (reason.Equals(SteppingConsts.MsgBarrierReasonRollback))
+            if (reason.Equals(barrierInfoModel.Reason))
             {
-                return true; // The "rollback" inserted succeed.
+                return true;
             }
         }
         catch (Exception ex)
@@ -88,7 +88,7 @@ public class EfCoreDbBarrierInserter : IDbBarrierInserter
             throw;
         }
 
-        return false; // The "rollback" not inserted.
+        return false;
     }
 
     protected virtual async Task<int> InsertBarrierAsync(BarrierInfoModel barrierInfoModel,

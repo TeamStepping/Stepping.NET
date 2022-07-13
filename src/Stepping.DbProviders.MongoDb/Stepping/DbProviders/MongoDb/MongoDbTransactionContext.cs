@@ -9,7 +9,7 @@ public class MongoDbTransactionContext : IDbTransactionContext
 
     public MongoDbTransactionContext(MongoDbSteppingDbContext dbContext)
     {
-        if (dbContext.SessionHandle is null)
+        if (dbContext.SessionHandle is null || !dbContext.SessionHandle.IsInTransaction)
         {
             throw new SteppingException("The specified DbContext is not with a DB transaction.");
         }
