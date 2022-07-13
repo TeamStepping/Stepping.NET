@@ -9,17 +9,17 @@ public class EfCoreDbTransactionContext : IDbTransactionContext
 
     public EfCoreDbTransactionContext(EfCoreSteppingDbContext dbContext)
     {
+        if (dbContext.DbContext.Database.CurrentTransaction is null)
+        {
+            throw new SteppingException("The specified DbContext is not with a DB transaction.");
+        }
+
         DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
     public virtual async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         var efDbContext = ((EfCoreSteppingDbContext)DbContext).DbContext;
-
-        if (efDbContext.Database.CurrentTransaction is null)
-        {
-            throw new SteppingException("This job is not with a DB transaction.");
-        }
 
         await efDbContext.Database.CommitTransactionAsync(cancellationToken);
     }

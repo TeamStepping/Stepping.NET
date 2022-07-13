@@ -9,10 +9,14 @@ public interface IDistributedJob
     string Gid { get; }
 
     List<StepInfoModel> Steps { get; }
-    
+
     ITmJobConfigurations? TmOptions { get; set; }
 
     IDbTransactionContext? DbTransactionContext { get; }
+
+    bool PrepareSent { get; }
+
+    bool SubmitSent { get; }
 
     /// <summary>
     /// Add a step for the job to do in order.

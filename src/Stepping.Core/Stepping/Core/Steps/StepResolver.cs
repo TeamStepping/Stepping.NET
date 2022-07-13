@@ -33,7 +33,7 @@ public class StepResolver : IStepResolver
             throw new SteppingException("Invalid StepName.");
         }
 
-        return Task.FromResult(ServiceProvider.GetService(CachedTypes[stepName]));
+        return Task.FromResult(ServiceProvider.GetRequiredService(CachedTypes[stepName]));
     }
 
     protected virtual Dictionary<string, Type> CreateCachedTypes()

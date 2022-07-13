@@ -28,11 +28,35 @@ public class StepExecutor : IStepExecutor
             }
             else
             {
-                var argsType = stepType.GetGenericArguments()[0];
+                var argsType = GetArgsType(stepType);
                 var args = await StepArgsSerializer.DeserializeAsync(argsToByteString, argsType);
 
                 await executableStep.ExecuteAsync(args);
             }
         }
+    }
+
+    protected virtual Type GetArgsType(Type stepType)
+    {
+        var baseType = stepType;
+
+        while ((baseType = baseType.BaseType) is not null)
+        {
+            if (!baseType.IsGenericType)
+            {
+                continue;
+            }
+
+            var generic = baseType.GetGenericTypeDefinition();
+
+            if (generic != typeof(ExecutableStep<>))
+            {
+                continue;
+            }
+
+            return baseType.GetGenericArguments()[0];
+        }
+
+        throw new InvalidOperationException();
     }
 }

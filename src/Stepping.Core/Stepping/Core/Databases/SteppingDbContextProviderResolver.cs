@@ -39,6 +39,7 @@ public class SteppingDbContextProviderResolver : ISteppingDbContextProviderResol
             throw new SteppingException("Invalid DbProviderName.");
         }
 
-        return Task.FromResult((ISteppingDbContextProvider)ServiceProvider.GetService(CachedTypes[dbProviderName]));
+        return Task.FromResult(
+            (ISteppingDbContextProvider)ServiceProvider.GetRequiredService(CachedTypes[dbProviderName]));
     }
 }

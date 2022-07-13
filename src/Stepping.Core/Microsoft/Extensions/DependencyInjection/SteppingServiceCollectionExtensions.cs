@@ -1,0 +1,61 @@
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Stepping.Core.Databases;
+using Stepping.Core.Infrastructures;
+using Stepping.Core.Jobs;
+using Stepping.Core.Options;
+using Stepping.Core.Steps;
+
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class SteppingServiceCollectionExtensions
+{
+    public static IServiceCollection AddStepping(this IServiceCollection services, Action<SteppingOptions> setupAction)
+    {
+        services.AddSteppingServices();
+
+        services.Configure(setupAction);
+
+        return services;
+    }
+
+    public static IServiceCollection AddStepping(this IServiceCollection services)
+    {
+        services.AddStepping(_ => { });
+
+        return services;
+    }
+
+    private static IServiceCollection AddSteppingServices(this IServiceCollection services)
+    {
+        services.TryAddSingleton<IBarrierInfoModelFactory, BarrierInfoModelFactory>();
+
+        services.TryAddTransient<IDbBarrierInserterResolver, DbBarrierInserterResolver>();
+        services.TryAddTransient<DbBarrierInserterResolver>();
+
+        services.TryAddTransient<ISteppingDbContextProviderResolver, SteppingDbContextProviderResolver>();
+        services.TryAddTransient<SteppingDbContextProviderResolver>();
+
+        services.TryAddTransient<IConnectionStringEncryptor, NullConnectionStringEncryptor>();
+        services.TryAddTransient<NullConnectionStringEncryptor>();
+
+        services.TryAddTransient<ISteppingJsonSerializer, NewtonsoftSteppingJsonSerializer>();
+        services.TryAddTransient<NewtonsoftSteppingJsonSerializer>();
+
+        services.TryAddTransient<IDistributedJobFactory, DistributedJobFactory>();
+        services.TryAddTransient<DistributedJobFactory>();
+
+        services.TryAddTransient<IStepArgsSerializer, JsonStepArgsSerializer>();
+        services.TryAddTransient<JsonStepArgsSerializer>();
+
+        services.TryAddTransient<IStepExecutor, StepExecutor>();
+        services.TryAddTransient<StepExecutor>();
+
+        services.TryAddTransient<IStepNameProvider, StepNameProvider>();
+        services.TryAddTransient<StepNameProvider>();
+
+        services.TryAddTransient<IStepResolver, StepResolver>();
+        services.TryAddTransient<StepResolver>();
+
+        return services;
+    }
+}
