@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Stepping.Core.Steps;
 
-namespace Stepping.Core.Tests.Fakes;
+namespace Stepping.TestBase.Fakes;
 
 public record TargetServiceInfoArgs(Type ServiceType);
 

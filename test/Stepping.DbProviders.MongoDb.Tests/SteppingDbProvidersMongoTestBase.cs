@@ -1,13 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Stepping.TestBase;
 
-namespace Stepping.Core.Tests;
+namespace Stepping.DbProviders.MongoDb.Tests;
 
-public abstract class SteppingCoreTestBase : SteppingTestBase
+public abstract class SteppingDbProvidersMongoTestBase : SteppingTestBase
 {
     protected override void ConfigureServices(ServiceCollection services)
     {
+        MongoDbInitializer.CacheEnabled = false;
+
         services.AddStepping();
+        services.AddSteppingMongoDb();
 
         base.ConfigureServices(services);
     }

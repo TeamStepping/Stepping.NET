@@ -1,7 +1,7 @@
 ﻿using Stepping.Core.Jobs;
 using Stepping.Core.TransactionManagers;
 
-namespace Stepping.Core.Tests.Fakes;
+namespace Stepping.TestBase.Fakes;
 
 public class FakeTmClient : ITmClient
 {

@@ -1,6 +1,6 @@
 ﻿using Stepping.Core.Databases;
 
-namespace Stepping.Core.Tests.Fakes;
+namespace Stepping.TestBase.Fakes;
 
 public class FakeSteppingDbContext : ISteppingDbContext
 {

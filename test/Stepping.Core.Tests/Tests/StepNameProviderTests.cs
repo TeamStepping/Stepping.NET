@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Stepping.Core.Steps;
-using Stepping.Core.Tests.Fakes;
+using Stepping.TestBase.Fakes;
 using Xunit;
 
 namespace Stepping.Core.Tests.Tests;
