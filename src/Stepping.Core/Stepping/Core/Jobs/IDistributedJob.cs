@@ -21,12 +21,12 @@ public interface IDistributedJob
     /// <summary>
     /// Add a step for the job to do in order.
     /// </summary>
-    Task AddStepAsync<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class;
+    void AddStep<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class;
 
     /// <summary>
     /// Add a step for the job to do in order.
     /// </summary>
-    Task AddStepAsync<TStep>() where TStep : IStepWithoutArgs;
+    void AddStep<TStep>() where TStep : IStepWithoutArgs;
 
     /// <summary>
     /// Send "prepare" to TM, insert a barrier record to DB, commit the DB transaction, and send "submit" to TM.

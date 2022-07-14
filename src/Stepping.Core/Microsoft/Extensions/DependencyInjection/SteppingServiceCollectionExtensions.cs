@@ -28,6 +28,7 @@ public static class SteppingServiceCollectionExtensions
     private static IServiceCollection AddSteppingServices(this IServiceCollection services)
     {
         services.TryAddSingleton<IBarrierInfoModelFactory, BarrierInfoModelFactory>();
+        services.TryAddSingleton<IStepNameProvider, StepNameProvider>();
 
         services.TryAddTransient<IDbBarrierInserterResolver, DbBarrierInserterResolver>();
         services.TryAddTransient<DbBarrierInserterResolver>();
@@ -49,9 +50,6 @@ public static class SteppingServiceCollectionExtensions
 
         services.TryAddTransient<IStepExecutor, StepExecutor>();
         services.TryAddTransient<StepExecutor>();
-
-        services.TryAddTransient<IStepNameProvider, StepNameProvider>();
-        services.TryAddTransient<StepNameProvider>();
 
         services.TryAddTransient<IStepResolver, StepResolver>();
         services.TryAddTransient<StepResolver>();

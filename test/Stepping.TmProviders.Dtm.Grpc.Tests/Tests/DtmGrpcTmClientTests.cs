@@ -34,8 +34,8 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
             new FakeDbTransactionContext(new FakeSteppingDbContext(true)));
 
-        await job.AddStepAsync<FakeExecutableStep>();
-        await job.AddStepAsync<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
+        job.AddStep<FakeExecutableStep>();
+        job.AddStep<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
             new TargetServiceInfoArgs(typeof(FakeService)));
 
         job.SetBranchHeader("header1", "header1_value");
@@ -89,8 +89,8 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
             new FakeDbTransactionContext(new FakeSteppingDbContext(true)));
 
-        await job.AddStepAsync<FakeExecutableStep>();
-        await job.AddStepAsync<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
+        job.AddStep<FakeExecutableStep>();
+        job.AddStep<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
             new TargetServiceInfoArgs(typeof(FakeService)));
 
         job.SetBranchHeader("header1", "header1_value");

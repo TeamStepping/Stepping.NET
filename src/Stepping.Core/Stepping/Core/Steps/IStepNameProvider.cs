@@ -2,5 +2,7 @@
 
 public interface IStepNameProvider
 {
-    Task<string> GetAsync<TStep>() where TStep : IStep;
+    string Get<TStep>() where TStep : IStep;
+
+    string Get(Type stepType);
 }
