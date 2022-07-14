@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.EfCore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.MongoDb.Tests", "test\Stepping.DbProviders.MongoDb.Tests\Stepping.DbProviders.MongoDb.Tests.csproj", "{A1703140-4869-4EC5-9E34-6B3C311CA1B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm.Grpc.Tests", "test\Stepping.TmProviders.Dtm.Grpc.Tests\Stepping.TmProviders.Dtm.Grpc.Tests.csproj", "{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{A1703140-4869-4EC5-9E34-6B3C311CA1B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1703140-4869-4EC5-9E34-6B3C311CA1B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1703140-4869-4EC5-9E34-6B3C311CA1B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B498BC14-E20A-439D-840F-076CA2C40E31} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
@@ -75,5 +81,6 @@ Global
 		{CA24C74B-AB48-4FB9-84FC-DF433C37A338} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{A1703140-4869-4EC5-9E34-6B3C311CA1B5} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 	EndGlobalSection
 EndGlobal

@@ -5,10 +5,11 @@ namespace Stepping.TestBase.Fakes;
 public class FakeSteppingDbContext : ISteppingDbContext
 {
     public const string FakeDbProviderName = "Fake";
+    public const string FakeConnectionString = "my-connection-string";
 
     public string DbProviderName => FakeDbProviderName;
 
-    public string ConnectionString => "my-connection-string";
+    public string ConnectionString => FakeConnectionString;
 
     public Type? GetInternalDbContextTypeOrNull() => null;
 
