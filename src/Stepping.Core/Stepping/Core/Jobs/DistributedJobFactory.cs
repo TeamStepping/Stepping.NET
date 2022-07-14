@@ -1,4 +1,5 @@
-﻿using Stepping.Core.Databases;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Stepping.Core.Databases;
 
 namespace Stepping.Core.Jobs;
 
@@ -11,13 +12,21 @@ public class DistributedJobFactory : IDistributedJobFactory
         ServiceProvider = serviceProvider;
     }
 
-    public virtual Task<IDistributedJob> CreateJobAsync(string gid, ISteppingDbContext? dbContext)
+    public virtual async Task<IDistributedJob> CreateJobAsync(string? gid, ISteppingDbContext? dbContext)
     {
-        return Task.FromResult<IDistributedJob>(new DistributedJob(gid, dbContext, ServiceProvider));
+        return new DistributedJob(gid ?? await GenerateGidAsync(), dbContext, ServiceProvider);
     }
 
-    public virtual Task<IAdvancedDistributedJob> CreateAdvancedJobAsync(string gid, ISteppingDbContext? dbContext)
+    public virtual async Task<IAdvancedDistributedJob> CreateAdvancedJobAsync(string? gid,
+        ISteppingDbContext? dbContext)
     {
-        return Task.FromResult<IAdvancedDistributedJob>(new DistributedJob(gid, dbContext, ServiceProvider));
+        return new DistributedJob(gid ?? await GenerateGidAsync(), dbContext, ServiceProvider);
+    }
+
+    protected virtual async Task<string> GenerateGidAsync()
+    {
+        var generator = ServiceProvider.GetRequiredService<IDistributedJobGidGenerator>();
+
+        return await generator.CreateAsync();
     }
 }
