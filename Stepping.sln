@@ -18,6 +18,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TestBase", "test\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.Core.Tests", "test\Stepping.Core.Tests\Stepping.Core.Tests.csproj", "{CA24C74B-AB48-4FB9-84FC-DF433C37A338}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.EfCore.Tests", "test\Stepping.DbProviders.EfCore.Tests\Stepping.DbProviders.EfCore.Tests.csproj", "{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.MongoDb.Tests", "test\Stepping.DbProviders.MongoDb.Tests\Stepping.DbProviders.MongoDb.Tests.csproj", "{A1703140-4869-4EC5-9E34-6B3C311CA1B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +56,14 @@ Global
 		{CA24C74B-AB48-4FB9-84FC-DF433C37A338}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA24C74B-AB48-4FB9-84FC-DF433C37A338}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA24C74B-AB48-4FB9-84FC-DF433C37A338}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1703140-4869-4EC5-9E34-6B3C311CA1B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1703140-4869-4EC5-9E34-6B3C311CA1B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1703140-4869-4EC5-9E34-6B3C311CA1B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1703140-4869-4EC5-9E34-6B3C311CA1B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B498BC14-E20A-439D-840F-076CA2C40E31} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
@@ -61,5 +73,7 @@ Global
 		{5AC4B579-20B2-4BA5-B624-8C329CBD5B47} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
 		{5361DB4C-0E6A-4011-842D-A36EE576498A} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{CA24C74B-AB48-4FB9-84FC-DF433C37A338} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{A1703140-4869-4EC5-9E34-6B3C311CA1B5} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 	EndGlobalSection
 EndGlobal

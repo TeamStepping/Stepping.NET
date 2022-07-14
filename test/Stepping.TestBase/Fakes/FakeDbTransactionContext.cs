@@ -1,7 +1,7 @@
 ﻿using Stepping.Core.Databases;
 using Stepping.Core.Exceptions;
 
-namespace Stepping.Core.Tests.Fakes;
+namespace Stepping.TestBase.Fakes;
 
 public class FakeDbTransactionContext : IDbTransactionContext
 {
