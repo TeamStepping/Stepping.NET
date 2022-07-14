@@ -1,20 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Stepping.Core;
 using Stepping.Core.Databases;
 
 namespace Stepping.DbProviders.EfCore;
 
-public class EfCoreSteppingDbContext : ISteppingDbContext
+public class EfCoreSteppingDbContext : SteppingDbContextBase
 {
-    public string DbProviderName => SteppingDbProviderEfCoreConsts.DbProviderName;
-
-    public string ConnectionString => DbContext.Database.GetConnectionString() ?? throw new InvalidOperationException();
+    public override string DbProviderName => SteppingDbProviderEfCoreConsts.DbProviderName;
 
     public DbContext DbContext { get; }
 
-    public virtual Type GetInternalDbContextTypeOrNull() => DbContext.GetType();
+    public override string ConnectionString =>
+        DbContext.Database.GetConnectionString() ?? throw new InvalidOperationException();
 
-    public string? GetInternalDatabaseNameOrNull() => null;
+    public override bool IsTransactional => DbContext.Database.CurrentTransaction is not null;
+
+    public override Type GetInternalDbContextTypeOrNull() => DbContext.GetType();
+
+    public override string? GetInternalDatabaseNameOrNull() => null;
+
+    protected override async Task InternalCommitTransactionAsync(CancellationToken cancellationToken = default) =>
+        await DbContext.Database.CommitTransactionAsync(cancellationToken);
 
     public EfCoreSteppingDbContext(DbContext dbContext)
     {

@@ -22,19 +22,19 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
-        job.DbTransactionContext.ShouldBeNull();
+        job.DbContext.ShouldBeNull();
     }
 
     [Fact]
     public async Task Should_Create_Job_With_Db_Transaction()
     {
-        var dbTransactionContext = new FakeDbTransactionContext(new FakeSteppingDbContext(true));
+        var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid", dbTransactionContext);
+        var job = await DistributedJobFactory.CreateJobAsync("my-gid", dbContext);
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
-        job.DbTransactionContext.ShouldBe(dbTransactionContext);
+        job.DbContext.ShouldBe(dbContext);
     }
 
     [Fact]
@@ -44,18 +44,18 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
-        job.DbTransactionContext.ShouldBeNull();
+        job.DbContext.ShouldBeNull();
     }
 
     [Fact]
     public async Task Should_Create_Advanced_Job_With_Db_Transaction()
     {
-        var dbTransactionContext = new FakeDbTransactionContext(new FakeSteppingDbContext(true));
+        var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbTransactionContext);
+        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
-        job.DbTransactionContext.ShouldBe(dbTransactionContext);
+        job.DbContext.ShouldBe(dbContext);
     }
 }

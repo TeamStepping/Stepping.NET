@@ -11,7 +11,7 @@ public class DistributedJob : IAdvancedDistributedJob
     public virtual string Gid { get; }
     public virtual List<StepInfoModel> Steps { get; } = new();
     public virtual ITmJobConfigurations? TmOptions { get; set; }
-    public virtual IDbTransactionContext? DbTransactionContext { get; }
+    public virtual ISteppingDbContext? DbContext { get; }
     public virtual bool PrepareSent { get; protected set; }
     public virtual bool SubmitSent { get; protected set; }
 
@@ -22,21 +22,26 @@ public class DistributedJob : IAdvancedDistributedJob
     protected IBarrierInfoModelFactory BarrierInfoModelFactory { get; }
 
     /// <summary>
-    /// You should set <see cref="DbTransactionContext"/> for final consistency
+    /// You should set <see cref="DbContext"/> for eventual consistency
     /// when the current session has DB-write operations in the DB transaction.
     /// </summary>
     public DistributedJob(
         string gid,
-        IDbTransactionContext? dbTransactionContext,
+        ISteppingDbContext? dbContext,
         IServiceProvider serviceProvider)
     {
         Gid = gid;
-        DbTransactionContext = dbTransactionContext;
+        DbContext = dbContext;
         ServiceProvider = serviceProvider;
         TmClient = serviceProvider.GetRequiredService<ITmClient>();
         StepNameProvider = serviceProvider.GetRequiredService<IStepNameProvider>();
         DbBarrierInserterResolver = serviceProvider.GetRequiredService<IDbBarrierInserterResolver>();
         BarrierInfoModelFactory = serviceProvider.GetRequiredService<IBarrierInfoModelFactory>();
+
+        if (dbContext is not null)
+        {
+            CheckTransactionalExists(dbContext);
+        }
     }
 
     public virtual void AddStep<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class
@@ -51,7 +56,7 @@ public class DistributedJob : IAdvancedDistributedJob
 
     public virtual async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        if (DbTransactionContext is not null)
+        if (DbContext is not null)
         {
             // P1. Send "prepare" to TM.
             await TmPrepareAsync(cancellationToken);
@@ -69,7 +74,7 @@ public class DistributedJob : IAdvancedDistributedJob
 
     public virtual async Task PrepareAndInsertBarrierAsync(CancellationToken cancellationToken = default)
     {
-        if (DbTransactionContext is null)
+        if (DbContext is null)
         {
             throw new SteppingException("DB Transaction not set.");
         }
@@ -103,27 +108,21 @@ public class DistributedJob : IAdvancedDistributedJob
 
     protected virtual async Task DbInsertBarrierAsync(CancellationToken cancellationToken = default)
     {
-        if (DbTransactionContext is null)
-        {
-            throw new SteppingException("DB Transaction not set.");
-        }
+        CheckDbContextIsNotNull();
 
-        var dbBarrierInserter = await DbBarrierInserterResolver.ResolveAsync(DbTransactionContext.DbContext);
+        var dbBarrierInserter = await DbBarrierInserterResolver.ResolveAsync(DbContext!);
 
         await dbBarrierInserter.MustInsertBarrierAsync(
             await BarrierInfoModelFactory.CreateForCommitAsync(Gid),
-            DbTransactionContext.DbContext,
+            DbContext!,
             cancellationToken);
     }
 
     protected virtual async Task DbCommitAsync(CancellationToken cancellationToken = default)
     {
-        if (DbTransactionContext is null)
-        {
-            throw new SteppingException("DB Transaction not set.");
-        }
+        CheckDbContextIsNotNull();
 
-        await DbTransactionContext.CommitAsync(cancellationToken);
+        await DbContext!.CommitTransactionAsync(cancellationToken);
     }
 
     protected virtual async Task TmSubmitAsync(CancellationToken cancellationToken = default)
@@ -145,6 +144,22 @@ public class DistributedJob : IAdvancedDistributedJob
         if (Steps.Count == 0)
         {
             throw new SteppingException("Steps not set.");
+        }
+    }
+
+    protected virtual void CheckDbContextIsNotNull()
+    {
+        if (DbContext is null)
+        {
+            throw new SteppingException("DB context not set.");
+        }
+    }
+
+    protected static void CheckTransactionalExists(ISteppingDbContext dbContext)
+    {
+        if (!dbContext.IsTransactional)
+        {
+            throw new SteppingException("Specified DB context should be with a transaction.");
         }
     }
 }

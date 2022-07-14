@@ -52,9 +52,8 @@ public class DistributedJobTests : SteppingCoreTestBase
     public async Task Should_Send_Prepare_And_Insert_Barrier()
     {
         var dbContext = new FakeSteppingDbContext(true);
-        var dbTransactionContext = new FakeDbTransactionContext(dbContext);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbTransactionContext);
+        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
@@ -86,16 +85,15 @@ public class DistributedJobTests : SteppingCoreTestBase
     public async Task Should_Submit_Job_After_Db_Transaction_Commit()
     {
         var dbContext = new FakeSteppingDbContext(true);
-        var dbTransactionContext = new FakeDbTransactionContext(dbContext);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbTransactionContext);
+        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
         await job.PrepareAndInsertBarrierAsync();
         job.PrepareSent.ShouldBeTrue();
 
-        await dbContext.FakeCommitTransactionAsync();
+        await dbContext.CommitTransactionAsync();
         dbContext.TransactionCommitted.ShouldBeTrue();
 
         await Should.NotThrowAsync(() => job.SubmitAsync());
@@ -121,9 +119,8 @@ public class DistributedJobTests : SteppingCoreTestBase
     public async Task Should_Execute_Job_With_Db_Transaction()
     {
         var dbContext = new FakeSteppingDbContext(true);
-        var dbTransactionContext = new FakeDbTransactionContext(dbContext);
 
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid", dbTransactionContext);
+        var job = await DistributedJobFactory.CreateJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
@@ -141,9 +138,8 @@ public class DistributedJobTests : SteppingCoreTestBase
     public async Task Should_Not_Allow_Duplicate_Sending_Prepare()
     {
         var dbContext = new FakeSteppingDbContext(true);
-        var dbTransactionContext = new FakeDbTransactionContext(dbContext);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbTransactionContext);
+        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
@@ -174,9 +170,8 @@ public class DistributedJobTests : SteppingCoreTestBase
         await Should.ThrowAsync<SteppingException>(() => job.ExecuteAsync(), "Duplicate sending submit to TM.");
 
         var dbContext = new FakeSteppingDbContext(true);
-        var dbTransactionContext = new FakeDbTransactionContext(dbContext);
 
-        var transJob = await DistributedJobFactory.CreateJobAsync("my-gid", dbTransactionContext);
+        var transJob = await DistributedJobFactory.CreateJobAsync("my-gid", dbContext);
 
         transJob.AddStep<FakeExecutableStep>();
 

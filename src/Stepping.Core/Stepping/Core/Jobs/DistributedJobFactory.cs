@@ -11,14 +11,13 @@ public class DistributedJobFactory : IDistributedJobFactory
         ServiceProvider = serviceProvider;
     }
 
-    public virtual Task<IDistributedJob> CreateJobAsync(string gid, IDbTransactionContext? dbTransactionContext)
+    public virtual Task<IDistributedJob> CreateJobAsync(string gid, ISteppingDbContext? dbContext)
     {
-        return Task.FromResult<IDistributedJob>(new DistributedJob(gid, dbTransactionContext, ServiceProvider));
+        return Task.FromResult<IDistributedJob>(new DistributedJob(gid, dbContext, ServiceProvider));
     }
 
-    public virtual Task<IAdvancedDistributedJob> CreateAdvancedJobAsync(string gid,
-        IDbTransactionContext? dbTransactionContext)
+    public virtual Task<IAdvancedDistributedJob> CreateAdvancedJobAsync(string gid, ISteppingDbContext? dbContext)
     {
-        return Task.FromResult<IAdvancedDistributedJob>(new DistributedJob(gid, dbTransactionContext, ServiceProvider));
+        return Task.FromResult<IAdvancedDistributedJob>(new DistributedJob(gid, dbContext, ServiceProvider));
     }
 }
