@@ -1,32 +1,25 @@
 ﻿using System.Collections.Concurrent;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Stepping.Core.Steps;
 
 public class StepNameProvider : IStepNameProvider
 {
-    protected static ConcurrentDictionary<Type, string> CachedNames { get; set; } = new();
+    protected static ConcurrentDictionary<Type, string> CachedNames { get; } = new();
 
-    protected IServiceProvider ServiceProvider { get; }
-
-    public StepNameProvider(IServiceProvider serviceProvider)
+    public virtual string Get<TStep>() where TStep : IStep
     {
-        ServiceProvider = serviceProvider;
+        var stepType = typeof(TStep);
+
+        return Get(stepType);
     }
 
-    public virtual Task<string> GetAsync<TStep>() where TStep : IStep
+    public virtual string Get(Type stepType)
     {
-        var type = typeof(TStep);
-
-        if (CachedNames.ContainsKey(type))
+        if (!CachedNames.ContainsKey(stepType))
         {
-            return Task.FromResult(CachedNames[type]);
+            CachedNames[stepType] = StepNameAttribute.GetStepName(stepType);
         }
 
-        var step = ServiceProvider.GetRequiredService<TStep>();
-
-        CachedNames[type] = step.StepName;
-
-        return Task.FromResult(step.StepName);
+        return CachedNames[stepType];
     }
 }

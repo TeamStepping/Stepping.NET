@@ -16,8 +16,10 @@ public class StepNameProviderTests : SteppingCoreTestBase
     }
 
     [Fact]
-    public async Task Should_Get_Step_Name()
+    public Task Should_Get_Step_Name()
     {
-        (await StepNameProvider.GetAsync<FakeExecutableStep>()).ShouldBe(FakeExecutableStep.FakeExecutableStepName);
+        StepNameProvider.Get<FakeExecutableStep>().ShouldBe(FakeExecutableStep.FakeExecutableStepName);
+
+        return Task.CompletedTask;
     }
 }

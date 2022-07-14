@@ -38,8 +38,9 @@ public class StepResolver : IStepResolver
 
     protected virtual Dictionary<string, Type> CreateCachedTypes()
     {
+        var stepNameProvider = ServiceProvider.GetRequiredService<IStepNameProvider>();
         var steps = ServiceProvider.GetRequiredService<IEnumerable<IStep>>();
 
-        return steps.ToDictionary(step => step.StepName, step => step.GetType());
+        return steps.ToDictionary(step => stepNameProvider.Get(step.GetType()), step => step.GetType());
     }
 }

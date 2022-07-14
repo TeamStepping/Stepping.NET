@@ -22,7 +22,7 @@ public abstract class ExecutableStep : ExecutableStepBase, IStepWithoutArgs
     public override Task ExecuteAsync(object args) => throw new InvalidOperationException();
 }
 
-public abstract class ExecutableStepBase : StepBase, IExecutableStep
+public abstract class ExecutableStepBase : IExecutableStep
 {
     protected IServiceProvider ServiceProvider { get; }
 

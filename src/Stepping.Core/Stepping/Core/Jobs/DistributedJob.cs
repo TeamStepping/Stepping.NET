@@ -39,14 +39,14 @@ public class DistributedJob : IAdvancedDistributedJob
         BarrierInfoModelFactory = serviceProvider.GetRequiredService<IBarrierInfoModelFactory>();
     }
 
-    public virtual async Task AddStepAsync<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class
+    public virtual void AddStep<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class
     {
-        Steps.Add(new StepInfoModel(await StepNameProvider.GetAsync<TStep>(), args));
+        Steps.Add(new StepInfoModel(StepNameProvider.Get<TStep>(), args));
     }
 
-    public virtual async Task AddStepAsync<TStep>() where TStep : IStepWithoutArgs
+    public virtual void AddStep<TStep>() where TStep : IStepWithoutArgs
     {
-        Steps.Add(new StepInfoModel(await StepNameProvider.GetAsync<TStep>(), null));
+        Steps.Add(new StepInfoModel(StepNameProvider.Get<TStep>(), null));
     }
 
     public virtual async Task ExecuteAsync(CancellationToken cancellationToken = default)
@@ -129,7 +129,7 @@ public class DistributedJob : IAdvancedDistributedJob
     protected virtual async Task TmSubmitAsync(CancellationToken cancellationToken = default)
     {
         CheckStepsExist();
-        
+
         if (SubmitSent)
         {
             throw new SteppingException("Duplicate sending submit to TM.");

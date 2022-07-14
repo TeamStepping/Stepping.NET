@@ -5,11 +5,10 @@ namespace Stepping.TestBase.Fakes;
 
 public record TargetServiceInfoArgs(Type ServiceType);
 
+[StepName(FakeWithArgsExecutableStepName)]
 public class FakeWithArgsExecutableStep : ExecutableStep<TargetServiceInfoArgs>
 {
     public const string FakeWithArgsExecutableStepName = "FakeWithArgs";
-
-    public override string StepName => FakeWithArgsExecutableStepName;
 
     public FakeWithArgsExecutableStep(IServiceProvider serviceProvider) : base(serviceProvider)
     {
