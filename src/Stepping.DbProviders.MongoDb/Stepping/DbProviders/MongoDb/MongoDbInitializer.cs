@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Stepping.Core;
 using Stepping.Core.Databases;
 
 namespace Stepping.DbProviders.MongoDb;
@@ -10,8 +9,9 @@ public class MongoDbInitializer : IDbInitializer
 {
     protected IBarrierCollectionProvider BarrierCollectionProvider { get; }
     private ILogger<MongoDbInitializer> Logger { get; }
-    private ConcurrentDictionary<string, bool> CreatedServers { get; } = new();
 
+    protected static ConcurrentDictionary<string, bool> CreatedServers { get; } = new();
+    public static bool CacheEnabled { get; set; }
 
     public MongoDbInitializer(
         IBarrierCollectionProvider barrierCollectionProvider,
@@ -27,7 +27,7 @@ public class MongoDbInitializer : IDbInitializer
 
         var servers = dbContext.Database.Client.Settings.Servers.Select(x => x.ToString()).ToList();
 
-        if (servers.All(x => CreatedServers.ContainsKey(x)))
+        if (CacheEnabled && servers.All(x => CreatedServers.ContainsKey(x)))
         {
             return;
         }

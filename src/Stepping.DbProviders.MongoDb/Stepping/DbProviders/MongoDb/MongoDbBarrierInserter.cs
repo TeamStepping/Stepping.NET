@@ -99,14 +99,16 @@ public class MongoDbBarrierInserter : IDbBarrierInserter
             var filter = BuildFindFilters(barrierInfoModel.Gid, barrierInfoModel.BranchId, barrierInfoModel.TransType,
                 barrierInfoModel.BarrierId);
 
-            var cursor = await mongoCollection.FindAsync<SteppingBarrierDocument>(mongoDbContext.SessionHandle, filter,
-                cancellationToken: cancellationToken);
+            var cursor = mongoDbContext.SessionHandle is null
+                ? await mongoCollection.FindAsync<SteppingBarrierDocument>(filter, cancellationToken: cancellationToken)
+                : await mongoCollection.FindAsync<SteppingBarrierDocument>(mongoDbContext.SessionHandle, filter,
+                    cancellationToken: cancellationToken);
 
             var res = await cursor.ToListAsync(cancellationToken: cancellationToken);
 
-            if (res is { Count: > 0 } && res[0].Reason.Equals(SteppingConsts.MsgBarrierReasonRollback))
+            if (res is { Count: > 0 } && res[0].Reason.Equals(barrierInfoModel.Reason))
             {
-                return true; // The "rollback" inserted succeed.
+                return true;
             }
         }
         catch (Exception ex)
@@ -115,7 +117,7 @@ public class MongoDbBarrierInserter : IDbBarrierInserter
             throw;
         }
 
-        return false; // The "rollback" not inserted.
+        return false;
     }
 
     protected virtual FilterDefinition<SteppingBarrierDocument> BuildFindFilters(

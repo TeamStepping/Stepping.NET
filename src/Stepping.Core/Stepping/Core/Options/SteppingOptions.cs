@@ -5,6 +5,7 @@ public class SteppingOptions
     /// <summary>
     /// The barrier table name. It will use the default value if you keep it <c>null</c>:<br /><br />
     /// SQL Server -> stepping.Barrier<br />
+    /// SQLite -> stepping_barrier<br />
     /// MySQL -> stepping_barrier<br />
     /// PostgreSQL -> stepping.barrier<br />
     /// MongoDB -> stepping_barrier
