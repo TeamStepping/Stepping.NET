@@ -4,7 +4,7 @@ namespace Stepping.Core.Steps;
 
 public class StepNameProvider : IStepNameProvider
 {
-    protected static ConcurrentDictionary<Type, string> CachedNames { get; } = new();
+    protected ConcurrentDictionary<Type, string> CachedNames { get; } = new();
 
     public virtual string Get<TStep>() where TStep : IStep
     {
