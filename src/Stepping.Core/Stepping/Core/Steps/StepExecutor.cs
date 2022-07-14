@@ -1,4 +1,6 @@
-﻿namespace Stepping.Core.Steps;
+﻿using Stepping.Core.Exceptions;
+
+namespace Stepping.Core.Steps;
 
 public class StepExecutor : IStepExecutor
 {
@@ -18,21 +20,23 @@ public class StepExecutor : IStepExecutor
         var step = await StepResolver.ResolveAsync(executableStepName);
         var stepType = step.GetType();
 
-        if (typeof(ExecutableStep).IsAssignableFrom(stepType))
+        if (!typeof(IExecutableStep).IsAssignableFrom(stepType))
         {
-            var executableStep = (ExecutableStep)step;
+            throw new SteppingException("Cannot execute a non-executable step.");
+        }
 
-            if (argsToByteString is null || argsToByteString.Equals(string.Empty))
-            {
-                await executableStep.ExecuteAsync();
-            }
-            else
-            {
-                var argsType = GetArgsType(stepType);
-                var args = await StepArgsSerializer.DeserializeAsync(argsToByteString, argsType);
+        var executableStep = (IExecutableStep)step;
 
-                await executableStep.ExecuteAsync(args);
-            }
+        if (argsToByteString is null || argsToByteString.Equals(string.Empty))
+        {
+            await executableStep.ExecuteAsync();
+        }
+        else
+        {
+            var argsType = GetArgsType(stepType);
+            var args = await StepArgsSerializer.DeserializeAsync(argsToByteString, argsType);
+
+            await executableStep.ExecuteAsync(args);
         }
     }
 

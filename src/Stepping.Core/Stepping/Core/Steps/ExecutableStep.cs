@@ -1,6 +1,6 @@
 ﻿namespace Stepping.Core.Steps;
 
-public abstract class ExecutableStep<TArgs> : ExecutableStep, IStep<TArgs> where TArgs : class
+public abstract class ExecutableStep<TArgs> : ExecutableStepBase, IStep<TArgs> where TArgs : class
 {
     public ExecutableStep(IServiceProvider serviceProvider) : base(serviceProvider)
     {
@@ -13,16 +13,25 @@ public abstract class ExecutableStep<TArgs> : ExecutableStep, IStep<TArgs> where
     public override Task ExecuteAsync(object args) => ExecuteAsync((TArgs)args);
 }
 
-public abstract class ExecutableStep : StepBase
+public abstract class ExecutableStep : ExecutableStepBase, IStepWithoutArgs
+{
+    protected ExecutableStep(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+    }
+    
+    public override Task ExecuteAsync(object args) => throw new InvalidOperationException();
+}
+
+public abstract class ExecutableStepBase : StepBase, IExecutableStep
 {
     protected IServiceProvider ServiceProvider { get; }
 
-    public ExecutableStep(IServiceProvider serviceProvider)
+    public ExecutableStepBase(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }
 
     public abstract Task ExecuteAsync();
 
-    public virtual Task ExecuteAsync(object args) => throw new InvalidOperationException();
+    public abstract Task ExecuteAsync(object args);
 }

@@ -44,7 +44,7 @@ public class DistributedJob : IAdvancedDistributedJob
         Steps.Add(new StepInfoModel(await StepNameProvider.GetAsync<TStep>(), args));
     }
 
-    public virtual async Task AddStepAsync<TStep>() where TStep : IStep
+    public virtual async Task AddStepAsync<TStep>() where TStep : IStepWithoutArgs
     {
         Steps.Add(new StepInfoModel(await StepNameProvider.GetAsync<TStep>(), null));
     }

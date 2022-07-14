@@ -22,14 +22,14 @@ public class ExecutableStepToDtmStepConverter : IStepToDtmStepConverter
 
     public virtual Task<bool> CanConvertAsync(IStep step)
     {
-        return Task.FromResult(step is ExecutableStep);
+        return Task.FromResult(step is IExecutableStep);
     }
 
     public virtual async Task<DtmStepInfoModel> ConvertAsync(string stepName, object? args)
     {
         var argsToByteString = args is not null
             ? Encoding.UTF8.GetString(await StepArgsSerializer.SerializeAsync(args))
-            : null;
+            : string.Empty;
 
         var payload = new ExecuteStepRequest
         {
@@ -40,7 +40,7 @@ public class ExecutableStepToDtmStepConverter : IStepToDtmStepConverter
         return new DtmStepInfoModel(
             new Dictionary<string, string>
             {
-                { DtmConsts.ActionStepName, Options.GetExecuteStepPathAddress() }
+                { DtmConsts.ActionStepName, Options.GetExecuteStepAddress() }
             },
             payload.ToByteString()
         );
