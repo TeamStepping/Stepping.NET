@@ -25,7 +25,7 @@ public class DistributedJob : IAdvancedDistributedJob
     /// You should set <see cref="DbContext"/> for eventual consistency
     /// when the current session has DB-write operations in the DB transaction.
     /// </summary>
-    public DistributedJob(
+    internal DistributedJob(
         string gid,
         ISteppingDbContext? dbContext,
         IServiceProvider serviceProvider)
