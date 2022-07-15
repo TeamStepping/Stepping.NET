@@ -2,31 +2,24 @@
 
 namespace Stepping.TestBase.Fakes;
 
-public class FakeSteppingDbContext : ISteppingDbContext
+public class FakeSteppingDbContext : SteppingDbContextBase
 {
     public const string FakeDbProviderName = "Fake";
     public const string FakeConnectionString = "my-connection-string";
 
-    public string DbProviderName => FakeDbProviderName;
+    public override string DbProviderName => FakeDbProviderName;
 
-    public string ConnectionString => FakeConnectionString;
+    public override string ConnectionString => FakeConnectionString;
 
-    public Type? GetInternalDbContextTypeOrNull() => null;
+    public override bool IsTransactional { get; }
 
-    public string? GetInternalDatabaseNameOrNull() => null;
+    public override Type? GetInternalDbContextTypeOrNull() => null;
 
-    public bool IsTransactional { get; }
+    public override string? GetInternalDatabaseNameOrNull() => null;
 
-    public bool TransactionCommitted { get; private set; }
-
-    public FakeSteppingDbContext(bool isTransactional)
+    protected override Task InternalCommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        IsTransactional = isTransactional;
-    }
-
-    public virtual Task FakeCommitTransactionAsync()
-    {
-        if (!IsTransactional || TransactionCommitted)
+        if (TransactionCommitted)
         {
             throw new Exception();
         }
@@ -34,5 +27,12 @@ public class FakeSteppingDbContext : ISteppingDbContext
         TransactionCommitted = true;
 
         return Task.CompletedTask;
+    }
+
+    public bool TransactionCommitted { get; private set; }
+
+    public FakeSteppingDbContext(bool isTransactional)
+    {
+        IsTransactional = isTransactional;
     }
 }

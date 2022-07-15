@@ -12,7 +12,7 @@ public interface IDistributedJob
 
     ITmJobConfigurations? TmOptions { get; set; }
 
-    IDbTransactionContext? DbTransactionContext { get; }
+    ISteppingDbContext? DbContext { get; }
 
     bool PrepareSent { get; }
 

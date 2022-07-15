@@ -43,7 +43,10 @@ public class DtmGrpcTmClient : ITmClient
 
     public virtual async Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
-        await AddDbContextInfoHeadersAsync(job);
+        if (job.DbContext is not null)
+        {
+            await AddDbContextInfoHeadersAsync(job);
+        }
 
         var dtmRequest = await BuildDtmRequestAsync(job);
 
@@ -59,23 +62,18 @@ public class DtmGrpcTmClient : ITmClient
 
     protected virtual async Task AddDbContextInfoHeadersAsync(IDistributedJob job)
     {
-        if (job.DbTransactionContext is null)
-        {
-            return;
-        }
-
         var headers = job.GetDtmJobConfigurations().BranchHeaders;
-        var dbProviderName = job.DbTransactionContext.DbContext.DbProviderName;
+        var dbProviderName = job.DbContext!.DbProviderName;
 
-        var dbContextType = job.DbTransactionContext.DbContext.GetInternalDbContextTypeOrNull();
+        var dbContextType = job.DbContext.GetInternalDbContextTypeOrNull();
         var dbContextTypeName = dbContextType is null
             ? string.Empty
             : $"{dbContextType.FullName}, {dbContextType.Assembly.GetName().Name}";
 
-        var databaseName = job.DbTransactionContext.DbContext.GetInternalDatabaseNameOrNull() ?? string.Empty;
+        var databaseName = job.DbContext.GetInternalDatabaseNameOrNull() ?? string.Empty;
 
         var encryptedConnectionString =
-            await ConnectionStringEncryptor.EncryptAsync(job.DbTransactionContext.DbContext.ConnectionString);
+            await ConnectionStringEncryptor.EncryptAsync(job.DbContext.ConnectionString);
 
         headers.Add(DtmRequestHeaderNames.DbProviderName, dbProviderName);
         headers.Add(DtmRequestHeaderNames.DbContextType, dbContextTypeName);

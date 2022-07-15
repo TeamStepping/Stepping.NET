@@ -1,12 +1,11 @@
 ﻿using MongoDB.Driver;
-using Stepping.Core;
 using Stepping.Core.Databases;
 
 namespace Stepping.DbProviders.MongoDb;
 
-public class MongoDbSteppingDbContext : ISteppingDbContext
+public class MongoDbSteppingDbContext : SteppingDbContextBase
 {
-    public string DbProviderName => SteppingDbProviderMongoDbConsts.DbProviderName;
+    public override string DbProviderName => SteppingDbProviderMongoDbConsts.DbProviderName;
 
     public IMongoDatabase Database { get; }
 
@@ -14,7 +13,13 @@ public class MongoDbSteppingDbContext : ISteppingDbContext
 
     public IClientSessionHandle? SessionHandle { get; }
 
-    public string ConnectionString { get; }
+    public override string ConnectionString { get; }
+
+    public override bool IsTransactional => SessionHandle is null || !SessionHandle.IsInTransaction;
+
+    public override Type? GetInternalDbContextTypeOrNull() => null;
+
+    public override string? GetInternalDatabaseNameOrNull() => Database.DatabaseNamespace.DatabaseName;
 
     public MongoDbSteppingDbContext(
         IMongoDatabase database, IMongoClient client, IClientSessionHandle? sessionHandle, string connectionString)
@@ -24,14 +29,7 @@ public class MongoDbSteppingDbContext : ISteppingDbContext
         SessionHandle = sessionHandle;
         ConnectionString = connectionString;
     }
-    
-    public virtual Type? GetInternalDbContextTypeOrNull()
-    {
-        return null;
-    }
 
-    public string? GetInternalDatabaseNameOrNull()
-    {
-        return Database.DatabaseNamespace.DatabaseName;
-    }
+    protected override async Task InternalCommitTransactionAsync(CancellationToken cancellationToken = default) =>
+        await SessionHandle!.CommitTransactionAsync(cancellationToken);
 }

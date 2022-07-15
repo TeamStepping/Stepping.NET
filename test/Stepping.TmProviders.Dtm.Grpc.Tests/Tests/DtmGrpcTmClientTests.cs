@@ -32,7 +32,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
     public async Task Should_Send_Prepare()
     {
         var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
-            new FakeDbTransactionContext(new FakeSteppingDbContext(true)));
+            new FakeSteppingDbContext(true));
 
         job.AddStep<FakeExecutableStep>();
         job.AddStep<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
@@ -70,7 +70,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         headers.ShouldContainKey(DtmRequestHeaderNames.EncryptedConnectionString);
 
         headers["header1"].ShouldBe("header1_value");
-        headers[DtmRequestHeaderNames.DbProviderName].ShouldBe(job.DbTransactionContext!.DbContext.DbProviderName);
+        headers[DtmRequestHeaderNames.DbProviderName].ShouldBe(job.DbContext!.DbProviderName);
         headers[DtmRequestHeaderNames.DbContextType].ShouldBe(string.Empty);
         headers[DtmRequestHeaderNames.Database].ShouldBe(string.Empty);
         headers[DtmRequestHeaderNames.EncryptedConnectionString]
@@ -87,7 +87,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
     public async Task Should_Send_Submit()
     {
         var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
-            new FakeDbTransactionContext(new FakeSteppingDbContext(true)));
+            new FakeSteppingDbContext(true));
 
         job.AddStep<FakeExecutableStep>();
         job.AddStep<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
