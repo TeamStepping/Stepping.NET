@@ -9,12 +9,12 @@ public abstract class ExecutableStep<TArgs> : IExecutableStep, IStepWithArgs, IS
         Args = args;
     }
 
-    public abstract Task ExecuteAsync(IServiceProvider serviceProvider);
+    public abstract Task ExecuteAsync(StepExecutionContext context);
 
     public virtual object GetArgs() => Args;
 }
 
 public abstract class ExecutableStep : IExecutableStep, IStepWithoutArgs
 {
-    public abstract Task ExecuteAsync(IServiceProvider serviceProvider);
+    public abstract Task ExecuteAsync(StepExecutionContext context);
 }

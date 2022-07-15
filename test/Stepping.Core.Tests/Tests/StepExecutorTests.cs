@@ -23,10 +23,11 @@ public class StepExecutorTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Execute_Step()
     {
-        await Should.NotThrowAsync(() => StepExecutor.ExecuteAsync(FakeExecutableStep.FakeExecutableStepName, null));
+        await Should.NotThrowAsync(() =>
+            StepExecutor.ExecuteAsync("my-gid", FakeExecutableStep.FakeExecutableStepName, null));
 
         await Should.ThrowAsync<InvalidOperationException>(async () =>
-            await StepExecutor.ExecuteAsync(FakeExecutableStep.FakeExecutableStepName,
+            await StepExecutor.ExecuteAsync("my-gid", FakeExecutableStep.FakeExecutableStepName,
                 Encoding.UTF8.GetString(await StepArgsSerializer.SerializeAsync(new InvalidArgsType()))));
     }
 
@@ -34,10 +35,10 @@ public class StepExecutorTests : SteppingCoreTestBase
     public async Task Should_Execute_Step_With_Args()
     {
         await Should.ThrowAsync<InvalidOperationException>(() =>
-            StepExecutor.ExecuteAsync(FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName, null));
+            StepExecutor.ExecuteAsync("my-gid", FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName, null));
 
         await Should.NotThrowAsync(async () =>
-            await StepExecutor.ExecuteAsync(FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName,
+            await StepExecutor.ExecuteAsync("my-gid", FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName,
                 Encoding.UTF8.GetString(await StepArgsSerializer.SerializeAsync("my-input"))));
     }
 }

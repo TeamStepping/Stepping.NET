@@ -13,26 +13,43 @@ If a job involves a DB transaction, the steps will be **ensured to be done** aft
 
 ## Examples
 
-`CreateOrderStep` and `SendOrderCreatedEmailStep` will be eventual done by TM:
+Define steps:
+```csharp
+[StepName("CreateOrder")]
+public class CreateOrderStep : ExecutableStep<CreateOrderArgs>
+{
+    public override async Task ExecuteAsync(StepExecutionContext context)
+    {
+        var orderManager = context.ServiceProvider.GetRequiredService<IOrderManager>();
+        await orderManager.CreateOrderAsync(Args);
+    }
+}
+
+[StepName("SendOrderCreatedEmail")]
+public class SendOrderCreatedEmailStep : ExecutableStep
+{
+    public override async Task ExecuteAsync(StepExecutionContext context)
+    {
+        var sender = context.ServiceProvider.GetRequiredService<IOrderEmailSender>();
+        await sender.SendForCreatedAsync(context.Gid); // should get order by gid
+    }
+}
+```
+The added steps will be eventual done by TM:
 ```csharp
 var job = await DistributedJobFactory.CreateJobAsync();
 
-job.AddStep<CreateOrderStep>();
+job.AddStep(new CreateOrderStep(orderCreatingArgs));
 job.AddStep<SendOrderCreatedEmailStep>();
 
 await job.StartAsync();
 ```
-In practice, some steps need args input:
-```csharp
-job.AddStep(new CreateOrderStep(orderCreatingArgs));
-```
 If you want to execute the steps after a DB transaction commits and want to ensure they will eventually be done:
 ```csharp
 var steppingDbContext = new EfCoreSteppingDbContext(efCoreDbContext);
-
 var job = await DistributedJobFactory.CreateJobAsync(steppingDbContext);
 ```
-For more, please see the [usage document](./Usage.md) or the [sample projects](../example).
+For more, please see the [usage document](./Usage.md).
 
 ## Supported Transaction Managers
 

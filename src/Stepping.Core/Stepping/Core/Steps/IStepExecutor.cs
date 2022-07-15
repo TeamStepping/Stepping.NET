@@ -2,5 +2,5 @@
 
 public interface IStepExecutor
 {
-    Task ExecuteAsync(string executableStepName, string? argsToByteString);
+    Task ExecuteAsync(string gid, string executableStepName, string? argsToByteString);
 }
