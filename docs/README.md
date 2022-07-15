@@ -5,15 +5,34 @@ Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consiste
 
 The distributed transaction is based on DTM's [2-phase messaging](https://en.dtm.pub/practice/msg.html) pattern.
 
-## What is `Job` and `Step` in Stepping?
+## What are `Job` and `Step` in Stepping?
 
-`Job` is a distributed transaction unit, and `Step` is a specific task inside a job. A job contains some steps and eventual executes them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
+`Job` is a distributed transaction unit, and `Step` is a specific task inside a job. A job contains some steps and eventually executes them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
-If a job involves a DB transaction, the steps will be **ensured to be done** after the transaction commit. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
+If a job involves a DB transaction, the steps will be **ensured to be done** after the transaction is committed. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
 
 ## Examples
 
-Todo.
+`CreateOrderStep` and `SendOrderCreatedEmailStep` will be eventual done by TM:
+```csharp
+var job = await DistributedJobFactory.CreateJobAsync();
+
+job.AddStep<CreateOrderStep>();
+job.AddStep<SendOrderCreatedEmailStep>();
+
+await job.StartAsync();
+```
+In practice, some steps need args input:
+```csharp
+job.AddStep(new CreateOrderStep(orderCreatingArgs));
+```
+If you want to execute the steps after a DB transaction commits and want to ensure they will eventually be done:
+```csharp
+var steppingDbContext = new EfCoreSteppingDbContext(efCoreDbContext);
+
+var job = await DistributedJobFactory.CreateJobAsync(steppingDbContext);
+```
+For more, please see the [usage document](./Usage.md) or the [sample projects](../example).
 
 ## Supported Transaction Managers
 
@@ -21,10 +40,12 @@ Stepping requires transaction managers. You can choose an implementation you lik
 
 ### DTM Server
 
-DTM Server is a mature transaction manager that can be used with Stepping. By using DTM, you also get many other distributed transaction modes like SAGA, TCC, and XA.
+DTM Server is a mature transaction manager you can use as the TM provider for Stepping. DTM allows you to get many other distributed transaction modes like SAGA, TCC, and XA.
 
-See DTM's [document](https://en.dtm.pub/guide/install.html) to learn how to install the DTM Server.
+See the [DTM document](./Dtm.md).
 
 ### Stepping Self-TM
 
-Stepping providers a Self-TM implementation for decentralization transaction managers. In short, who starts a job should be the TM of this job.
+Stepping provides a built-in self-TM implementation. It runs with your app as a decentralization transaction manager. In short, which app starts a job should be the TM of this job.
+
+See the [Self-TM document](./SelfTm.md).
