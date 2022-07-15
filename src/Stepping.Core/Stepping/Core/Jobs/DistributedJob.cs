@@ -48,7 +48,7 @@ public class DistributedJob : IAdvancedDistributedJob
 
     public virtual void AddStep<TStep>() where TStep : IStepWithoutArgs => Steps.Add(StepResolver.Resolve<TStep>());
 
-    public virtual async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public virtual async Task StartAsync(CancellationToken cancellationToken = default)
     {
         if (DbContext is not null)
         {

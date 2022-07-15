@@ -100,7 +100,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     }
 
     [Fact]
-    public async Task Should_Execute_Job_Without_Db_Transaction()
+    public async Task Should_Start_Job_Without_Db_Transaction()
     {
         var job = await DistributedJobFactory.CreateJobAsync("my-gid");
 
@@ -109,13 +109,13 @@ public class DistributedJobTests : SteppingCoreTestBase
         job.PrepareSent.ShouldBeFalse();
         job.SubmitSent.ShouldBeFalse();
 
-        await Should.NotThrowAsync(() => job.ExecuteAsync());
+        await Should.NotThrowAsync(() => job.StartAsync());
         job.PrepareSent.ShouldBeFalse();
         job.SubmitSent.ShouldBeTrue();
     }
 
     [Fact]
-    public async Task Should_Execute_Job_With_Db_Transaction()
+    public async Task Should_Start_Job_With_Db_Transaction()
     {
         var dbContext = new FakeSteppingDbContext(true);
 
@@ -127,7 +127,7 @@ public class DistributedJobTests : SteppingCoreTestBase
         job.PrepareSent.ShouldBeFalse();
         job.SubmitSent.ShouldBeFalse();
 
-        await Should.NotThrowAsync(() => job.ExecuteAsync());
+        await Should.NotThrowAsync(() => job.StartAsync());
         dbContext.TransactionCommitted.ShouldBeTrue();
         job.PrepareSent.ShouldBeTrue();
         job.SubmitSent.ShouldBeTrue();
@@ -165,8 +165,8 @@ public class DistributedJobTests : SteppingCoreTestBase
 
         job.AddStep<FakeExecutableStep>();
 
-        await Should.NotThrowAsync(() => job.ExecuteAsync());
-        await Should.ThrowAsync<SteppingException>(() => job.ExecuteAsync(), "Duplicate sending submit to TM.");
+        await Should.NotThrowAsync(() => job.StartAsync());
+        await Should.ThrowAsync<SteppingException>(() => job.StartAsync(), "Duplicate sending submit to TM.");
 
         var dbContext = new FakeSteppingDbContext(true);
 
@@ -174,7 +174,7 @@ public class DistributedJobTests : SteppingCoreTestBase
 
         transJob.AddStep<FakeExecutableStep>();
 
-        await Should.NotThrowAsync(() => transJob.ExecuteAsync());
-        await Should.ThrowAsync<SteppingException>(() => transJob.ExecuteAsync(), "Duplicate sending prepare to TM.");
+        await Should.NotThrowAsync(() => transJob.StartAsync());
+        await Should.ThrowAsync<SteppingException>(() => transJob.StartAsync(), "Duplicate sending prepare to TM.");
     }
 }
