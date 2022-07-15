@@ -74,10 +74,7 @@ public class DistributedJob : IAdvancedDistributedJob
 
     public virtual async Task PrepareAndInsertBarrierAsync(CancellationToken cancellationToken = default)
     {
-        if (DbContext is null)
-        {
-            throw new SteppingException("DB Transaction not set.");
-        }
+        CheckDbContextIsNotNull();
 
         // P1. Send "prepare" to TM.
         await TmPrepareAsync(cancellationToken);
