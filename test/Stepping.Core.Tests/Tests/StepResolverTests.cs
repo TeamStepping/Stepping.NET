@@ -16,12 +16,14 @@ public class StepResolverTests : SteppingCoreTestBase
     }
 
     [Fact]
-    public async Task Should_Resolve_Step()
+    public Task Should_Resolve_Step()
     {
-        var fakeStep = await StepResolver.ResolveAsync(FakeExecutableStep.FakeExecutableStepName);
-        var fakeArgsStep = await StepResolver.ResolveAsync(FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName);
+        var fakeStep = StepResolver.Resolve(FakeExecutableStep.FakeExecutableStepName);
+        var fakeArgsStep = StepResolver.Resolve(FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName, "my-input");
 
         fakeStep.GetType().ShouldBe(typeof(FakeExecutableStep));
         fakeArgsStep.GetType().ShouldBe(typeof(FakeWithArgsExecutableStep));
+
+        return Task.CompletedTask;
     }
 }

@@ -35,8 +35,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
             new FakeSteppingDbContext(true));
 
         job.AddStep<FakeExecutableStep>();
-        job.AddStep<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
-            new TargetServiceInfoArgs(typeof(FakeService)));
+        job.AddStep(new FakeWithArgsExecutableStep("my-input"));
 
         job.SetBranchHeader("header1", "header1_value");
         job.SetPassthroughHeader("header1");
@@ -90,8 +89,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
             new FakeSteppingDbContext(true));
 
         job.AddStep<FakeExecutableStep>();
-        job.AddStep<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
-            new TargetServiceInfoArgs(typeof(FakeService)));
+        job.AddStep(new FakeWithArgsExecutableStep("my-input"));
 
         job.SetBranchHeader("header1", "header1_value");
         job.SetPassthroughHeader("header1");

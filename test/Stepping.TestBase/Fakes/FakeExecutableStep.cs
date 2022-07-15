@@ -8,13 +8,9 @@ public class FakeExecutableStep : ExecutableStep
 {
     public const string FakeExecutableStepName = "Fake";
 
-    public FakeExecutableStep(IServiceProvider serviceProvider) : base(serviceProvider)
+    public override Task ExecuteAsync(IServiceProvider serviceProvider)
     {
-    }
-
-    public override Task ExecuteAsync()
-    {
-        ServiceProvider.GetRequiredService<FakeService>();
+        serviceProvider.GetRequiredService<FakeService>();
 
         return Task.CompletedTask;
     }

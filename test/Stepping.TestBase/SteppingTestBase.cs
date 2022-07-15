@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Stepping.Core.Databases;
-using Stepping.Core.Steps;
 using Stepping.Core.TransactionManagers;
 using Stepping.TestBase.Fakes;
 
@@ -10,13 +9,13 @@ namespace Stepping.TestBase;
 public abstract class SteppingTestBase
 {
     protected IServiceProvider ServiceProvider { get; }
-    
+
     public SteppingTestBase()
     {
         var serviceCollection = new ServiceCollection();
 
         ConfigureServices(serviceCollection);
-        
+
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
         AfterBuildingServiceProvider();
@@ -29,7 +28,7 @@ public abstract class SteppingTestBase
     protected virtual void ConfigureServices(ServiceCollection services)
     {
         services.AddLogging();
-        
+
         services.AddTransient<IDbBarrierInserter, FakeDbBarrierInserter>();
         services.TryAddTransient<FakeDbBarrierInserter>();
 
@@ -38,12 +37,6 @@ public abstract class SteppingTestBase
 
         services.AddTransient<ITmClient, FakeTmClient>();
         services.TryAddTransient<FakeTmClient>();
-
-        services.AddTransient<IStep, FakeExecutableStep>();
-        services.TryAddTransient<FakeExecutableStep>();
-
-        services.AddTransient<IStep, FakeWithArgsExecutableStep>();
-        services.TryAddTransient<FakeWithArgsExecutableStep>();
 
         services.TryAddTransient<FakeService>();
     }

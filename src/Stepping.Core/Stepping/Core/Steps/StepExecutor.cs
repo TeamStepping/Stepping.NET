@@ -5,19 +5,23 @@ namespace Stepping.Core.Steps;
 public class StepExecutor : IStepExecutor
 {
     protected IStepResolver StepResolver { get; }
+    protected IServiceProvider ServiceProvider { get; }
     protected IStepArgsSerializer StepArgsSerializer { get; }
 
     public StepExecutor(
         IStepResolver stepResolver,
+        IServiceProvider serviceProvider,
         IStepArgsSerializer stepArgsSerializer)
     {
         StepResolver = stepResolver;
+        ServiceProvider = serviceProvider;
         StepArgsSerializer = stepArgsSerializer;
     }
 
     public virtual async Task ExecuteAsync(string executableStepName, string? argsToByteString)
     {
-        var step = await StepResolver.ResolveAsync(executableStepName);
+        var step = StepResolver.Resolve(executableStepName, argsToByteString);
+
         var stepType = step.GetType();
 
         if (!typeof(IExecutableStep).IsAssignableFrom(stepType))
@@ -29,14 +33,14 @@ public class StepExecutor : IStepExecutor
 
         if (argsToByteString is null || argsToByteString.Equals(string.Empty))
         {
-            await executableStep.ExecuteAsync();
+            await executableStep.ExecuteAsync(ServiceProvider);
         }
         else
         {
             var argsType = GetArgsType(stepType);
             var args = await StepArgsSerializer.DeserializeAsync(argsToByteString, argsType);
 
-            await executableStep.ExecuteAsync(args);
+            await executableStep.ExecuteAsync(ServiceProvider);
         }
     }
 

@@ -38,7 +38,6 @@ public class StepExecutorTests : SteppingCoreTestBase
 
         await Should.NotThrowAsync(async () =>
             await StepExecutor.ExecuteAsync(FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName,
-                Encoding.UTF8.GetString(
-                    await StepArgsSerializer.SerializeAsync(new TargetServiceInfoArgs(typeof(FakeService))))));
+                Encoding.UTF8.GetString(await StepArgsSerializer.SerializeAsync("my-input"))));
     }
 }

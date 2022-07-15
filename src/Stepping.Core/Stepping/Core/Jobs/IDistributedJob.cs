@@ -8,7 +8,7 @@ public interface IDistributedJob
 {
     string Gid { get; }
 
-    List<StepInfoModel> Steps { get; }
+    List<IStep> Steps { get; }
 
     ITmJobConfigurations? TmOptions { get; set; }
 
@@ -21,7 +21,7 @@ public interface IDistributedJob
     /// <summary>
     /// Add a step for the job to do in order.
     /// </summary>
-    void AddStep<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class;
+    void AddStep<TStep>(TStep step) where TStep : IStep;
 
     /// <summary>
     /// Add a step for the job to do in order.
