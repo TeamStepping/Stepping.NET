@@ -19,10 +19,20 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Create_Job()
     {
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid", null);
+        var job = await DistributedJobFactory.CreateJobAsync("my-gid");
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
+        job.DbContext.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Should_Create_Job_Without_Gid_Input()
+    {
+        var job = await DistributedJobFactory.CreateJobAsync();
+
+        job.ShouldNotBeNull();
+        job.Gid.ShouldNotBeNullOrWhiteSpace();
         job.DbContext.ShouldBeNull();
     }
 
@@ -50,11 +60,33 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Create_Advanced_Job()
     {
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", null);
+        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
         job.DbContext.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Should_Create_Advanced_Job_Without_Gid_Input()
+    {
+        var job = await DistributedJobFactory.CreateAdvancedJobAsync();
+
+        job.ShouldNotBeNull();
+        job.Gid.ShouldNotBeNullOrWhiteSpace();
+        job.DbContext.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Should_Create_Advanced_Job_With_Transactional_DbContext()
+    {
+        var dbContext = new FakeSteppingDbContext(true);
+
+        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
+
+        job.ShouldNotBeNull();
+        job.Gid.ShouldBe("my-gid");
+        job.DbContext.ShouldBe(dbContext);
     }
 
     [Fact]

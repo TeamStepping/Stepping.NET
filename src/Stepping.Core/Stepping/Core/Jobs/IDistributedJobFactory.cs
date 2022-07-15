@@ -4,7 +4,7 @@ namespace Stepping.Core.Jobs;
 
 public interface IDistributedJobFactory
 {
-    Task<IDistributedJob> CreateJobAsync(string gid, ISteppingDbContext? dbContext);
+    Task<IDistributedJob> CreateJobAsync(string? gid = null, ISteppingDbContext? dbContext = null);
 
-    Task<IAdvancedDistributedJob> CreateAdvancedJobAsync(string gid, ISteppingDbContext? dbContext);
+    Task<IAdvancedDistributedJob> CreateAdvancedJobAsync(string? gid = null, ISteppingDbContext? dbContext = null);
 }
