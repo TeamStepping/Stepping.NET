@@ -7,9 +7,9 @@ The distributed transaction is based on DTM's [2-phase messaging](https://en.dtm
 
 ## What are `Job` and `Step` in Stepping?
 
-`Job` is a distributed transaction unit, and `Step` is a specific task inside a job. A job contains some steps and eventually executes them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
+`Job` is a distributed transaction unit, and `Step` is a specific task inside a job. A job contains some steps and executes them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
-If a job involves a DB transaction, the steps will be **ensured to be done** after the transaction is committed. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
+If a job involves a DB transaction, the steps will be **ensured to be eventually done** after the transaction is committed. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
 
 ## Examples
 
