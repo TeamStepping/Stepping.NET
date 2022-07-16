@@ -3,13 +3,15 @@
 # Stepping.NET
 Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) jobs implementation. You can use it as a workflow engine, event outbox/inbox, email/SMS sender, remote invoker, and more. 
 
+It can also work with a DB transaction and supports the multi-DB scenario. That means the jobs are **ensured to be eventually done** after the DB transactions commit. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
+
 The distributed transaction is based on DTM's [2-phase messaging](https://en.dtm.pub/practice/msg.html) pattern.
 
 ## What are `Job` and `Step` in Stepping?
 
-`Job` is a distributed transaction unit, and `Step` is a specific task inside a job. A job contains some steps and executes them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
+`Job` is a distributed transaction unit, and `Step` is a specific task inside a job.
 
-If a job involves a DB transaction, the steps will be **ensured to be eventually done** after the transaction is committed. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
+A job contains some steps, and the TM will execute them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
 ## Examples
 
@@ -35,7 +37,7 @@ public class SendOrderCreatedEmailStep : ExecutableStep
     }
 }
 ```
-The added steps will be eventual done by TM:
+The TM will eventually complete the added steps:
 ```csharp
 var job = await DistributedJobFactory.CreateJobAsync();
 
@@ -50,6 +52,10 @@ var steppingDbContext = new EfCoreSteppingDbContext(efCoreDbContext);
 var job = await DistributedJobFactory.CreateJobAsync(steppingDbContext);
 ```
 For more, please see the [usage document](./Usage.md).
+
+## Installation
+
+See the [installation document](./Installation.md).
 
 ## Supported Transaction Managers
 

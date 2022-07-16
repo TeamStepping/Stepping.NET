@@ -12,7 +12,7 @@ See DTM's [official document](https://en.dtm.pub/guide/install.html) to learn ho
    ```shell
    Install-Package Stepping.TmProviders.Dtm.Grpc
    ```
-2. Add services and configure:
+2. Configure services:
    ```csharp
    services.AddSteppingDtmGrpc(options =>
    {
