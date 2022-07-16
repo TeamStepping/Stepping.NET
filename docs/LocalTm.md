@@ -14,7 +14,7 @@ Stepping provides a simple built-in TM implementation. It runs with your app as 
    Install-Package Stepping.TmProviders.LocalTm.MongoDb
    Install-Package Stepping.TmProviders.LocalTm.Redis
    ```
-2. Add services and configure:
+2. Configure services:
    ```csharp
    services.AddSteppingLocalTm();
    
