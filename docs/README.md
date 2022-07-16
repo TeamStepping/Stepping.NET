@@ -61,8 +61,8 @@ DTM Server is a mature transaction manager you can use as the TM provider for St
 
 See the [DTM document](./Dtm.md).
 
-### Stepping Self-TM
+### Local-TM
 
-Stepping provides a built-in self-TM implementation. It runs with your app as a decentralization transaction manager. In short, which app starts a job should be the TM of this job.
+Stepping provides a simple built-in TM implementation. It runs with your app as a local transaction manager. Which app starts a job should be the TM of this job.
 
-See the [Self-TM document](./SelfTm.md).
+See the [Local-TM document](./LocalTm.md).

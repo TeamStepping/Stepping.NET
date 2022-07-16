@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.Core", "src\Steppi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm.Grpc", "src\Stepping.TmProviders.Dtm.Grpc\Stepping.TmProviders.Dtm.Grpc.csproj", "{55116019-F0FA-46C7-BC0F-FCC550AE2881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.SelfTm", "src\Stepping.TmProviders.SelfTm\Stepping.TmProviders.SelfTm.csproj", "{5AC4B579-20B2-4BA5-B624-8C329CBD5B47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalTm", "src\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj", "{5AC4B579-20B2-4BA5-B624-8C329CBD5B47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.EfCore", "src\Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj", "{F37B3C40-7D66-4E40-9FB2-F722CECB953E}"
 EndProject
