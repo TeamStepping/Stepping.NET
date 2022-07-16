@@ -15,7 +15,7 @@ public static class SteppingServiceCollectionExtensions
 
         services.Configure<SteppingOptions>(options =>
         {
-            // options.RegisterSteps(typeof(HttpRequestStep));
+            options.RegisterSteps(typeof(HttpRequestStep));
         });
 
         services.Configure(setupAction);

@@ -1,17 +1,12 @@
 ﻿namespace Stepping.Core.Steps;
 
-public abstract class ExecutableStep<TArgs> : IExecutableStep, IStepWithArgs, IStep<TArgs> where TArgs : class
+public abstract class ExecutableStep<TArgs> : StepWithArgsBase<TArgs>, IExecutableStep where TArgs : class
 {
-    public TArgs Args { get; }
-
-    protected ExecutableStep(TArgs args)
+    protected ExecutableStep(TArgs args) : base(args)
     {
-        Args = args;
     }
 
     public abstract Task ExecuteAsync(StepExecutionContext context);
-
-    public virtual object GetArgs() => Args;
 }
 
 public abstract class ExecutableStep : IExecutableStep, IStepWithoutArgs

@@ -4,7 +4,7 @@ public interface IStep
 {
 }
 
-public interface IStep<out TArgs> : IStep where TArgs : class
+public interface IStep<out TArgs> : IStepWithArgs where TArgs : class
 {
     TArgs Args { get; }
 }

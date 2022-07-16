@@ -26,6 +26,9 @@ public static class SteppingDtmGrpcServiceCollectionExtensions
         services.TryAddTransient<IStepToDtmStepConverter, ExecutableStepToDtmStepConverter>();
         services.TryAddTransient<ExecutableStepToDtmStepConverter>();
 
+        services.TryAddTransient<IStepToDtmStepConverter, HttpRequestStepToDtmStepConverter>();
+        services.TryAddTransient<HttpRequestStepToDtmStepConverter>();
+
         services.TryAddTransient<IStepToDtmStepConvertResolver, StepToDtmStepConvertResolver>();
         services.TryAddTransient<StepToDtmStepConvertResolver>();
 

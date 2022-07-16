@@ -11,7 +11,7 @@ Minimum Stepping consists of the core package and a TM provider.
 2. Configure services:
    ```csharp
    services.AddStepping(options => {
-       options.RegisterSteps(GetType().Assembly); // if you have custom steps
+       options.RegisterSteps(typeof(MyClass).Assembly); // if you have custom steps
    });
    ```
 
