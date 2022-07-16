@@ -3,20 +3,18 @@ using Stepping.Core.Steps;
 
 namespace Stepping.TestBase.Fakes;
 
-public record TargetServiceInfoArgs(Type ServiceType);
-
 [StepName(FakeWithArgsExecutableStepName)]
-public class FakeWithArgsExecutableStep : ExecutableStep<TargetServiceInfoArgs>
+public class FakeWithArgsExecutableStep : ExecutableStep<string>
 {
     public const string FakeWithArgsExecutableStepName = "FakeWithArgs";
 
-    public FakeWithArgsExecutableStep(IServiceProvider serviceProvider) : base(serviceProvider)
+    public FakeWithArgsExecutableStep(string args) : base(args)
     {
     }
 
-    public override Task ExecuteAsync(TargetServiceInfoArgs args)
+    public override Task ExecuteAsync(IServiceProvider serviceProvider)
     {
-        ServiceProvider.GetRequiredService(args.ServiceType);
+        serviceProvider.GetRequiredService<FakeService>();
 
         return Task.CompletedTask;
     }

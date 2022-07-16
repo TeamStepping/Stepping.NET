@@ -4,5 +4,5 @@ namespace Stepping.TmProviders.Dtm.Grpc.Steps;
 
 public interface IStepToDtmStepConvertResolver
 {
-    Task<DtmStepInfoModel> ResolveAsync(string stepName, object? args);
+    Task<DtmStepInfoModel> ResolveAsync(IStep step);
 }

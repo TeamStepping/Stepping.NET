@@ -13,6 +13,11 @@ public static class SteppingServiceCollectionExtensions
     {
         services.AddSteppingServices();
 
+        services.Configure<SteppingOptions>(options =>
+        {
+            // options.RegisterSteps(typeof(HttpRequestStep));
+        });
+
         services.Configure(setupAction);
 
         return services;

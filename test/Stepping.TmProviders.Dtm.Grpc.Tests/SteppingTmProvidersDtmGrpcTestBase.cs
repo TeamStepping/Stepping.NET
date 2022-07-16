@@ -10,7 +10,6 @@ public abstract class SteppingTmProvidersDtmGrpcTestBase : SteppingTestBase
 {
     protected override void ConfigureServices(ServiceCollection services)
     {
-        services.AddStepping();
         services.AddSteppingDtmGrpc(_ => { });
 
         base.ConfigureServices(services);

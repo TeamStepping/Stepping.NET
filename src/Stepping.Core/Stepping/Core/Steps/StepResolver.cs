@@ -1,46 +1,67 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Stepping.Core.Exceptions;
+using Stepping.Core.Options;
 
 namespace Stepping.Core.Steps;
 
 public class StepResolver : IStepResolver
 {
-    protected static Dictionary<string, Type>? CachedTypes { get; set; }
+    protected static Dictionary<string, StepResolverCachedTypeModel>? CachedTypes { get; set; }
 
     private static readonly object SyncObj = new();
 
     protected IServiceProvider ServiceProvider { get; }
+    protected IStepNameProvider StepNameProvider { get; }
 
-    public StepResolver(IServiceProvider serviceProvider)
+    public StepResolver(
+        IServiceProvider serviceProvider,
+        IStepNameProvider stepNameProvider)
     {
         ServiceProvider = serviceProvider;
+        StepNameProvider = stepNameProvider;
     }
 
-    public virtual async Task<IStep> ResolveAsync(string stepName) => (IStep)await InternalResolveAsync(stepName);
+    public virtual IStep Resolve(string stepName, object? args = null) => (IStep)InternalResolve(stepName, args);
 
-    protected virtual Task<object> InternalResolveAsync(string stepName)
+    public virtual IStep Resolve<TStep>(object? args = null) where TStep : IStep =>
+        (IStep)InternalResolve(StepNameProvider.Get<TStep>(), args);
+
+    protected virtual object InternalResolve(string stepName, object? args = null)
     {
-        if (CachedTypes is null)
-        {
-            lock (SyncObj)
-            {
-                CachedTypes ??= CreateCachedTypes();
-            }
-        }
+        TryWarmUp(ServiceProvider);
 
-        if (!CachedTypes.ContainsKey(stepName))
+        if (!CachedTypes!.ContainsKey(stepName))
         {
             throw new SteppingException("Invalid StepName.");
         }
 
-        return Task.FromResult(ServiceProvider.GetRequiredService(CachedTypes[stepName]));
+        return CachedTypes[stepName].HasArgs
+            ? ActivatorUtilities.CreateInstance(ServiceProvider, CachedTypes[stepName].Type, args!)
+            : ActivatorUtilities.CreateInstance(ServiceProvider, CachedTypes[stepName].Type);
     }
 
-    protected virtual Dictionary<string, Type> CreateCachedTypes()
+    protected static Dictionary<string, StepResolverCachedTypeModel> CreateCachedTypes(IServiceProvider serviceProvider)
     {
-        var stepNameProvider = ServiceProvider.GetRequiredService<IStepNameProvider>();
-        var steps = ServiceProvider.GetRequiredService<IEnumerable<IStep>>();
+        var options = serviceProvider.GetRequiredService<IOptions<SteppingOptions>>();
+        var stepNameProvider = serviceProvider.GetRequiredService<IStepNameProvider>();
 
-        return steps.ToDictionary(step => stepNameProvider.Get(step.GetType()), step => step.GetType());
+        return options.Value.StepTypes
+            .ToDictionary(
+                stepNameProvider.Get,
+                type => new StepResolverCachedTypeModel(type, typeof(IStepWithArgs).IsAssignableFrom(type)));
+    }
+
+    public static void TryWarmUp(IServiceProvider serviceProvider)
+    {
+        if (CachedTypes is not null)
+        {
+            return;
+        }
+
+        lock (SyncObj)
+        {
+            CachedTypes ??= CreateCachedTypes(serviceProvider);
+        }
     }
 }

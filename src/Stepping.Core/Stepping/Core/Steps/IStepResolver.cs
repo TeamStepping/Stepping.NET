@@ -2,5 +2,7 @@
 
 public interface IStepResolver
 {
-    Task<IStep> ResolveAsync(string stepName);
+    IStep Resolve(string stepName, object? args = null);
+
+    IStep Resolve<TStep>(object? args = null) where TStep : IStep;
 }

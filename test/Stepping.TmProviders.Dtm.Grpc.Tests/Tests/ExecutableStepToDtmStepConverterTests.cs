@@ -11,22 +11,18 @@ namespace Stepping.TmProviders.Dtm.Grpc.Tests.Tests;
 public class ExecutableStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpcTestBase
 {
     protected SteppingDtmGrpcOptions Options { get; }
-    protected FakeExecutableStep FakeExecutableStep { get; }
-    protected FakeWithArgsExecutableStep FakeWithArgsExecutableStep { get; }
     protected ExecutableStepToDtmStepConverter ExecutableStepToDtmStepConverter { get; }
 
     public ExecutableStepToDtmStepConverterTests()
     {
         Options = ServiceProvider.GetRequiredService<IOptions<SteppingDtmGrpcOptions>>().Value;
-        FakeExecutableStep = ServiceProvider.GetRequiredService<FakeExecutableStep>();
-        FakeWithArgsExecutableStep = ServiceProvider.GetRequiredService<FakeWithArgsExecutableStep>();
         ExecutableStepToDtmStepConverter = ServiceProvider.GetRequiredService<ExecutableStepToDtmStepConverter>();
     }
 
     [Fact]
     public async Task Should_Convert_Executable_Step()
     {
-        (await ExecutableStepToDtmStepConverter.CanConvertAsync(FakeExecutableStep)).ShouldBeTrue();
+        (await ExecutableStepToDtmStepConverter.CanConvertAsync(new FakeExecutableStep())).ShouldBeTrue();
 
         var stepInfoModel =
             await ExecutableStepToDtmStepConverter.ConvertAsync(FakeExecutableStep.FakeExecutableStepName, null);
@@ -40,12 +36,12 @@ public class ExecutableStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpcT
     [Fact]
     public async Task Should_Convert_Executable_Step_With_Args()
     {
-        (await ExecutableStepToDtmStepConverter.CanConvertAsync(FakeWithArgsExecutableStep)).ShouldBeTrue();
+        (await ExecutableStepToDtmStepConverter.CanConvertAsync(new FakeWithArgsExecutableStep("my-input")))
+            .ShouldBeTrue();
 
         var stepInfoModel =
             await ExecutableStepToDtmStepConverter.ConvertAsync(
-                FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName,
-                new TargetServiceInfoArgs(typeof(FakeService)));
+                FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName, "my-input");
 
         stepInfoModel.Step.Count.ShouldBe(1);
         stepInfoModel.Step.ShouldContainKey(DtmConsts.ActionStepName);

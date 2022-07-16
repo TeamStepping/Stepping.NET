@@ -9,7 +9,7 @@ namespace Stepping.Core.Jobs;
 public class DistributedJob : IAdvancedDistributedJob
 {
     public virtual string Gid { get; }
-    public virtual List<StepInfoModel> Steps { get; } = new();
+    public virtual List<IStep> Steps { get; } = new();
     public virtual ITmJobConfigurations? TmOptions { get; set; }
     public virtual ISteppingDbContext? DbContext { get; }
     public virtual bool PrepareSent { get; protected set; }
@@ -17,7 +17,7 @@ public class DistributedJob : IAdvancedDistributedJob
 
     protected IServiceProvider ServiceProvider { get; }
     protected ITmClient TmClient { get; }
-    protected IStepNameProvider StepNameProvider { get; }
+    protected IStepResolver StepResolver { get; }
     protected IDbBarrierInserterResolver DbBarrierInserterResolver { get; }
     protected IBarrierInfoModelFactory BarrierInfoModelFactory { get; }
 
@@ -34,7 +34,7 @@ public class DistributedJob : IAdvancedDistributedJob
         DbContext = dbContext;
         ServiceProvider = serviceProvider;
         TmClient = serviceProvider.GetRequiredService<ITmClient>();
-        StepNameProvider = serviceProvider.GetRequiredService<IStepNameProvider>();
+        StepResolver = serviceProvider.GetRequiredService<IStepResolver>();
         DbBarrierInserterResolver = serviceProvider.GetRequiredService<IDbBarrierInserterResolver>();
         BarrierInfoModelFactory = serviceProvider.GetRequiredService<IBarrierInfoModelFactory>();
 
@@ -44,15 +44,9 @@ public class DistributedJob : IAdvancedDistributedJob
         }
     }
 
-    public virtual void AddStep<TStep, TArgs>(TArgs args) where TStep : IStep<TArgs> where TArgs : class
-    {
-        Steps.Add(new StepInfoModel(StepNameProvider.Get<TStep>(), args));
-    }
+    public virtual void AddStep<TStep>(TStep step) where TStep : IStep => Steps.Add(step);
 
-    public virtual void AddStep<TStep>() where TStep : IStepWithoutArgs
-    {
-        Steps.Add(new StepInfoModel(StepNameProvider.Get<TStep>(), null));
-    }
+    public virtual void AddStep<TStep>() where TStep : IStepWithoutArgs => Steps.Add(StepResolver.Resolve<TStep>());
 
     public virtual async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

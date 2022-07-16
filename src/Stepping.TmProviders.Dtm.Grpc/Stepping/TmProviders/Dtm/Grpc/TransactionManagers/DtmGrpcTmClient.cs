@@ -114,10 +114,10 @@ public class DtmGrpcTmClient : ITmClient
         var dtmSteps = new List<Dictionary<string, string>>();
         var dtmBinPayloads = new List<ByteString>();
 
-        foreach (var stepInfoModel in job.Steps)
+        foreach (var step in job.Steps)
         {
             var dtmStepInfoModel =
-                await StepToDtmStepConvertResolver.ResolveAsync(stepInfoModel.StepName, stepInfoModel.Args);
+                await StepToDtmStepConvertResolver.ResolveAsync(step);
 
             dtmSteps.Add(dtmStepInfoModel.Step);
             dtmBinPayloads.Add(dtmStepInfoModel.BinPayload);

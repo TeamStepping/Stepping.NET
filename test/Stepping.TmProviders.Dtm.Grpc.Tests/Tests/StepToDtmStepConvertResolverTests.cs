@@ -18,14 +18,14 @@ public class StepToDtmStepConvertResolverTests : SteppingTmProvidersDtmGrpcTestB
     [Fact]
     public async Task Should_Resolve_Executable_Step()
     {
-        (await StepToDtmStepConvertResolver.ResolveAsync(FakeExecutableStep.FakeExecutableStepName, null))
-            .ShouldNotBeNull();
+        (await StepToDtmStepConvertResolver.ResolveAsync(new FakeExecutableStep())).ShouldNotBeNull();
     }
 
     [Fact]
     public async Task Should_Resolve_Executable_Step_With_Args()
     {
-        (await StepToDtmStepConvertResolver.ResolveAsync(FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName,
-                new TargetServiceInfoArgs(typeof(FakeService)))).ShouldNotBeNull();
+        var step = new FakeWithArgsExecutableStep("my-input");
+
+        (await StepToDtmStepConvertResolver.ResolveAsync(step)).ShouldNotBeNull();
     }
 }

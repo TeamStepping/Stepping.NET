@@ -10,7 +10,6 @@ public abstract class SteppingDbProvidersEfCoreTestBase : SteppingTestBase
     {
         EfCoreDbInitializer.CacheEnabled = false;
 
-        services.AddStepping();
         services.AddSteppingEfCore();
         services.AddEntityFrameworkSqlite();
 

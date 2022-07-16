@@ -29,13 +29,12 @@ public class DistributedJobTests : SteppingCoreTestBase
 
         // Executable step with args
         Should.NotThrow(() =>
-            job.AddStep<FakeWithArgsExecutableStep, TargetServiceInfoArgs>(
-                new TargetServiceInfoArgs(typeof(FakeService))));
+            job.AddStep(new FakeWithArgsExecutableStep("my-input")));
 
         job.Steps.Count.ShouldBe(3);
-        job.Steps[0].StepName.ShouldBe(FakeExecutableStep.FakeExecutableStepName);
-        job.Steps[1].StepName.ShouldBe(FakeExecutableStep.FakeExecutableStepName);
-        job.Steps[2].StepName.ShouldBe(FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName);
+        job.Steps[0].GetType().ShouldBe(typeof(FakeExecutableStep));
+        job.Steps[1].GetType().ShouldBe(typeof(FakeExecutableStep));
+        job.Steps[2].GetType().ShouldBe(typeof(FakeWithArgsExecutableStep));
     }
 
     [Fact]

@@ -13,13 +13,17 @@ public class StepToDtmStepConvertResolver : IStepToDtmStepConvertResolver
     private static readonly object SyncObj = new();
 
     protected IServiceProvider ServiceProvider { get; }
+    protected IStepNameProvider StepNameProvider { get; }
 
-    public StepToDtmStepConvertResolver(IServiceProvider serviceProvider)
+    public StepToDtmStepConvertResolver(
+        IServiceProvider serviceProvider,
+        IStepNameProvider stepNameProvider)
     {
         ServiceProvider = serviceProvider;
+        StepNameProvider = stepNameProvider;
     }
 
-    public virtual async Task<DtmStepInfoModel> ResolveAsync(string stepName, object? args)
+    public virtual async Task<DtmStepInfoModel> ResolveAsync(IStep step)
     {
         if (CachedConverters is null)
         {
@@ -30,6 +34,9 @@ public class StepToDtmStepConvertResolver : IStepToDtmStepConvertResolver
             }
         }
 
+        var stepName = StepNameProvider.Get(step.GetType());
+        var args = step is IStepWithArgs withArgs ? withArgs.GetArgs() : null;
+
         if (CachedMappings.ContainsKey(stepName))
         {
             return await CachedMappings[stepName].ConvertAsync(stepName, args);
@@ -37,9 +44,6 @@ public class StepToDtmStepConvertResolver : IStepToDtmStepConvertResolver
 
         foreach (var converter in CachedConverters)
         {
-            var stepResolver = ServiceProvider.GetRequiredService<IStepResolver>();
-            var step = await stepResolver.ResolveAsync(stepName);
-
             if (!await converter.CanConvertAsync(step))
             {
                 continue;
