@@ -44,9 +44,19 @@ public class DistributedJob : IAdvancedDistributedJob
         }
     }
 
-    public virtual void AddStep<TStep>(TStep step) where TStep : IStep => Steps.Add(step);
+    public virtual IDistributedJob AddStep<TStep>(TStep step) where TStep : IStep
+    {
+        Steps.Add(step);
 
-    public virtual void AddStep<TStep>() where TStep : IStepWithoutArgs => Steps.Add(StepResolver.Resolve<TStep>());
+        return this;
+    }
+
+    public virtual IDistributedJob AddStep<TStep>() where TStep : IStepWithoutArgs
+    {
+        Steps.Add(StepResolver.Resolve<TStep>());
+
+        return this;
+    }
 
     public virtual async Task StartAsync(CancellationToken cancellationToken = default)
     {

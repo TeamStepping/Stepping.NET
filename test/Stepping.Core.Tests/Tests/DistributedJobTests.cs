@@ -21,15 +21,11 @@ public class DistributedJobTests : SteppingCoreTestBase
     {
         var job = await DistributedJobFactory.CreateJobAsync("my-gid");
 
-        // Executable step
-        Should.NotThrow(() => job.AddStep<FakeExecutableStep>());
-
-        // Duplicate step
-        Should.NotThrow(() => job.AddStep<FakeExecutableStep>());
-
-        // Executable step with args
-        Should.NotThrow(() =>
-            job.AddStep(new FakeWithArgsExecutableStep("my-input")));
+        await job
+            .AddStep<FakeExecutableStep>() // Executable step
+            .AddStep<FakeExecutableStep>() // Duplicate step
+            .AddStep(new FakeWithArgsExecutableStep("my-input")) // Executable step with args
+            .StartAsync();
 
         job.Steps.Count.ShouldBe(3);
         job.Steps[0].GetType().ShouldBe(typeof(FakeExecutableStep));
