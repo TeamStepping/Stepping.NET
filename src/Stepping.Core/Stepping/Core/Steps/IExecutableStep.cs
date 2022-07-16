@@ -2,5 +2,5 @@
 
 public interface IExecutableStep : IStep
 {
-    Task ExecuteAsync(IServiceProvider serviceProvider);
+    Task ExecuteAsync(StepExecutionContext context);
 }

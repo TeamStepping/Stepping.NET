@@ -27,8 +27,10 @@ public class SteppingService : Generated.SteppingService.SteppingServiceBase
     {
         await CheckActionApiTokenAsync(context);
 
+        var gid = context.GetHeader(DtmRequestHeaderNames.DtmGid);
+
         var stepExecutor = ServiceProvider.GetRequiredService<IStepExecutor>();
-        await stepExecutor.ExecuteAsync(request.StepName, request.ArgsToByteString);
+        await stepExecutor.ExecuteAsync(gid, request.StepName, request.ArgsToByteString);
 
         return new Empty();
     }

@@ -18,7 +18,7 @@ public class StepExecutor : IStepExecutor
         StepArgsSerializer = stepArgsSerializer;
     }
 
-    public virtual async Task ExecuteAsync(string executableStepName, string? argsToByteString)
+    public virtual async Task ExecuteAsync(string gid, string executableStepName, string? argsToByteString)
     {
         var step = StepResolver.Resolve(executableStepName, argsToByteString);
 
@@ -33,14 +33,14 @@ public class StepExecutor : IStepExecutor
 
         if (argsToByteString is null || argsToByteString.Equals(string.Empty))
         {
-            await executableStep.ExecuteAsync(ServiceProvider);
+            await executableStep.ExecuteAsync(new StepExecutionContext(gid, ServiceProvider));
         }
         else
         {
             var argsType = GetArgsType(stepType);
             var args = await StepArgsSerializer.DeserializeAsync(argsToByteString, argsType);
 
-            await executableStep.ExecuteAsync(ServiceProvider);
+            await executableStep.ExecuteAsync(new StepExecutionContext(gid, ServiceProvider));
         }
     }
 

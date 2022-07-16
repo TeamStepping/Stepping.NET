@@ -7,32 +7,49 @@ The distributed transaction is based on DTM's [2-phase messaging](https://en.dtm
 
 ## What are `Job` and `Step` in Stepping?
 
-`Job` is a distributed transaction unit, and `Step` is a specific task inside a job. A job contains some steps and eventually executes them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
+`Job` is a distributed transaction unit, and `Step` is a specific task inside a job. A job contains some steps and executes them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
-If a job involves a DB transaction, the steps will be **ensured to be done** after the transaction is committed. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
+If a job involves a DB transaction, the steps will be **ensured to be eventually done** after the transaction is committed. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
 
 ## Examples
 
-`CreateOrderStep` and `SendOrderCreatedEmailStep` will be eventual done by TM:
+Define steps:
+```csharp
+[StepName("CreateOrder")]
+public class CreateOrderStep : ExecutableStep<CreateOrderArgs>
+{
+    public override async Task ExecuteAsync(StepExecutionContext context)
+    {
+        var orderManager = context.ServiceProvider.GetRequiredService<IOrderManager>();
+        await orderManager.CreateOrderAsync(Args);
+    }
+}
+
+[StepName("SendOrderCreatedEmail")]
+public class SendOrderCreatedEmailStep : ExecutableStep
+{
+    public override async Task ExecuteAsync(StepExecutionContext context)
+    {
+        var sender = context.ServiceProvider.GetRequiredService<IOrderEmailSender>();
+        await sender.SendForCreatedAsync(context.Gid); // should get order by gid
+    }
+}
+```
+The added steps will be eventual done by TM:
 ```csharp
 var job = await DistributedJobFactory.CreateJobAsync();
 
-job.AddStep<CreateOrderStep>();
+job.AddStep(new CreateOrderStep(orderCreatingArgs));
 job.AddStep<SendOrderCreatedEmailStep>();
 
 await job.StartAsync();
 ```
-In practice, some steps need args input:
-```csharp
-job.AddStep(new CreateOrderStep(orderCreatingArgs));
-```
 If you want to execute the steps after a DB transaction commits and want to ensure they will eventually be done:
 ```csharp
 var steppingDbContext = new EfCoreSteppingDbContext(efCoreDbContext);
-
 var job = await DistributedJobFactory.CreateJobAsync(steppingDbContext);
 ```
-For more, please see the [usage document](./Usage.md) or the [sample projects](../example).
+For more, please see the [usage document](./Usage.md).
 
 ## Supported Transaction Managers
 

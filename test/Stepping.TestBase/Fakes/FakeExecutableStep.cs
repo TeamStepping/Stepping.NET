@@ -8,9 +8,9 @@ public class FakeExecutableStep : ExecutableStep
 {
     public const string FakeExecutableStepName = "Fake";
 
-    public override Task ExecuteAsync(IServiceProvider serviceProvider)
+    public override Task ExecuteAsync(StepExecutionContext context)
     {
-        serviceProvider.GetRequiredService<FakeService>();
+        context.ServiceProvider.GetRequiredService<FakeService>();
 
         return Task.CompletedTask;
     }

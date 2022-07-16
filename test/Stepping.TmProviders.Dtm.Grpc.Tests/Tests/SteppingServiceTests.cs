@@ -62,6 +62,7 @@ public class SteppingServiceTests : SteppingTmProvidersDtmGrpcTestBase
             deadline: DateTime.Now.AddMinutes(30),
             requestHeaders: new Metadata
             {
+                { DtmRequestHeaderNames.DtmGid, "my-gid" },
                 { DtmRequestHeaderNames.ActionApiToken, "" }
             },
             cancellationToken: CancellationToken.None,
