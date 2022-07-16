@@ -9,7 +9,7 @@ public interface IAdvancedDistributedJob : IDistributedJob
     Task PrepareAndInsertBarrierAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Send "submit" to TM, and then the TM will do the steps you added in order.
+    /// Send "submit" to TM, and then the TM will execute the steps you added in order.
     /// If the job involves a DB transaction, you should commit it yourself before invoking this method.
     /// </summary>
     Task SubmitAsync(CancellationToken cancellationToken = default);
