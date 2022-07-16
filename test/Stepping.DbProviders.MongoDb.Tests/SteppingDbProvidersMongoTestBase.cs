@@ -9,7 +9,6 @@ public abstract class SteppingDbProvidersMongoTestBase : SteppingTestBase
     {
         MongoDbInitializer.CacheEnabled = false;
 
-        services.AddStepping();
         services.AddSteppingMongoDb();
 
         base.ConfigureServices(services);
