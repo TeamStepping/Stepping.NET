@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Stepping.Core.Exceptions;
+using Stepping.Core.Options;
 
 namespace Stepping.Core.Steps;
 
@@ -27,7 +29,7 @@ public class StepResolver : IStepResolver
 
     protected virtual object InternalResolve(string stepName, object? args = null)
     {
-        TryWarmUp(StepNameProvider);
+        TryWarmUp(ServiceProvider);
 
         if (!CachedTypes!.ContainsKey(stepName))
         {
@@ -39,21 +41,18 @@ public class StepResolver : IStepResolver
             : ActivatorUtilities.CreateInstance(ServiceProvider, CachedTypes[stepName].Type);
     }
 
-    protected static Dictionary<string, StepResolverCachedTypeModel> CreateCachedTypes(
-        IStepNameProvider stepNameProvider)
+    protected static Dictionary<string, StepResolverCachedTypeModel> CreateCachedTypes(IServiceProvider serviceProvider)
     {
-        return AppDomain
-            .CurrentDomain
-            .GetAssemblies()
-            .Where(assembly => !assembly.IsDynamic)
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => typeof(IStep).IsAssignableFrom(type))
+        var options = serviceProvider.GetRequiredService<IOptions<SteppingOptions>>();
+        var stepNameProvider = serviceProvider.GetRequiredService<IStepNameProvider>();
+
+        return options.Value.StepTypes
             .ToDictionary(
                 stepNameProvider.Get,
                 type => new StepResolverCachedTypeModel(type, typeof(IStepWithArgs).IsAssignableFrom(type)));
     }
 
-    public static void TryWarmUp(IStepNameProvider stepNameProvider)
+    public static void TryWarmUp(IServiceProvider serviceProvider)
     {
         if (CachedTypes is not null)
         {
@@ -62,7 +61,7 @@ public class StepResolver : IStepResolver
 
         lock (SyncObj)
         {
-            CachedTypes ??= CreateCachedTypes(stepNameProvider);
+            CachedTypes ??= CreateCachedTypes(serviceProvider);
         }
     }
 }

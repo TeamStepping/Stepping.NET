@@ -27,6 +27,14 @@ public abstract class SteppingTestBase
 
     protected virtual void ConfigureServices(ServiceCollection services)
     {
+        services.AddStepping(options =>
+        {
+            options.RegisterSteps(
+                typeof(FakeExecutableStep),
+                typeof(FakeWithArgsExecutableStep)
+            );
+        });
+
         services.AddLogging();
 
         services.AddTransient<IDbBarrierInserter, FakeDbBarrierInserter>();
