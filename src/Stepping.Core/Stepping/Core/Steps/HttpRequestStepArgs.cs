@@ -17,13 +17,12 @@ public class HttpRequestStepArgs
 
     /// <summary>
     /// It will convert to raw data in JSON format.
-    /// The request becomes a POST request if the Payload is not empty due to the DTM's design.
+    /// The request becomes a POST request if the Payload is not empty if you are using DTM.
     /// </summary>
     public Dictionary<string, object> Payload { get; }
 
     /// <summary>
     /// Http request headers.
-    /// Don't override the headers used by Stepping. If you do so, you will get exception throws.
     /// </summary>
     public List<KeyValuePair<string, string>> Headers { get; }
 
