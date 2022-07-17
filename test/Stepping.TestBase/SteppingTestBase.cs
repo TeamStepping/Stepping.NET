@@ -29,10 +29,7 @@ public abstract class SteppingTestBase
     {
         services.AddStepping(options =>
         {
-            options.RegisterSteps(
-                typeof(FakeExecutableStep),
-                typeof(FakeWithArgsExecutableStep)
-            );
+            options.RegisterSteps(typeof(SteppingTestBase).Assembly);
         });
 
         services.AddLogging();

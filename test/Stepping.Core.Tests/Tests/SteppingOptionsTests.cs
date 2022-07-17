@@ -33,7 +33,7 @@ public class SteppingOptionsTests : SteppingCoreTestBase
 
         options.RegisterSteps(typeof(SteppingTestBase).Assembly);
 
-        options.StepTypes.Count.ShouldBe(2);
+        options.StepTypes.ShouldNotBeEmpty();
         options.StepTypes.ShouldContain(typeof(FakeExecutableStep));
         options.StepTypes.ShouldContain(typeof(FakeWithArgsExecutableStep));
 

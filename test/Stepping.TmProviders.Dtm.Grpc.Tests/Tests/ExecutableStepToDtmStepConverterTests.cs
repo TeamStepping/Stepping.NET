@@ -30,7 +30,7 @@ public class ExecutableStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpcT
         stepInfoModel.Step.Count.ShouldBe(1);
         stepInfoModel.Step.ShouldContainKey(DtmConsts.ActionStepName);
         stepInfoModel.Step[DtmConsts.ActionStepName].ShouldBe(Options.GetExecuteStepAddress());
-        stepInfoModel.BinPayload.ShouldNotBeNull();
+        stepInfoModel.BinPayload.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -46,6 +46,6 @@ public class ExecutableStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpcT
         stepInfoModel.Step.Count.ShouldBe(1);
         stepInfoModel.Step.ShouldContainKey(DtmConsts.ActionStepName);
         stepInfoModel.Step[DtmConsts.ActionStepName].ShouldBe(Options.GetExecuteStepAddress());
-        stepInfoModel.BinPayload.ShouldNotBeNull();
+        stepInfoModel.BinPayload.ShouldNotBeEmpty();
     }
 }
