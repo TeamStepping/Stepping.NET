@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Stepping.Core;
+using Stepping.Core.Databases;
 using Stepping.Core.Infrastructures;
 using Stepping.Core.Jobs;
 using Stepping.Core.TransactionManagers;
@@ -16,14 +17,14 @@ namespace Stepping.TmProviders.Dtm.Grpc.Tests.Tests;
 public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
 {
     protected SteppingDtmGrpcOptions Options { get; }
-    protected IConnectionStringEncryptor ConnectionStringEncryptor { get; }
+    protected IConnectionStringHasher ConnectionStringHasher { get; }
     protected IDistributedJobFactory DistributedJobFactory { get; }
     protected FakeDtmGrpcTmClient FakeDtmGrpcTmClient { get; }
 
     public DtmGrpcTmClientTests()
     {
         Options = ServiceProvider.GetRequiredService<IOptions<SteppingDtmGrpcOptions>>().Value;
-        ConnectionStringEncryptor = ServiceProvider.GetRequiredService<IConnectionStringEncryptor>();
+        ConnectionStringHasher = ServiceProvider.GetRequiredService<IConnectionStringHasher>();
         DistributedJobFactory = ServiceProvider.GetRequiredService<IDistributedJobFactory>();
         FakeDtmGrpcTmClient = (FakeDtmGrpcTmClient)ServiceProvider.GetRequiredService<ITmClient>();
     }
@@ -32,7 +33,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
     public async Task Should_Send_Prepare()
     {
         var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
-            new FakeSteppingDbContext(true));
+            new FakeSteppingDbContext(true, "some-info"));
 
         job.AddStep<FakeExecutableStep>();
         job.AddStep(new FakeWithArgsExecutableStep("my-input"));
@@ -64,16 +65,20 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
 
         headers.ShouldContainKey("header1");
         headers.ShouldContainKey(DtmRequestHeaderNames.DbProviderName);
+        headers.ShouldContainKey(DtmRequestHeaderNames.HashedConnectionString);
         headers.ShouldContainKey(DtmRequestHeaderNames.DbContextType);
         headers.ShouldContainKey(DtmRequestHeaderNames.Database);
-        headers.ShouldContainKey(DtmRequestHeaderNames.EncryptedConnectionString);
+        headers.ShouldContainKey(DtmRequestHeaderNames.TenantId);
+        headers.ShouldContainKey(DtmRequestHeaderNames.CustomInfo);
 
         headers["header1"].ShouldBe("header1_value");
         headers[DtmRequestHeaderNames.DbProviderName].ShouldBe(job.DbContext!.DbProviderName);
+        headers[DtmRequestHeaderNames.HashedConnectionString]
+            .ShouldBe(await ConnectionStringHasher.HashAsync(FakeSteppingDbContext.FakeConnectionString));
         headers[DtmRequestHeaderNames.DbContextType].ShouldBe(string.Empty);
         headers[DtmRequestHeaderNames.Database].ShouldBe(string.Empty);
-        headers[DtmRequestHeaderNames.EncryptedConnectionString]
-            .ShouldBe(await ConnectionStringEncryptor.EncryptAsync(FakeSteppingDbContext.FakeConnectionString));
+        headers[DtmRequestHeaderNames.TenantId].ShouldBe(string.Empty);
+        headers[DtmRequestHeaderNames.CustomInfo].ShouldBe("some-info");
 
         dtmRequest.TransOptions.PassthroughHeaders.ShouldContain("header1");
         dtmRequest.TransOptions.RetryInterval.ShouldBe(123);

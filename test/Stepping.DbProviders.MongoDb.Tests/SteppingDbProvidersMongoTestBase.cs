@@ -9,7 +9,10 @@ public abstract class SteppingDbProvidersMongoTestBase : SteppingTestBase
     {
         MongoDbInitializer.CacheEnabled = false;
 
-        services.AddSteppingMongoDb();
+        services.AddSteppingMongoDb(options =>
+        {
+            options.DefaultConnectionString = MongoDbFixture.ConnectionString;
+        });
 
         base.ConfigureServices(services);
     }

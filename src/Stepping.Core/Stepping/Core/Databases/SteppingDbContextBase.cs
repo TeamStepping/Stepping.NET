@@ -10,11 +10,18 @@ public abstract class SteppingDbContextBase : ISteppingDbContext
 
     public abstract bool IsTransactional { get; }
 
+    public virtual string? CustomInfo { get; }
+
     public abstract Type? GetInternalDbContextTypeOrNull();
 
     public abstract string? GetInternalDatabaseNameOrNull();
 
     protected abstract Task InternalCommitTransactionAsync(CancellationToken cancellationToken = default);
+
+    protected SteppingDbContextBase(string? customInfo)
+    {
+        CustomInfo = customInfo;
+    }
 
     public virtual async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {

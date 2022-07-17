@@ -15,14 +15,18 @@ public class MongoDbSteppingDbContext : SteppingDbContextBase
 
     public override string ConnectionString { get; }
 
-    public override bool IsTransactional => SessionHandle is null || !SessionHandle.IsInTransaction;
+    public override bool IsTransactional => SessionHandle is not null && SessionHandle.IsInTransaction;
 
     public override Type? GetInternalDbContextTypeOrNull() => null;
 
     public override string? GetInternalDatabaseNameOrNull() => Database.DatabaseNamespace.DatabaseName;
 
     public MongoDbSteppingDbContext(
-        IMongoDatabase database, IMongoClient client, IClientSessionHandle? sessionHandle, string connectionString)
+        IMongoDatabase database,
+        IMongoClient client,
+        IClientSessionHandle? sessionHandle,
+        string connectionString,
+        string? customInfo = null) : base(customInfo)
     {
         Database = database;
         Client = client;

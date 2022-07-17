@@ -4,5 +4,5 @@ public interface ISteppingDbContextProvider
 {
     string DbProviderName { get; }
 
-    Task<ISteppingDbContext> GetAsync(SteppingDbContextInfoModel infoModel);
+    Task<ISteppingDbContext> GetAsync(SteppingDbContextLookupInfoModel infoModel);
 }

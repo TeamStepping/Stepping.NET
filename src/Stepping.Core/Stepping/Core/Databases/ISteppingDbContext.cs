@@ -7,6 +7,8 @@ public interface ISteppingDbContext
     string ConnectionString { get; }
     
     bool IsTransactional { get; }
+    
+    public string? CustomInfo { get; }
 
     Type? GetInternalDbContextTypeOrNull();
 

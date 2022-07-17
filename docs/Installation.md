@@ -35,5 +35,8 @@ You should install a DB provider if you want to execute the steps after a DB tra
 2. Configure services:
    ```csharp
    services.AddSteppingEfCore();
-   services.AddSteppingMongoDb();
+   services.AddSteppingMongoDb(options => {
+       // you can implement ISteppingDbContextProvider to customize the connection string lookup.
+       options.DefaultConnectionString = "mongodb://root:password123@198.174.21.23:27017"
+   });
    ```

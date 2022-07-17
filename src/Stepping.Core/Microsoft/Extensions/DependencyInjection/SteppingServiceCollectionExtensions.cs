@@ -13,10 +13,7 @@ public static class SteppingServiceCollectionExtensions
     {
         services.AddSteppingServices();
 
-        services.Configure<SteppingOptions>(options =>
-        {
-            options.RegisterSteps(typeof(HttpRequestStep));
-        });
+        services.Configure<SteppingOptions>(options => { options.RegisterSteps(typeof(HttpRequestStep)); });
 
         services.Configure(setupAction);
 
@@ -41,8 +38,14 @@ public static class SteppingServiceCollectionExtensions
         services.TryAddTransient<ISteppingDbContextProviderResolver, SteppingDbContextProviderResolver>();
         services.TryAddTransient<SteppingDbContextProviderResolver>();
 
-        services.TryAddTransient<IConnectionStringEncryptor, NullConnectionStringEncryptor>();
-        services.TryAddTransient<NullConnectionStringEncryptor>();
+        services.TryAddTransient<ISteppingTenantIdProvider, NullSteppingTenantIdProvider>();
+        services.TryAddTransient<NullSteppingTenantIdProvider>();
+
+        services.TryAddTransient<IConnectionStringHasher, Md5ConnectionStringHasher>();
+        services.TryAddTransient<Md5ConnectionStringHasher>();
+
+        services.TryAddTransient<ISteppingDbContextLookupInfoProvider, SteppingDbContextLookupInfoProvider>();
+        services.TryAddTransient<SteppingDbContextLookupInfoProvider>();
 
         services.TryAddTransient<ISteppingJsonSerializer, NewtonsoftSteppingJsonSerializer>();
         services.TryAddTransient<NewtonsoftSteppingJsonSerializer>();

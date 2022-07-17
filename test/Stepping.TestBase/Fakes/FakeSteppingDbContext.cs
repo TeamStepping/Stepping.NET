@@ -31,7 +31,7 @@ public class FakeSteppingDbContext : SteppingDbContextBase
 
     public bool TransactionCommitted { get; private set; }
 
-    public FakeSteppingDbContext(bool isTransactional)
+    public FakeSteppingDbContext(bool isTransactional, string? customInfo = null) : base(customInfo)
     {
         IsTransactional = isTransactional;
     }
