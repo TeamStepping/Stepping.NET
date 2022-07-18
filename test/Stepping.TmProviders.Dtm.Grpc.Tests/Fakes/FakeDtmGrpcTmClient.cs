@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Reflection;
+using Microsoft.Extensions.Options;
 using Stepping.Core.Databases;
 using Stepping.Core.Infrastructures;
 using Stepping.TmProviders.Dtm.Grpc.Clients;
@@ -15,16 +16,17 @@ public class FakeDtmGrpcTmClient : DtmGrpcTmClient
     public FakeDtmGrpcTmClient(
         IOptions<SteppingDtmGrpcOptions> options,
         ISteppingJsonSerializer jsonSerializer,
+        DtmServer.DtmServerClient dtmServerClient,
         IStepToDtmStepConvertResolver stepToDtmStepConvertResolver,
         ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
-        : base(options, jsonSerializer, stepToDtmStepConvertResolver, dbContextLookupInfoProvider)
+        : base(options, jsonSerializer, dtmServerClient, stepToDtmStepConvertResolver, dbContextLookupInfoProvider)
     {
     }
 
-    protected override Task InvokeDtmServerAsync(string methodName, DtmRequest dtmRequest,
+    protected override Task InvokeDtmServerAsync<TResult>(GrpcMethod<TResult> method, DtmRequest dtmRequest,
         CancellationToken cancellationToken = default)
     {
-        LastInvoking = new ValueTuple<string, DtmRequest>(methodName, dtmRequest);
+        LastInvoking = new ValueTuple<string, DtmRequest>(method.GetMethodInfo().Name, dtmRequest);
 
         return Task.CompletedTask;
     }

@@ -46,7 +46,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         await FakeDtmGrpcTmClient.PrepareAsync(job);
 
         FakeDtmGrpcTmClient.LastInvoking.ShouldNotBeNull();
-        FakeDtmGrpcTmClient.LastInvoking.Value.Item1.ShouldBe("Prepare");
+        FakeDtmGrpcTmClient.LastInvoking.Value.Item1.ShouldBe("PrepareAsync");
         FakeDtmGrpcTmClient.LastInvoking.Value.Item2.ShouldNotBeNull();
 
         var dtmRequest = FakeDtmGrpcTmClient.LastInvoking.Value.Item2;
@@ -104,7 +104,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         await FakeDtmGrpcTmClient.SubmitAsync(job);
 
         FakeDtmGrpcTmClient.LastInvoking.ShouldNotBeNull();
-        FakeDtmGrpcTmClient.LastInvoking.Value.Item1.ShouldBe("Submit");
+        FakeDtmGrpcTmClient.LastInvoking.Value.Item1.ShouldBe("SubmitAsync");
         FakeDtmGrpcTmClient.LastInvoking.Value.Item2.ShouldNotBeNull();
 
         var dtmRequest = FakeDtmGrpcTmClient.LastInvoking.Value.Item2;
