@@ -10,10 +10,12 @@ See DTM's [official document](https://en.dtm.pub/guide/install.html) to learn ho
 
 1. Install the NuGet package:
    ```shell
+   Install-Package Grpc.AspNetCore
    Install-Package Stepping.TmProviders.Dtm.Grpc
    ```
 2. Configure services:
    ```csharp
+   services.AddGrpc();
    services.AddSteppingDtmGrpc(options =>
    {
        options.ActionApiToken = "KLyqz0VS3mOc6VY1"; // DTM Server invokes app's action APIs with this token for authorization.

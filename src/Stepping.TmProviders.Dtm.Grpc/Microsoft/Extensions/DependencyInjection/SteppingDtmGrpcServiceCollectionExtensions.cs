@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Stepping.Core.TransactionManagers;
+using Stepping.TmProviders.Dtm.Grpc.Clients;
 using Stepping.TmProviders.Dtm.Grpc.Options;
 using Stepping.TmProviders.Dtm.Grpc.Secrets;
 using Stepping.TmProviders.Dtm.Grpc.Steps;
@@ -34,6 +36,12 @@ public static class SteppingDtmGrpcServiceCollectionExtensions
 
         services.TryAddTransient<ITmClient, DtmGrpcTmClient>();
         services.TryAddTransient<DtmGrpcTmClient>();
+
+        services.AddGrpcClient<DtmServer.DtmServerClient>((serviceProvider, options) =>
+        {
+            var dtmGrpcOptions = serviceProvider.GetRequiredService<IOptions<SteppingDtmGrpcOptions>>().Value;
+            options.Address = new Uri(dtmGrpcOptions.DtmGrpcUrl);
+        });
 
         return services;
     }

@@ -1,7 +1,5 @@
 ﻿using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Grpc.Net.Client;
 using Microsoft.Extensions.Options;
 using Stepping.Core;
 using Stepping.Core.Databases;
@@ -18,16 +16,9 @@ namespace Stepping.TmProviders.Dtm.Grpc.TransactionManagers;
 
 public class DtmGrpcTmClient : ITmClient
 {
-    protected static readonly Marshaller<DtmRequest> DtmRequestMarshaller =
-        Marshallers.Create(r => r.ToByteArray(), data => DtmRequest.Parser.ParseFrom(data));
-
-    protected static readonly Marshaller<Empty> DtmReplyMarshaller =
-        Marshallers.Create(r => r.ToByteArray(), data => Empty.Parser.ParseFrom(data));
-
-    protected string DtmServiceName { get; set; } = "dtm.DtmServer";
-
     protected SteppingDtmGrpcOptions Options { get; }
     protected ISteppingJsonSerializer JsonSerializer { get; }
+    protected DtmServer.DtmServerClient DtmServerClient { get; }
 
     protected IStepToDtmStepConvertResolver StepToDtmStepConvertResolver { get; }
     protected ISteppingDbContextLookupInfoProvider DbContextLookupInfoProvider { get; }
@@ -35,11 +26,13 @@ public class DtmGrpcTmClient : ITmClient
     public DtmGrpcTmClient(
         IOptions<SteppingDtmGrpcOptions> options,
         ISteppingJsonSerializer jsonSerializer,
+        DtmServer.DtmServerClient dtmServerClient,
         IStepToDtmStepConvertResolver stepToDtmStepConvertResolver,
         ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
     {
         Options = options.Value;
         JsonSerializer = jsonSerializer;
+        DtmServerClient = dtmServerClient;
         StepToDtmStepConvertResolver = stepToDtmStepConvertResolver;
         DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
@@ -56,9 +49,15 @@ public class DtmGrpcTmClient : ITmClient
             await AddDbContextLookupInfoHeadersAsync(job);
         }
 
-        var dtmRequest = await BuildDtmRequestAsync(job);
+        await InvokeDtmServerAsync(DtmServerClient.PrepareAsync, await BuildDtmRequestAsync(job), cancellationToken);
+    }
 
-        await InvokeDtmServerAsync("Prepare", dtmRequest, cancellationToken);
+    protected delegate AsyncUnaryCall<TResult> GrpcMethod<TResult>(DtmRequest dtmRequest, CallOptions callOptions);
+
+    protected virtual async Task InvokeDtmServerAsync<TResult>(GrpcMethod<TResult> method, DtmRequest dtmRequest,
+        CancellationToken cancellationToken = default)
+    {
+        await method(dtmRequest, CreateGrpcCallOptions(cancellationToken));
     }
 
     public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
@@ -68,9 +67,7 @@ public class DtmGrpcTmClient : ITmClient
             throw new SteppingException("Duplicate sending submit to TM.");
         }
 
-        var dtmRequest = await BuildDtmRequestAsync(job);
-
-        await InvokeDtmServerAsync("Submit", dtmRequest, cancellationToken);
+        await InvokeDtmServerAsync(DtmServerClient.SubmitAsync, await BuildDtmRequestAsync(job), cancellationToken);
     }
 
     protected virtual async Task AddDbContextLookupInfoHeadersAsync(IDistributedJob job)
@@ -87,19 +84,11 @@ public class DtmGrpcTmClient : ITmClient
         headers.Add(DtmRequestHeaderNames.CustomInfo, lookupInfoModel.CustomInfo ?? string.Empty);
     }
 
-    protected virtual async Task InvokeDtmServerAsync(string methodName, DtmRequest dtmRequest,
-        CancellationToken cancellationToken = default)
+    protected virtual CallOptions CreateGrpcCallOptions(CancellationToken cancellationToken = default)
     {
-        var method = new Method<DtmRequest, Empty>(
-            MethodType.Unary, DtmServiceName, methodName, DtmRequestMarshaller, DtmReplyMarshaller);
-
-        using var channel = GrpcChannel.ForAddress(Options.DtmGrpcUrl);
-
-        var callOptions = new CallOptions()
+        return new CallOptions()
             .WithCancellationToken(cancellationToken)
             .WithDeadline(DateTime.UtcNow.AddMilliseconds(Options.DtmServerRequestTimeout));
-
-        await channel.CreateCallInvoker().AsyncUnaryCall(method, null, callOptions, dtmRequest);
     }
 
     protected virtual async Task<DtmRequest> BuildDtmRequestAsync(IDistributedJob job)
