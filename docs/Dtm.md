@@ -21,3 +21,8 @@ See DTM's [official document](https://en.dtm.pub/guide/install.html) to learn ho
        options.DtmGrpcUrl = "http://localhost:36790"; // Base URL for the current app to invoke DTM Server.
    });
    ```
+3. Configure gRPC services:
+   ```csharp
+   app.UseRouting();
+   app.UseEndpoints(builder => builder.MapGrpcService<SteppingService>());
+   ```

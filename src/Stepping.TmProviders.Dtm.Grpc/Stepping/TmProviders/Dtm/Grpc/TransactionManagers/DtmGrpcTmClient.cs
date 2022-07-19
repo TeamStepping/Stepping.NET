@@ -4,6 +4,8 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Options;
 using Stepping.Core;
+using Stepping.Core.Databases;
+using Stepping.Core.Exceptions;
 using Stepping.Core.Infrastructures;
 using Stepping.Core.Jobs;
 using Stepping.Core.TransactionManagers;
@@ -26,26 +28,32 @@ public class DtmGrpcTmClient : ITmClient
 
     protected SteppingDtmGrpcOptions Options { get; }
     protected ISteppingJsonSerializer JsonSerializer { get; }
-    protected IConnectionStringEncryptor ConnectionStringEncryptor { get; }
+
     protected IStepToDtmStepConvertResolver StepToDtmStepConvertResolver { get; }
+    protected ISteppingDbContextLookupInfoProvider DbContextLookupInfoProvider { get; }
 
     public DtmGrpcTmClient(
         IOptions<SteppingDtmGrpcOptions> options,
         ISteppingJsonSerializer jsonSerializer,
-        IConnectionStringEncryptor connectionStringEncryptor,
-        IStepToDtmStepConvertResolver stepToDtmStepConvertResolver)
+        IStepToDtmStepConvertResolver stepToDtmStepConvertResolver,
+        ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
     {
         Options = options.Value;
         JsonSerializer = jsonSerializer;
-        ConnectionStringEncryptor = connectionStringEncryptor;
         StepToDtmStepConvertResolver = stepToDtmStepConvertResolver;
+        DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
 
     public virtual async Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
+        if (job.PrepareSent)
+        {
+            throw new SteppingException("Duplicate sending prepare to TM.");
+        }
+
         if (job.DbContext is not null)
         {
-            await AddDbContextInfoHeadersAsync(job);
+            await AddDbContextLookupInfoHeadersAsync(job);
         }
 
         var dtmRequest = await BuildDtmRequestAsync(job);
@@ -55,30 +63,28 @@ public class DtmGrpcTmClient : ITmClient
 
     public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
+        if (job.SubmitSent)
+        {
+            throw new SteppingException("Duplicate sending submit to TM.");
+        }
+
         var dtmRequest = await BuildDtmRequestAsync(job);
 
         await InvokeDtmServerAsync("Submit", dtmRequest, cancellationToken);
     }
 
-    protected virtual async Task AddDbContextInfoHeadersAsync(IDistributedJob job)
+    protected virtual async Task AddDbContextLookupInfoHeadersAsync(IDistributedJob job)
     {
         var headers = job.GetDtmJobConfigurations().BranchHeaders;
-        var dbProviderName = job.DbContext!.DbProviderName;
 
-        var dbContextType = job.DbContext.GetInternalDbContextTypeOrNull();
-        var dbContextTypeName = dbContextType is null
-            ? string.Empty
-            : $"{dbContextType.FullName}, {dbContextType.Assembly.GetName().Name}";
+        var lookupInfoModel = await DbContextLookupInfoProvider.GetAsync(job.DbContext!);
 
-        var databaseName = job.DbContext.GetInternalDatabaseNameOrNull() ?? string.Empty;
-
-        var encryptedConnectionString =
-            await ConnectionStringEncryptor.EncryptAsync(job.DbContext.ConnectionString);
-
-        headers.Add(DtmRequestHeaderNames.DbProviderName, dbProviderName);
-        headers.Add(DtmRequestHeaderNames.DbContextType, dbContextTypeName);
-        headers.Add(DtmRequestHeaderNames.Database, databaseName);
-        headers.Add(DtmRequestHeaderNames.EncryptedConnectionString, encryptedConnectionString);
+        headers.Add(DtmRequestHeaderNames.DbProviderName, lookupInfoModel.DbProviderName);
+        headers.Add(DtmRequestHeaderNames.HashedConnectionString, lookupInfoModel.HashedConnectionString);
+        headers.Add(DtmRequestHeaderNames.DbContextType, lookupInfoModel.DbContextType ?? string.Empty);
+        headers.Add(DtmRequestHeaderNames.Database, lookupInfoModel.Database ?? string.Empty);
+        headers.Add(DtmRequestHeaderNames.TenantId, lookupInfoModel.TenantId ?? string.Empty);
+        headers.Add(DtmRequestHeaderNames.CustomInfo, lookupInfoModel.CustomInfo ?? string.Empty);
     }
 
     protected virtual async Task InvokeDtmServerAsync(string methodName, DtmRequest dtmRequest,

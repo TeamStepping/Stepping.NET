@@ -23,7 +23,7 @@ public class CreateOrderStep : ExecutableStep<CreateOrderArgs>
     public override async Task ExecuteAsync(StepExecutionContext context)
     {
         var orderManager = context.ServiceProvider.GetRequiredService<IOrderManager>();
-        await orderManager.CreateOrderAsync(Args);
+        await orderManager.CreateOrderAsync(Args, context.Gid); // records gid.
     }
 }
 
@@ -63,7 +63,7 @@ Stepping requires transaction managers. You can choose an implementation you lik
 
 ### DTM Server
 
-DTM Server is a mature transaction manager you can use as the TM provider for Stepping. DTM allows you to get many other distributed transaction modes like SAGA, TCC, and XA.
+DTM is a mature transaction manager you can use as the TM provider for Stepping. DTM allows you to get many other distributed transaction modes like SAGA, TCC, and XA.
 
 See the [DTM document](./Dtm.md).
 

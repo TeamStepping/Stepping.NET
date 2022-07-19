@@ -41,16 +41,16 @@ public class SteppingService : Generated.SteppingService.SteppingServiceBase
 
         var gid = context.GetHeader(DtmRequestHeaderNames.DtmGid);
 
-        var dbContextInfoModel = context.CreateDbContextInfoModel();
+        var dbContextLookupInfoModel = context.CreateDbContextLookupInfoModel();
         var dbContextProviderResolver = ServiceProvider.GetRequiredService<ISteppingDbContextProviderResolver>();
-        var dbContextProvider = await dbContextProviderResolver.ResolveAsync(dbContextInfoModel.DbProviderName);
-        var dbContext = await dbContextProvider.GetAsync(dbContextInfoModel);
+        var dbContextProvider = await dbContextProviderResolver.ResolveAsync(dbContextLookupInfoModel.DbProviderName);
+        var dbContext = await dbContextProvider.GetAsync(dbContextLookupInfoModel);
 
         var barrierInfoModelFactory = ServiceProvider.GetRequiredService<IBarrierInfoModelFactory>();
         var barrierInfoModel = await barrierInfoModelFactory.CreateForRollbackAsync(gid);
 
         var dbBarrierInserterResolver = ServiceProvider.GetRequiredService<IDbBarrierInserterResolver>();
-        var barrierInserter = await dbBarrierInserterResolver.ResolveAsync(dbContextInfoModel.DbProviderName);
+        var barrierInserter = await dbBarrierInserterResolver.ResolveAsync(dbContextLookupInfoModel.DbProviderName);
 
         if (await barrierInserter.TryInsertBarrierAsync(barrierInfoModel, dbContext, context.CancellationToken))
         {

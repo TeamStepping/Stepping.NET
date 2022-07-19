@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stepping.Core.Databases;
+using Stepping.Core.Extensions;
 using Stepping.Core.Infrastructures;
 using Stepping.Core.Options;
 
@@ -76,7 +77,7 @@ public class EfCoreDbInitializer : IDbInitializer
         {
             await using var scope = ServiceProvider.CreateAsyncScope();
 
-            var newSteppingDbContext = await GetNewSteppingDbContextAsync(scope.ServiceProvider, dbContext.DbContext);
+            var newSteppingDbContext = await GetNewSteppingDbContextAsync(scope.ServiceProvider, dbContext);
 
             await newSteppingDbContext.DbContext.Database.GetDbConnection().ExecuteAsync(sql);
             CreatedConnectionStrings[connectionString] = true;
@@ -84,22 +85,26 @@ public class EfCoreDbInitializer : IDbInitializer
     }
 
     protected virtual async Task<EfCoreSteppingDbContext> GetNewSteppingDbContextAsync(
-        IServiceProvider serviceProvider, DbContext originalDbContext)
+        IServiceProvider serviceProvider, EfCoreSteppingDbContext originalDbContext)
     {
-        var connectionStringEncryptor = serviceProvider.GetRequiredService<IConnectionStringEncryptor>();
+        var connectionStringHasher = serviceProvider.GetRequiredService<IConnectionStringHasher>();
         var dbContextProviderResolver = serviceProvider.GetRequiredService<ISteppingDbContextProviderResolver>();
+        var tenantIdProvider = serviceProvider.GetRequiredService<ISteppingTenantIdProvider>();
 
         var dbContextProvider =
             await dbContextProviderResolver.ResolveAsync(SteppingDbProviderEfCoreConsts.DbProviderName);
 
+        var connectionString = originalDbContext.DbContext.Database.GetConnectionString() ??
+                               throw new InvalidOperationException();
+
         return (EfCoreSteppingDbContext)await dbContextProvider.GetAsync(
-            new SteppingDbContextInfoModel(
+            new SteppingDbContextLookupInfoModel(
                 SteppingDbProviderEfCoreConsts.DbProviderName,
-                SteppingDbContextInfoModel.GetTypeFullNameWithAssemblyName(originalDbContext.GetType()),
+                await connectionStringHasher.HashAsync(connectionString),
+                originalDbContext.GetType().GetTypeFullNameWithAssemblyName(),
                 null,
-                await connectionStringEncryptor.EncryptAsync(
-                    originalDbContext.Database.GetConnectionString() ?? throw new InvalidOperationException()
-                )
+                await tenantIdProvider.GetCurrentAsync(),
+                originalDbContext.CustomInfo
             )
         );
     }

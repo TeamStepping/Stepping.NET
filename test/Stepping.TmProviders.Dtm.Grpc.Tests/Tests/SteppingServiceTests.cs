@@ -3,7 +3,7 @@ using Grpc.Core;
 using Grpc.Core.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using Stepping.Core.Infrastructures;
+using Stepping.Core.Databases;
 using Stepping.TestBase.Fakes;
 using Stepping.TmProviders.Dtm.Grpc.Secrets;
 using Stepping.TmProviders.Dtm.Grpc.Services.Generated;
@@ -14,12 +14,12 @@ namespace Stepping.TmProviders.Dtm.Grpc.Tests.Tests;
 
 public class SteppingServiceTests : SteppingTmProvidersDtmGrpcTestBase
 {
-    protected IConnectionStringEncryptor ConnectionStringEncryptor { get; }
+    protected IConnectionStringHasher ConnectionStringHasher { get; }
     protected SteppingService SteppingService { get; }
 
     public SteppingServiceTests()
     {
-        ConnectionStringEncryptor = ServiceProvider.GetRequiredService<IConnectionStringEncryptor>();
+        ConnectionStringHasher = ServiceProvider.GetRequiredService<IConnectionStringHasher>();
         SteppingService =
             new SteppingService(ServiceProvider, ServiceProvider.GetRequiredService<IActionApiTokenChecker>());
     }
@@ -44,10 +44,12 @@ public class SteppingServiceTests : SteppingTmProvidersDtmGrpcTestBase
         serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.DtmGid, Guid.NewGuid().ToString());
         serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.DbProviderName,
             FakeSteppingDbContext.FakeDbProviderName);
+        serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.HashedConnectionString,
+            await ConnectionStringHasher.HashAsync(FakeSteppingDbContext.FakeConnectionString));
         serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.DbContextType, string.Empty);
         serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.Database, string.Empty);
-        serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.EncryptedConnectionString,
-            await ConnectionStringEncryptor.EncryptAsync(FakeSteppingDbContext.FakeConnectionString));
+        serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.TenantId, string.Empty);
+        serverCallContext.RequestHeaders.Add(DtmRequestHeaderNames.CustomInfo, "some-info");
 
         // It throws since the barrier with "rollback" is successfully inserted.
         await Should.ThrowAsync<RpcException>(() => SteppingService.QueryPrepared(new Empty(), serverCallContext),

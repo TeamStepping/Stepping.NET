@@ -6,9 +6,19 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SteppingEfCoreServiceCollectionExtensions
 {
-    public static IServiceCollection AddSteppingEfCore(this IServiceCollection services)
+    public static IServiceCollection AddSteppingEfCore(this IServiceCollection services,
+        Action<SteppingEfCoreOptions> setupAction)
     {
         services.AddSteppingEfCoreServices();
+
+        services.Configure(setupAction);
+
+        return services;
+    }
+
+    public static IServiceCollection AddSteppingEfCore(this IServiceCollection services)
+    {
+        services.AddSteppingEfCore(_ => { });
 
         return services;
     }
@@ -21,8 +31,8 @@ public static class SteppingEfCoreServiceCollectionExtensions
         services.AddTransient<IDbInitializer, EfCoreDbInitializer>();
         services.TryAddTransient<EfCoreDbInitializer>();
 
-        services.AddTransient<ISteppingDbContextProvider, EfCoreSteppingDbContextProvider>();
-        services.TryAddTransient<EfCoreSteppingDbContextProvider>();
+        services.AddTransient<ISteppingDbContextProvider, DefaultEfCoreSteppingDbContextProvider>();
+        services.TryAddTransient<DefaultEfCoreSteppingDbContextProvider>();
 
         return services;
     }

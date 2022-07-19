@@ -21,7 +21,7 @@ public class EfCoreSteppingDbContext : SteppingDbContextBase
     protected override async Task InternalCommitTransactionAsync(CancellationToken cancellationToken = default) =>
         await DbContext.Database.CommitTransactionAsync(cancellationToken);
 
-    public EfCoreSteppingDbContext(DbContext dbContext)
+    public EfCoreSteppingDbContext(DbContext dbContext, string? customInfo = null) : base(customInfo)
     {
         DbContext = dbContext;
     }

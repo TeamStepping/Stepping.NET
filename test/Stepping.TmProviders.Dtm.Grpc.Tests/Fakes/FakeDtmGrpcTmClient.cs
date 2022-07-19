@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Stepping.Core.Databases;
 using Stepping.Core.Infrastructures;
 using Stepping.TmProviders.Dtm.Grpc.Clients;
 using Stepping.TmProviders.Dtm.Grpc.Options;
@@ -14,9 +15,9 @@ public class FakeDtmGrpcTmClient : DtmGrpcTmClient
     public FakeDtmGrpcTmClient(
         IOptions<SteppingDtmGrpcOptions> options,
         ISteppingJsonSerializer jsonSerializer,
-        IConnectionStringEncryptor connectionStringEncryptor,
-        IStepToDtmStepConvertResolver stepToDtmStepConvertResolver)
-        : base(options, jsonSerializer, connectionStringEncryptor, stepToDtmStepConvertResolver)
+        IStepToDtmStepConvertResolver stepToDtmStepConvertResolver,
+        ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
+        : base(options, jsonSerializer, stepToDtmStepConvertResolver, dbContextLookupInfoProvider)
     {
     }
 

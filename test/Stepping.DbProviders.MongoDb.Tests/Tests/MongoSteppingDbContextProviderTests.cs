@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Stepping.Core.Databases;
+using Stepping.Core.Infrastructures;
 using Xunit;
 
 namespace Stepping.DbProviders.MongoDb.Tests.Tests;
@@ -8,11 +9,15 @@ namespace Stepping.DbProviders.MongoDb.Tests.Tests;
 [Collection(MongoTestCollection.Name)]
 public class MongoSteppingDbContextProviderTests : SteppingDbProvidersMongoTestBase
 {
-    protected MongoDbSteppingDbContextProvider SteppingDbContextProvider { get; }
+    protected DefaultMongoDbSteppingDbContextProvider SteppingDbContextProvider { get; }
+    protected IConnectionStringHasher ConnectionStringHasher { get; }
+    protected ISteppingTenantIdProvider TenantIdProvider { get; }
 
     public MongoSteppingDbContextProviderTests()
     {
-        SteppingDbContextProvider = ServiceProvider.GetRequiredService<MongoDbSteppingDbContextProvider>();
+        SteppingDbContextProvider = ServiceProvider.GetRequiredService<DefaultMongoDbSteppingDbContextProvider>();
+        ConnectionStringHasher = ServiceProvider.GetRequiredService<IConnectionStringHasher>();
+        TenantIdProvider = ServiceProvider.GetRequiredService<ISteppingTenantIdProvider>();
     }
 
     [Fact]
@@ -20,12 +25,18 @@ public class MongoSteppingDbContextProviderTests : SteppingDbProvidersMongoTestB
     {
         SteppingDbContextProvider.DbProviderName.ShouldBe(SteppingDbProviderMongoDbConsts.DbProviderName);
     
-        var dbContext = await SteppingDbContextProvider.GetAsync(new SteppingDbContextInfoModel(
+        var dbContext = await SteppingDbContextProvider.GetAsync(new SteppingDbContextLookupInfoModel(
             SteppingDbProviderMongoDbConsts.DbProviderName,
+            await ConnectionStringHasher.HashAsync(MongoDbFixture.ConnectionString),
             null,
             MongoDbTestConsts.Database,
-            MongoDbFixture.ConnectionString));
+            await TenantIdProvider.GetCurrentAsync(),
+            "my-custom-info"));
     
         dbContext.ShouldNotBeNull();
+        dbContext.ConnectionString.ShouldBe(MongoDbFixture.ConnectionString);
+        dbContext.CustomInfo.ShouldBe("my-custom-info");
+        dbContext.IsTransactional.ShouldBeFalse();
+        dbContext.DbProviderName.ShouldBe(SteppingDbProviderMongoDbConsts.DbProviderName);
     }
 }
