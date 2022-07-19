@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.*" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(MicrosoftPackagesVersion)" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
         <ProjectReference Include="..\..\src\Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj" />
         <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj" />
     </ItemGroup>
