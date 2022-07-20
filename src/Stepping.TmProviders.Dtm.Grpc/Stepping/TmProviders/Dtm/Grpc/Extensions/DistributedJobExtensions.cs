@@ -10,6 +10,15 @@ public static class DistributedJobExtensions
         return job.GetOrCreateDtmConfigurations();
     }
 
+    public static IDistributedJob SetWaitResult(this IDistributedJob job, bool waitResult)
+    {
+        var options = job.GetOrCreateDtmConfigurations();
+
+        options.WaitResult = waitResult;
+
+        return job;
+    }
+
     public static IDistributedJob SetRetryInterval(this IDistributedJob job, long retryInterval)
     {
         var options = job.GetOrCreateDtmConfigurations();
