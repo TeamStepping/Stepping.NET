@@ -97,9 +97,9 @@ public class DtmGrpcTmClient : ITmClient
 
         var transOptions = new DtmTransOptions
         {
-            WaitResult = true,
-            RetryInterval = configurations.RetryInterval,
+            WaitResult = configurations.WaitResult,
             TimeoutToFail = configurations.TimeoutToFail,
+            RetryInterval = configurations.RetryInterval,
             RequestTimeout = Options.BranchRequestTimeout
         };
 

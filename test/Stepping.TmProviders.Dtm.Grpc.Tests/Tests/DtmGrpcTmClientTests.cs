@@ -40,6 +40,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
 
         job.SetBranchHeader("header1", "header1_value");
         job.SetPassthroughHeader("header1");
+        job.SetWaitResult(true);
         job.SetRetryInterval(123);
         job.SetTimeoutToFail(456);
 
@@ -98,6 +99,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
 
         job.SetBranchHeader("header1", "header1_value");
         job.SetPassthroughHeader("header1");
+        job.SetWaitResult(true);
         job.SetRetryInterval(123);
         job.SetTimeoutToFail(456);
 
