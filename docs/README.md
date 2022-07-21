@@ -13,21 +13,20 @@ The distributed transaction is based on DTM's [2-phase messaging](https://en.dtm
 
 A job contains some steps, and the TM will execute them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
-## Examples
+## Examples (for EF Core)
 
 Define steps:
 ```csharp
-[StepName("CreateOrder")]
 public class CreateOrderStep : ExecutableStep<CreateOrderArgs>
 {
     public override async Task ExecuteAsync(StepExecutionContext context)
     {
-        var orderManager = context.ServiceProvider.GetRequiredService<IOrderManager>();
-        await orderManager.CreateOrderAsync(Args, context.Gid); // records gid.
+        var db = context.ServiceProvider.GetRequiredService<MyDbContext>();
+        db.Orders.Add(new Order(Args, context.Gid)); // records unique gid for idempotent
+        await db.SaveChangesAsync(context.CancellationToken);
     }
 }
 
-[StepName("SendOrderCreatedEmail")]
 public class SendOrderCreatedEmailStep : ExecutableStep
 {
     public override async Task ExecuteAsync(StepExecutionContext context)
@@ -39,7 +38,7 @@ public class SendOrderCreatedEmailStep : ExecutableStep
 ```
 The TM will eventually complete the added steps:
 ```csharp
-var job = await DistributedJobFactory.CreateJobAsync();
+var job = await distributedJobFactory.CreateJobAsync();
 
 job.AddStep(new CreateOrderStep(orderCreatingArgs));
 job.AddStep<SendOrderCreatedEmailStep>();
@@ -48,14 +47,28 @@ await job.StartAsync();
 ```
 If you want to execute the steps after a DB transaction commits and want to ensure they will eventually be done:
 ```csharp
-var steppingDbContext = new EfCoreSteppingDbContext(efCoreDbContext);
-var job = await DistributedJobFactory.CreateJobAsync(steppingDbContext);
+var db = context.ServiceProvider.GetRequiredService<MyDbContext>();
+await db.Database.BeginTransactionAsync(context.CancellationToken);
+
+var order = new Order(args);
+
+db.Orders.Add(order);
+await db.SaveChangesAsync(context.CancellationToken);
+
+var job = await distributedJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
+
+job.AddStep(new SendOrderCreatedEmailStep(order));
+job.AddStep(new SendOrderCreatedSmsStep(order));
+
+await job.StartAsync(); // it will commit the DB transaction
 ```
-For more, please see the [usage document](./Usage.md).
+Stepping supports `EF Core`, `ADO.NET`(coming soon), and `MongoDB`.
+
+For more, please see the [Usage document](./Usage.md).
 
 ## Installation
 
-See the [installation document](./Installation.md).
+See the [Installation document](./Installation.md).
 
 ## Supported Transaction Managers
 
