@@ -4,6 +4,11 @@ Stepping DB Providers are not required.
 
 If you want to execute the steps after a DB transaction commits and ensure they will eventually be done, you should install them.
 
+Supported providers:
+* [EF Core](#ef-core)
+* [ADO.NET](#adonet)
+* [MongoDB](#mongodb)
+
 ### EF Core
 
 The regular usage:

@@ -2,6 +2,11 @@
 
 Before creating a distributed job, you should make some Step classes to determine things to do.
 
+Supported step types:
+* [Executable Step](#executable-step)
+* [HTTP Request Step](#http-request-step)
+* [gRPC Request Step](#grpc-request-step)
+
 ### Executable Step
 
 A sample step class inherits `ExecutableStep<TArgs>`:
