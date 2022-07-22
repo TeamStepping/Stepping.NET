@@ -5,10 +5,10 @@ namespace Stepping.TestBase.Fakes;
 [StepName(RequestGitHubGetOrganizationStepName)]
 public class RequestGitHubGetOrganizationStep : HttpRequestStep
 {
-    public const string RequestGitHubGetOrganizationStepName = "RequestGitHubGetOrganizationStep";
+    public const string RequestGitHubGetOrganizationStepName = "RequestGitHubGetOrganization";
 
-    public RequestGitHubGetOrganizationStep(string organizationName) : base(
-        new HttpRequestStepArgs($"https://api.github.com/orgs/{organizationName.TrimStart('/')}", HttpMethod.Get))
+    public RequestGitHubGetOrganizationStep(string orgName) : base(
+        new HttpRequestStepArgs($"https://api.github.com/orgs/{orgName}", HttpMethod.Get))
     {
     }
 }

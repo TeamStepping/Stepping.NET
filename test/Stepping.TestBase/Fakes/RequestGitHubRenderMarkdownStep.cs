@@ -11,12 +11,8 @@ public class RequestGitHubRenderMarkdownStep : HttpRequestStep
         new HttpRequestStepArgs(
             "https://api.github.com/markdown",
             HttpMethod.Post,
-            new Dictionary<string, object>
-            {
-                { "text", text }
-            }
-        )
-    )
+            new Dictionary<string, object> { { "text", text } }
+        ))
     {
     }
 }
