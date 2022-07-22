@@ -23,7 +23,7 @@ public class MongoDbInitializerTests : SteppingDbProvidersMongoTestBase
     {
         var client = new MongoClient(MongoDbFixture.ConnectionString);
         var database = client.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext = new MongoDbSteppingDbContext(database, client, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext = new MongoDbSteppingDbContext(client, database, null, MongoDbFixture.ConnectionString);
         var barrierCollection = await BarrierCollectionProvider.GetAsync(steppingDbContext);
 
         await barrierCollection.Indexes.DropAllAsync();
@@ -39,7 +39,7 @@ public class MongoDbInitializerTests : SteppingDbProvidersMongoTestBase
     {
         var client = new MongoClient(MongoDbFixture.ConnectionString);
         var database = client.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext = new MongoDbSteppingDbContext(database, client, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext = new MongoDbSteppingDbContext(client, database, null, MongoDbFixture.ConnectionString);
         var barrierCollection = await BarrierCollectionProvider.GetAsync(steppingDbContext);
 
         await barrierCollection.Indexes.DropAllAsync();

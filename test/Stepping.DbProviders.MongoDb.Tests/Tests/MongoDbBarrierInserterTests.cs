@@ -23,7 +23,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
     {
         var client = new MongoClient(MongoDbFixture.ConnectionString);
         var database = client.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext = new MongoDbSteppingDbContext(database, client, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext = new MongoDbSteppingDbContext(client, database, null, MongoDbFixture.ConnectionString);
 
         var barrierInfoModel1 = new BarrierInfoModel(SteppingConsts.TypeMsg, Guid.NewGuid().ToString(),
             SteppingConsts.MsgBranchId, SteppingConsts.MsgOp, SteppingConsts.MsgBarrierId,
@@ -45,7 +45,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
     {
         var client = new MongoClient(MongoDbFixture.ConnectionString);
         var database = client.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext = new MongoDbSteppingDbContext(database, client, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext = new MongoDbSteppingDbContext(client, database, null, MongoDbFixture.ConnectionString);
 
         var barrierInfoModel = new BarrierInfoModel(SteppingConsts.TypeMsg, Guid.NewGuid().ToString(),
             SteppingConsts.MsgBranchId, SteppingConsts.MsgOp, SteppingConsts.MsgBarrierId,
@@ -73,7 +73,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         var sessionHandle1 = await client1.StartSessionAsync();
         sessionHandle1.StartTransaction();
         var steppingDbContext1 =
-            new MongoDbSteppingDbContext(database1, client1, sessionHandle1, MongoDbFixture.ConnectionString);
+            new MongoDbSteppingDbContext(client1, database1, sessionHandle1, MongoDbFixture.ConnectionString);
 
         var barrierInfoModel = new BarrierInfoModel(SteppingConsts.TypeMsg, Guid.NewGuid().ToString(),
             SteppingConsts.MsgBranchId, SteppingConsts.MsgOp, SteppingConsts.MsgBarrierId,
@@ -88,7 +88,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         await using var scope = ServiceProvider.CreateAsyncScope();
         var client2 = new MongoClient(MongoDbFixture.ConnectionString);
         var database2 = client2.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext2 = new MongoDbSteppingDbContext(database2, client2, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext2 = new MongoDbSteppingDbContext(client2, database2, null, MongoDbFixture.ConnectionString);
 
         var task = Task.Run(async () =>
             result = await DbBarrierInserter.TryInsertBarrierAsync(barrierInfoModel, steppingDbContext2));
@@ -111,7 +111,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         var sessionHandle1 = await client1.StartSessionAsync();
         sessionHandle1.StartTransaction();
         var steppingDbContext1 =
-            new MongoDbSteppingDbContext(database1, client1, sessionHandle1, MongoDbFixture.ConnectionString);
+            new MongoDbSteppingDbContext(client1, database1, sessionHandle1, MongoDbFixture.ConnectionString);
 
         var barrierInfoModel = new BarrierInfoModel(SteppingConsts.TypeMsg, Guid.NewGuid().ToString(),
             SteppingConsts.MsgBranchId, SteppingConsts.MsgOp, SteppingConsts.MsgBarrierId,
@@ -126,7 +126,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         await using var scope = ServiceProvider.CreateAsyncScope();
         var client2 = new MongoClient(MongoDbFixture.ConnectionString);
         var database2 = client2.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext2 = new MongoDbSteppingDbContext(database2, client2, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext2 = new MongoDbSteppingDbContext(client2, database2, null, MongoDbFixture.ConnectionString);
 
         var task = Task.Run(async () =>
             result = await DbBarrierInserter.TryInsertBarrierAsync(barrierInfoModel, steppingDbContext2));

@@ -38,8 +38,8 @@ public class DefaultMongoDbSteppingDbContextProvider : ISteppingDbContextProvide
         var client = new MongoClient(connectionString);
 
         return new MongoDbSteppingDbContext(
-            client.GetDatabase(infoModel.Database),
             client,
+            client.GetDatabase(infoModel.Database),
             null,
             connectionString,
             infoModel.CustomInfo);
