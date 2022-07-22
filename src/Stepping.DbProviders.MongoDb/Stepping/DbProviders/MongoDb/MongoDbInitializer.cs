@@ -25,7 +25,7 @@ public class MongoDbInitializer : IDbInitializer
     {
         var dbContext = (MongoDbSteppingDbContext)infoModel.DbContext;
 
-        var servers = dbContext.Database.Client.Settings.Servers.Select(x => x.ToString()).ToList();
+        var servers = dbContext.Client.Settings.Servers.Select(x => x.ToString()).ToList();
 
         if (CacheEnabled && servers.All(x => CreatedServers.ContainsKey(x)))
         {

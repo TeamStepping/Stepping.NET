@@ -22,6 +22,6 @@ public class BarrierCollectionProvider : IBarrierCollectionProvider
 
         return Task.FromResult(fs.Length == 2
             ? context.Client.GetDatabase(fs[0]).GetCollection<SteppingBarrierDocument>(fs[1])
-            : context.Database.GetCollection<SteppingBarrierDocument>(configuredTableName));
+            : context.BarrierDatabase.GetCollection<SteppingBarrierDocument>(configuredTableName));
     }
 }
