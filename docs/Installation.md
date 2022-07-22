@@ -24,7 +24,9 @@ Stepping requires transaction managers. You can choose an implementation you lik
 
 ### Install DB Providers (optional)
 
-You should install a DB provider if you want to execute the steps after a DB transaction commits.
+Stepping DB Providers are not required.
+
+If you want to execute the steps after a DB transaction commits and ensure they will eventually be done, you should install them.
 
 1. Install the NuGet package:
    ```shell
@@ -40,3 +42,5 @@ You should install a DB provider if you want to execute the steps after a DB tra
        options.DefaultConnectionString = "mongodb://root:password123@198.174.21.23:27017"
    });
    ```
+
+Also, see the [DB Provider document](./DbProviders.md) for usage.

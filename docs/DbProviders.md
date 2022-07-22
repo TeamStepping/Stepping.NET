@@ -2,7 +2,7 @@
 
 Stepping DB Providers are not required.
 
-If you want to execute the steps after a DB transaction commits and ensure they will eventually be done, you should install them.
+If you want to execute the steps after a DB transaction commits and ensure they will eventually be done, you should see the [Installation document](./Installation.md) and install Stepping DB providers.
 
 Supported providers:
 * [EF Core](#ef-core)
