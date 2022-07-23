@@ -7,7 +7,10 @@ public class MongoDbSteppingDbContext : SteppingDbContextBase
 {
     public override string DbProviderName => SteppingDbProviderMongoDbConsts.DbProviderName;
 
-    public IMongoDatabase Database { get; }
+    /// <summary>
+    /// Specify the database for the Barrier collection.
+    /// </summary>
+    public IMongoDatabase BarrierDatabase { get; }
 
     public IMongoClient Client { get; }
 
@@ -19,17 +22,17 @@ public class MongoDbSteppingDbContext : SteppingDbContextBase
 
     public override Type? GetInternalDbContextTypeOrNull() => null;
 
-    public override string? GetInternalDatabaseNameOrNull() => Database.DatabaseNamespace.DatabaseName;
+    public override string? GetInternalDatabaseNameOrNull() => BarrierDatabase.DatabaseNamespace.DatabaseName;
 
     public MongoDbSteppingDbContext(
         IMongoClient client,
-        IMongoDatabase database,
+        IMongoDatabase barrierDatabase,
         IClientSessionHandle? sessionHandle,
         string connectionString,
         string? customInfo = null) : base(customInfo)
     {
         Client = client;
-        Database = database;
+        BarrierDatabase = barrierDatabase;
         SessionHandle = sessionHandle;
         ConnectionString = connectionString;
     }
