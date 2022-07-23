@@ -7,7 +7,7 @@ namespace Stepping.Core.Steps;
 [StepName(HttpRequestStepName)]
 public class HttpRequestStep : StepWithArgsBase<HttpRequestStepArgs>
 {
-    public const string HttpRequestStepName = "HttpRequestStep";
+    public const string HttpRequestStepName = "HttpRequest";
 
     public HttpRequestStep(HttpRequestStepArgs args) : base(args)
     {
