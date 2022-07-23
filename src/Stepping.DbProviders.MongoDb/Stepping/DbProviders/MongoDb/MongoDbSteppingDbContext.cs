@@ -22,14 +22,14 @@ public class MongoDbSteppingDbContext : SteppingDbContextBase
     public override string? GetInternalDatabaseNameOrNull() => Database.DatabaseNamespace.DatabaseName;
 
     public MongoDbSteppingDbContext(
-        IMongoDatabase database,
         IMongoClient client,
+        IMongoDatabase database,
         IClientSessionHandle? sessionHandle,
         string connectionString,
         string? customInfo = null) : base(customInfo)
     {
-        Database = database;
         Client = client;
+        Database = database;
         SessionHandle = sessionHandle;
         ConnectionString = connectionString;
     }
