@@ -15,28 +15,8 @@ A job contains some steps, and the TM will execute them in order. If step 1 fail
 
 ## Examples (for EF Core)
 
-Define steps:
-```csharp
-public class CreateOrderStep : ExecutableStep<CreateOrderArgs>
-{
-    public override async Task ExecuteAsync(StepExecutionContext context)
-    {
-        var db = context.ServiceProvider.GetRequiredService<MyDbContext>();
-        db.Orders.Add(new Order(Args, context.Gid)); // records unique gid for idempotent
-        await db.SaveChangesAsync(context.CancellationToken);
-    }
-}
-
-public class SendOrderCreatedEmailStep : ExecutableStep
-{
-    public override async Task ExecuteAsync(StepExecutionContext context)
-    {
-        var sender = context.ServiceProvider.GetRequiredService<IOrderEmailSender>();
-        await sender.SendForCreatedAsync(context.Gid); // should get order by gid
-    }
-}
-```
 The TM will eventually complete the added steps:
+
 ```csharp
 var job = await distributedJobFactory.CreateJobAsync();
 
@@ -45,15 +25,19 @@ job.AddStep<SendOrderCreatedEmailStep>();
 
 await job.StartAsync();
 ```
-If you want to execute the steps after a DB transaction commits and want to ensure they will eventually be done:
+
+The [Steps document](./Steps.md) shows how to define a step.
+
+If you want to execute the steps after a DB transaction commits and ensure they will eventually be done:
+
 ```csharp
-var db = context.ServiceProvider.GetRequiredService<MyDbContext>();
-await db.Database.BeginTransactionAsync(context.CancellationToken);
+var db = serviceProvider.GetRequiredService<MyDbContext>();
+await db.Database.BeginTransactionAsync();
 
 var order = new Order(args);
 
 db.Orders.Add(order);
-await db.SaveChangesAsync(context.CancellationToken);
+await db.SaveChangesAsync();
 
 var job = await distributedJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
 
@@ -62,9 +46,10 @@ job.AddStep(new SendOrderCreatedSmsStep(order));
 
 await job.StartAsync(); // it will commit the DB transaction
 ```
+
 Stepping supports `EF Core`, `ADO.NET`(coming soon), and `MongoDB`.
 
-For more, please see the [Usage document](./Usage.md).
+For details, please see the [Usage document](./Usage.md).
 
 ## Installation
 
