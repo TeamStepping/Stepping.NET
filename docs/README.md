@@ -13,7 +13,7 @@ The distributed transaction is based on DTM's [2-phase messaging](https://en.dtm
 
 A job contains some steps, and the TM will execute them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
-## Examples (for EF Core)
+## Examples
 
 The TM will eventually complete the added steps:
 
@@ -31,7 +31,7 @@ The [Steps document](./Steps.md) shows how to define a step.
 If you want to execute the steps after a DB transaction commits and ensure they will eventually be done:
 
 ```csharp
-var db = serviceProvider.GetRequiredService<MyDbContext>();
+var db = serviceProvider.GetRequiredService<MyDbContext>(); // example for EF Core
 await db.Database.BeginTransactionAsync();
 
 var order = new Order(args);
