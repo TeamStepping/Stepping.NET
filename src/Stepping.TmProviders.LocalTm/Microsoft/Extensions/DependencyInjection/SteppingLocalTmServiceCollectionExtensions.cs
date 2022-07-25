@@ -23,10 +23,15 @@ public static class SteppingLocalTmServiceCollectionExtensions
         services.TryAddTransient<ILocalTmProcessor, LocalTmProcessor>();
         services.TryAddTransient<LocalTmProcessor>();
 
-        services.AddHostedService<LocalTmHostedService>();
-
         services.TryAddTransient<ISteppingDistributedLock, DefaultSteppingDistributedLock>();
         services.TryAddTransient<DefaultSteppingDistributedLock>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddLocalTmHostedService(this IServiceCollection services)
+    {
+        services.AddHostedService<LocalTmHostedService>();
 
         return services;
     }
