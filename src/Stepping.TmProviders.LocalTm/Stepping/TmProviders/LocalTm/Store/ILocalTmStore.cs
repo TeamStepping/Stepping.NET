@@ -14,7 +14,7 @@ public interface ILocalTmStore
     /// <summary>
     /// Get Pending TmTransaction List (read-only)
     /// <para>
-    /// Condition (status != 'SUCCESS' && status != 'FFAILURE' && (NextRetryTime <= UTCNOW() || NextRetryTime == null) && CreateTime >= UTCNOW().Add(-<see cref="LocalTmOptions.Timeout"/>))
+    /// Condition (status != '<see cref="LocalTmConst.StatusFinish"/>' && status != '<see cref="LocalTmConst.StatusRollback"/>' && (NextRetryTime <= UTCNOW() || NextRetryTime == null) && CreateTime >= UTCNOW().Add(-<see cref="LocalTmOptions.Timeout"/>))
     /// </para>
     /// <para>
     /// Order By NextRetryTime

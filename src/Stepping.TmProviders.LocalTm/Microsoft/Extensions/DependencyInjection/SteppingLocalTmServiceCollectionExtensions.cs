@@ -3,6 +3,7 @@ using Stepping.Core.TransactionManagers;
 using Stepping.TmProviders.LocalTm.DistributedLocks;
 using Stepping.TmProviders.LocalTm.HostedService;
 using Stepping.TmProviders.LocalTm.Steps;
+using Stepping.TmProviders.LocalTm.Store;
 using Stepping.TmProviders.LocalTm.TransactionManagers;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,9 @@ public static class SteppingLocalTmServiceCollectionExtensions
 
         services.TryAddTransient<ISteppingDistributedLock, DefaultSteppingDistributedLock>();
         services.TryAddTransient<DefaultSteppingDistributedLock>();
+
+        services.TryAddSingleton<MemoryLocalTmStore>();
+        services.TryAddSingleton<ILocalTmStore>(sp => sp.GetRequiredService<MemoryLocalTmStore>());
 
         return services;
     }
