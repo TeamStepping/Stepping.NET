@@ -3,7 +3,7 @@ using Stepping.TmProviders.LocalTm.Steps;
 
 namespace Stepping.TmProviders.LocalTm.TransactionManagers;
 
-public interface ILocalTmProcessor
+public interface ILocalTmManager
 {
     Task PrepareAsync(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo,
         CancellationToken cancellationToken = default);

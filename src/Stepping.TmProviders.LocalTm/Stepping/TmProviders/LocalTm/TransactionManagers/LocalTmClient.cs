@@ -9,17 +9,17 @@ public class LocalTmClient : ITmClient
 {
     protected ILocalTmStepConverter LocalTmStepConverter { get; }
 
-    protected ILocalTmProcessor LocalTmProcessor { get; }
+    protected ILocalTmManager LocalTmManager { get; }
 
     protected ISteppingDbContextLookupInfoProvider DbContextLookupInfoProvider { get; }
 
     public LocalTmClient(
         ILocalTmStepConverter localTmStepConverter,
-        ILocalTmProcessor localTmProcessor,
+        ILocalTmManager localTmManager,
         ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
     {
         LocalTmStepConverter = localTmStepConverter;
-        LocalTmProcessor = localTmProcessor;
+        LocalTmManager = localTmManager;
         DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
 
@@ -28,13 +28,13 @@ public class LocalTmClient : ITmClient
         var steps = await LocalTmStepConverter.ConvertAsync(job.Steps);
         var steppingDbContextLookupInfo = await DbContextLookupInfoProvider.GetAsync(job.DbContext!);
 
-        await LocalTmProcessor.PrepareAsync(job.Gid, steps, steppingDbContextLookupInfo, cancellationToken);
+        await LocalTmManager.PrepareAsync(job.Gid, steps, steppingDbContextLookupInfo, cancellationToken);
     }
 
     public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
-        await LocalTmProcessor.SubmitAsync(job.Gid, cancellationToken);
+        await LocalTmManager.SubmitAsync(job.Gid, cancellationToken);
 
-        await LocalTmProcessor.ProcessSubmitAsync(job.Gid, cancellationToken);
+        await LocalTmManager.ProcessSubmitAsync(job.Gid, cancellationToken);
     }
 }

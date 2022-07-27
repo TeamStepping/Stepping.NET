@@ -7,7 +7,7 @@ using Stepping.TmProviders.LocalTm.Store;
 
 namespace Stepping.TmProviders.LocalTm.TransactionManagers;
 
-public class LocalTmProcessor : ILocalTmProcessor
+public class LocalTmManager : ILocalTmManager
 {
     protected ISteppingDistributedLock DistributedLock { get; }
 
@@ -21,16 +21,16 @@ public class LocalTmProcessor : ILocalTmProcessor
 
     protected IDbBarrierInserterResolver DbBarrierInserterResolver { get; }
 
-    protected ILogger<LocalTmProcessor> Logger { get; }
+    protected ILogger<LocalTmManager> Logger { get; }
 
-    public LocalTmProcessor(
+    public LocalTmManager(
         ISteppingDistributedLock distributedLock,
         ILocalTmStore localTmStore,
         ILocalTmStepExecutor localTmStepExecutor,
         ISteppingDbContextProviderResolver dbContextProviderResolver,
         IBarrierInfoModelFactory barrierInfoModelFactory,
         IDbBarrierInserterResolver dbBarrierInserterResolver,
-        ILogger<LocalTmProcessor> logger)
+        ILogger<LocalTmManager> logger)
     {
         DistributedLock = distributedLock;
         LocalTmStore = localTmStore;
@@ -196,7 +196,11 @@ public class LocalTmProcessor : ILocalTmProcessor
     {
         if (tmTransactionModel.Status != expectedStatus)
         {
-            Logger.LogWarning("Local transaction '{gid}' status is not {status}.", tmTransactionModel.Gid, expectedStatus);
+            Logger.LogWarning("Local transaction '{gid}' status '{status}' is not expected status {expectedStatus}.",
+                tmTransactionModel.Gid,
+                tmTransactionModel.Status,
+                expectedStatus
+            );
             return Task.FromResult(false);
         }
 

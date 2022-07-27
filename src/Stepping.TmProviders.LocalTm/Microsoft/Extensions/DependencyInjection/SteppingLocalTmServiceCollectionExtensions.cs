@@ -21,8 +21,8 @@ public static class SteppingLocalTmServiceCollectionExtensions
         services.TryAddTransient<ITmClient, LocalTmClient>();
         services.TryAddTransient<LocalTmClient>();
 
-        services.TryAddTransient<ILocalTmProcessor, LocalTmProcessor>();
-        services.TryAddTransient<LocalTmProcessor>();
+        services.TryAddTransient<ILocalTmManager, LocalTmManager>();
+        services.TryAddTransient<LocalTmManager>();
 
         services.TryAddTransient<ISteppingDistributedLock, DefaultSteppingDistributedLock>();
         services.TryAddTransient<DefaultSteppingDistributedLock>();

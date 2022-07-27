@@ -34,7 +34,7 @@ public class LocalTmHostedService : IHostedService
     {
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
         await scope.ServiceProvider
-            .GetRequiredService<ILocalTmProcessor>()
+            .GetRequiredService<ILocalTmManager>()
             .ProcessPendingAsync(cancellationToken);
     }
 
