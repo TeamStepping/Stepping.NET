@@ -11,4 +11,6 @@ public static class LocalTmConst
     public const string StatusRollback = "ROLLBACK";
 
     public const string ReasonPrepareFailure = "PrepareFailure";
+
+    public const string LocalTmHttpClient = "LocalTm";
 }

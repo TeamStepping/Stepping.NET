@@ -23,7 +23,7 @@ public class LocalTmStepExecutor : ILocalTmStepExecutor
         StepResolver = stepResolver;
         StepExecutor = stepExecutor;
         SteppingJsonSerializer = steppingJsonSerializer;
-        HttpClient = httpClientFactory.CreateClient("LocalTm");
+        HttpClient = httpClientFactory.CreateClient(LocalTmConst.LocalTmHttpClient);
     }
 
     public virtual async Task ExecuteAsync(string gid, LocalTmStepInfoModel stepInfoModel, CancellationToken cancellationToken = default)
