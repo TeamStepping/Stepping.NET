@@ -3,7 +3,7 @@ using Stepping.TmProviders.LocalTm.Options;
 
 namespace Stepping.TmProviders.LocalTm.Store;
 
-public interface ILocalTmStore
+public interface ITransactionStore
 {
     Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken = default);
 

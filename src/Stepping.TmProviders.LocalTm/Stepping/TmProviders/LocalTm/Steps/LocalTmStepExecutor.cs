@@ -46,6 +46,6 @@ public class LocalTmStepExecutor : ILocalTmStepExecutor
             return;
         }
 
-        throw new SteppingException("Cannot execute a non-executable step.");
+        throw new SteppingException($"Unknown step type: {stepType.FullName}.");
     }
 }

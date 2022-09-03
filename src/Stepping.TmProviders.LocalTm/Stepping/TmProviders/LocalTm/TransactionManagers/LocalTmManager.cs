@@ -4,6 +4,7 @@ using Stepping.TmProviders.LocalTm.DistributedLocks;
 using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Steps;
 using Stepping.TmProviders.LocalTm.Store;
+using Stepping.TmProviders.LocalTm.Timing;
 
 namespace Stepping.TmProviders.LocalTm.TransactionManagers;
 
@@ -11,7 +12,7 @@ public class LocalTmManager : ILocalTmManager
 {
     protected ISteppingDistributedLock DistributedLock { get; }
 
-    protected ILocalTmStore LocalTmStore { get; }
+    protected ITransactionStore TransactionStore { get; }
 
     protected ILocalTmStepExecutor LocalTmStepExecutor { get; }
 
@@ -23,22 +24,26 @@ public class LocalTmManager : ILocalTmManager
 
     protected ILogger<LocalTmManager> Logger { get; }
 
+    protected ISteppingClock SteppingClock { get; }
+
     public LocalTmManager(
         ISteppingDistributedLock distributedLock,
-        ILocalTmStore localTmStore,
+        ITransactionStore transactionStore,
         ILocalTmStepExecutor localTmStepExecutor,
         ISteppingDbContextProviderResolver dbContextProviderResolver,
         IBarrierInfoModelFactory barrierInfoModelFactory,
         IDbBarrierInserterResolver dbBarrierInserterResolver,
-        ILogger<LocalTmManager> logger)
+        ILogger<LocalTmManager> logger,
+        ISteppingClock steppingClock)
     {
         DistributedLock = distributedLock;
-        LocalTmStore = localTmStore;
+        TransactionStore = transactionStore;
         LocalTmStepExecutor = localTmStepExecutor;
         DbContextProviderResolver = dbContextProviderResolver;
         BarrierInfoModelFactory = barrierInfoModelFactory;
         DbBarrierInserterResolver = dbBarrierInserterResolver;
         Logger = logger;
+        SteppingClock = steppingClock;
     }
 
     public virtual async Task PrepareAsync(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo,
@@ -53,17 +58,9 @@ public class LocalTmManager : ILocalTmManager
 
     public virtual async Task SubmitAsync(string gid, CancellationToken cancellationToken = default)
     {
-        await using var handle = await DistributedLock.TryAcquireAsync($"LocalTm-{gid}", cancellationToken: cancellationToken);
-
-        if (handle == null)
-        {
-            Logger.LogWarning("Local transaction '{gid}' submit try acquire lock failed.", gid);
-            return;
-        }
-
         var tmTransactionModel = await GetAsync(gid, cancellationToken);
 
-        if (await IsExpectedStatusAsync(tmTransactionModel, LocalTmConst.StatusPrepare))
+        if (!await IsInStatusAsync(tmTransactionModel, LocalTmConst.StatusPrepare))
         {
             return;
         }
@@ -75,7 +72,15 @@ public class LocalTmManager : ILocalTmManager
 
     public virtual async Task ProcessPendingAsync(CancellationToken cancellationToken = default)
     {
-        var pendingTmTransactionModels = await LocalTmStore.GetPendingListAsync(cancellationToken);
+        await using var handle = await DistributedLock.TryAcquireAsync("LocalTm-ProcessPeding", cancellationToken: cancellationToken);
+
+        if (handle == null)
+        {
+            Logger.LogWarning("Local transaction process pending try acquire lock failed.");
+            return;
+        }
+
+        var pendingTmTransactionModels = await TransactionStore.GetPendingListAsync(cancellationToken);
 
         foreach (var tmTransactionModel in pendingTmTransactionModels)
         {
@@ -83,29 +88,21 @@ public class LocalTmManager : ILocalTmManager
             {
                 if (await ProcessQueryPreparedAsync(tmTransactionModel.Gid, cancellationToken))
                 {
-                    await ProcessSubmitAsync(tmTransactionModel.Gid, cancellationToken);
+                    await ProcessSubmittedAsync(tmTransactionModel.Gid, cancellationToken);
                 }
             }
             else if (tmTransactionModel.Status == LocalTmConst.StatusSubmit)
             {
-                await ProcessSubmitAsync(tmTransactionModel.Gid, cancellationToken);
+                await ProcessSubmittedAsync(tmTransactionModel.Gid, cancellationToken);
             }
         }
     }
 
-    public virtual async Task ProcessSubmitAsync(string gid, CancellationToken cancellationToken = default)
+    public virtual async Task ProcessSubmittedAsync(string gid, CancellationToken cancellationToken = default)
     {
-        await using var handle = await DistributedLock.TryAcquireAsync($"LocalTm-{gid}", cancellationToken: cancellationToken);
-
-        if (handle == null)
-        {
-            Logger.LogWarning("Local transaction '{gid}' process submit try acquire lock failed.", gid);
-            return;
-        }
-
         var tmTransactionModel = await GetAsync(gid, cancellationToken);
 
-        if (await IsExpectedStatusAsync(tmTransactionModel, LocalTmConst.StatusSubmit))
+        if (!await IsInStatusAsync(tmTransactionModel, LocalTmConst.StatusSubmit))
         {
             return;
         }
@@ -132,24 +129,16 @@ public class LocalTmManager : ILocalTmManager
 
     protected virtual async Task<bool> ProcessQueryPreparedAsync(string gid, CancellationToken cancellationToken)
     {
-        await using var handle = await DistributedLock.TryAcquireAsync($"LocalTm-{gid}", cancellationToken: cancellationToken);
-
-        if (handle == null)
-        {
-            Logger.LogWarning("Local transaction '{gid}' process query prepared try acquire lock failed.", gid);
-            return false;
-        }
-
         var tmTransactionModel = await GetAsync(gid, cancellationToken);
 
-        if (await IsExpectedStatusAsync(tmTransactionModel, LocalTmConst.StatusPrepare))
+        if (!await IsInStatusAsync(tmTransactionModel, LocalTmConst.StatusPrepare))
         {
             return false;
         }
 
         try
         {
-            if (!await QueryPreparedAsync(tmTransactionModel, cancellationToken))
+            if (await TryInsertBarrierAsRollbackAsync(tmTransactionModel, cancellationToken))
             {
                 await UpdateRollbackAsync(tmTransactionModel, LocalTmConst.ReasonPrepareFailure, cancellationToken);
 
@@ -174,7 +163,7 @@ public class LocalTmManager : ILocalTmManager
         }
     }
 
-    protected virtual async Task<bool> QueryPreparedAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
+    protected virtual async Task<bool> TryInsertBarrierAsRollbackAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
     {
         var dbContextLookupInfoModel = tmTransactionModel.SteppingDbContextLookupInfo;
         var dbContextProvider = await DbContextProviderResolver.ResolveAsync(dbContextLookupInfoModel.DbProviderName);
@@ -186,13 +175,13 @@ public class LocalTmManager : ILocalTmManager
 
         if (await barrierInserter.TryInsertBarrierAsync(barrierInfoModel, dbContext, cancellationToken))
         {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
-    protected virtual Task<bool> IsExpectedStatusAsync(TmTransactionModel tmTransactionModel, string expectedStatus)
+    protected virtual Task<bool> IsInStatusAsync(TmTransactionModel tmTransactionModel, string expectedStatus)
     {
         if (tmTransactionModel.Status != expectedStatus)
         {
@@ -209,19 +198,19 @@ public class LocalTmManager : ILocalTmManager
 
     protected virtual async Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken)
     {
-        return await LocalTmStore.GetAsync(gid, cancellationToken);
+        return await TransactionStore.GetAsync(gid, cancellationToken);
     }
 
     protected virtual async Task CreateAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
     {
-        tmTransactionModel.CreateTime = DateTime.UtcNow;
-        await LocalTmStore.CreateAsync(tmTransactionModel, cancellationToken);
+        tmTransactionModel.CreationTime = SteppingClock.Now;
+        await TransactionStore.CreateAsync(tmTransactionModel, cancellationToken);
     }
 
     protected virtual async Task UpdateAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
     {
-        tmTransactionModel.UpdateTime = DateTime.UtcNow;
-        await LocalTmStore.UpdateAsync(tmTransactionModel, cancellationToken);
+        tmTransactionModel.UpdateTime = SteppingClock.Now;
+        await TransactionStore.UpdateAsync(tmTransactionModel, cancellationToken);
     }
 
     protected virtual async Task UpdateSubmitAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
@@ -240,14 +229,14 @@ public class LocalTmManager : ILocalTmManager
     {
         tmTransactionModel.Status = LocalTmConst.StatusRollback;
         tmTransactionModel.RollbackReason = reason;
-        tmTransactionModel.RollbackTime = DateTime.UtcNow;
+        tmTransactionModel.RollbackTime = SteppingClock.Now;
         await UpdateAsync(tmTransactionModel, cancellationToken);
     }
 
     protected virtual async Task UpdateFinishAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
     {
         tmTransactionModel.Status = LocalTmConst.StatusFinish;
-        tmTransactionModel.FinishTime = DateTime.UtcNow;
+        tmTransactionModel.FinishTime = SteppingClock.Now;
         await UpdateAsync(tmTransactionModel, cancellationToken);
     }
 }

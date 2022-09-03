@@ -12,5 +12,5 @@ public interface ILocalTmManager
 
     Task ProcessPendingAsync(CancellationToken cancellationToken = default);
 
-    Task ProcessSubmitAsync(string gid, CancellationToken cancellationToken = default);
+    Task ProcessSubmittedAsync(string gid, CancellationToken cancellationToken = default);
 }

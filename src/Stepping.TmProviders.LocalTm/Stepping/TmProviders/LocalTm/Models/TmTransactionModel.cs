@@ -11,7 +11,7 @@ public class TmTransactionModel
 
     public LocalTmStepModel Steps { get; set; } = null!;
 
-    public DateTime CreateTime { get; set; }
+    public DateTime CreationTime { get; set; }
 
     public DateTime? UpdateTime { get; set; }
 
@@ -37,7 +37,7 @@ public class TmTransactionModel
         Status = LocalTmConst.StatusPrepare;
         Steps = steps;
         SteppingDbContextLookupInfo = steppingDbContextLookupInfo;
-        CreateTime = DateTime.UtcNow;
+        CreationTime = DateTime.UtcNow;
     }
 
     public void CalculateNextRetryTime()

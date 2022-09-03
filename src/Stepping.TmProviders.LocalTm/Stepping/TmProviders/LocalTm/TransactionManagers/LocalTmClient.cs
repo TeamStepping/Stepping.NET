@@ -35,6 +35,6 @@ public class LocalTmClient : ITmClient
     {
         await LocalTmManager.SubmitAsync(job.Gid, cancellationToken);
 
-        await LocalTmManager.ProcessSubmitAsync(job.Gid, cancellationToken);
+        await LocalTmManager.ProcessSubmittedAsync(job.Gid, cancellationToken);
     }
 }

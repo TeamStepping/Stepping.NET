@@ -2,24 +2,25 @@
 using System.Net.Mail;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Stepping.Core.Exceptions;
 using Stepping.Core.Infrastructures;
 using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Options;
 
 namespace Stepping.TmProviders.LocalTm.Store;
 
-public class MemoryLocalTmStore : ILocalTmStore
+public class MemoryTransactionStore : ITransactionStore
 {
     private static readonly ConcurrentDictionary<string, TmTransactionModel> _memoryStore = new();
 
-    protected ILogger<MemoryLocalTmStore> Logger { get; }
+    protected ILogger<MemoryTransactionStore> Logger { get; }
 
     protected IOptionsMonitor<LocalTmOptions> OptionsMonitor { get; }
 
     protected ISteppingJsonSerializer SteppingJsonSerializer { get; }
 
-    public MemoryLocalTmStore(
-        ILogger<MemoryLocalTmStore> logger,
+    public MemoryTransactionStore(
+        ILogger<MemoryTransactionStore> logger,
         IOptionsMonitor<LocalTmOptions> optionsMonitor,
         ISteppingJsonSerializer steppingJsonSerializer)
     {
@@ -30,24 +31,24 @@ public class MemoryLocalTmStore : ILocalTmStore
 
     public virtual async Task CreateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default)
     {
-        Logger.LogWarning("You are using the ILocalTmStore's memory implementation, please do not use it in production environment!");
+        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
 
         tmTransaction.ConcurrencyStamp = Guid.NewGuid().ToString("N");
         var cloneTmTransaction = await DeepCloneAsync(tmTransaction);
 
         if (!_memoryStore.TryAdd(tmTransaction.Gid, cloneTmTransaction))
         {
-            throw new SmtpException($"Local transaction '{tmTransaction.Gid}' exists.");
+            throw new SteppingException($"Local transaction '{tmTransaction.Gid}' exists.");
         }
     }
 
     public virtual async Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken = default)
     {
-        Logger.LogWarning("You are using the ILocalTmStore's memory implementation, please do not use it in production environment!");
+        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
 
         if (!_memoryStore.TryGetValue(gid, out var tmTransaction))
         {
-            throw new SmtpException($"Local transaction '{gid}' not exists.");
+            throw new SteppingException($"Local transaction '{gid}' not exists.");
         }
 
         return await DeepCloneAsync(tmTransaction);
@@ -55,18 +56,18 @@ public class MemoryLocalTmStore : ILocalTmStore
 
     public virtual async Task UpdateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default)
     {
-        Logger.LogWarning("You are using the ILocalTmStore's memory implementation, please do not use it in production environment!");
+        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
 
         var cloneTmTransaction = await DeepCloneAsync(tmTransaction);
 
         _memoryStore.AddOrUpdate(
             tmTransaction.Gid,
-            _ => throw new SmtpException($"Local transaction '{tmTransaction.Gid}' update failed."),
+            _ => throw new SteppingException($"Local transaction '{tmTransaction.Gid}' update failed."),
             (_, existTmTransaction) =>
             {
                 if (tmTransaction.ConcurrencyStamp != existTmTransaction.ConcurrencyStamp)
                 {
-                    throw new SmtpException($"Local transaction '{tmTransaction.Gid}' update failed.");
+                    throw new SteppingException($"Local transaction '{tmTransaction.Gid}' update failed.");
                 }
 
                 cloneTmTransaction.ConcurrencyStamp = Guid.NewGuid().ToString("N");
@@ -78,7 +79,7 @@ public class MemoryLocalTmStore : ILocalTmStore
 
     public virtual async Task<List<TmTransactionModel>> GetPendingListAsync(CancellationToken cancellationToken = default)
     {
-        Logger.LogWarning("You are using the ILocalTmStore's memory implementation, please do not use it in production environment!");
+        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
 
         var timeout = OptionsMonitor.CurrentValue.Timeout;
 
