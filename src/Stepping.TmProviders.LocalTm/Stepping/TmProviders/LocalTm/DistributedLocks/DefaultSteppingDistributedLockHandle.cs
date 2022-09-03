@@ -1,22 +1,23 @@
 ﻿namespace Stepping.TmProviders.LocalTm.DistributedLocks;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3881:\"IDisposable\" should be implemented correctly", Justification = "<Pending>")]
 public class DefaultSteppingDistributedLockHandle : ISteppingDistributedLockHandle
 {
-    protected SemaphoreSlim SemaphoreSlim;
+    private readonly Action _action;
 
-    public DefaultSteppingDistributedLockHandle(SemaphoreSlim semaphoreSlim)
+    public DefaultSteppingDistributedLockHandle(Action action)
     {
-        SemaphoreSlim = semaphoreSlim;
+        _action = action;
     }
 
     public void Dispose()
     {
-        SemaphoreSlim.Release();
+        _action.Invoke();
     }
 
     public ValueTask DisposeAsync()
     {
-        SemaphoreSlim.Release();
+        _action.Invoke();
         return ValueTask.CompletedTask;
     }
 }
