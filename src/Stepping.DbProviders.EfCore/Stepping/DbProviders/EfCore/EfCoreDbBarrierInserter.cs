@@ -67,7 +67,7 @@ public class EfCoreDbBarrierInserter : IDbBarrierInserter
             BarrierSqlTemplates.DbProviderSpecialMapping.TryGetValue(efCoreDbContext.DbContext.Database.ProviderName!,
                 out var special);
 
-            var reason = await efCoreDbContext.DbContext.Database.GetDbConnection().QueryFirstOrDefaultAsync<string>(
+            var reason = await efCoreDbContext.DbContext.Database.GetDbConnection().QueryFirstAsync<string>(
                 special!.GetQueryPreparedSql(Options.BarrierTableName),
                 new
                 {
