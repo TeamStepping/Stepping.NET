@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj" />
+    <ProjectReference Include="..\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj" />
+  </ItemGroup>
+
+</Project>

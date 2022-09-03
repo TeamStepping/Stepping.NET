@@ -37,8 +37,8 @@ public static class SteppingLocalTmServiceCollectionExtensions
         services.TryAddTransient<ISteppingDistributedLock, DefaultSteppingDistributedLock>();
         services.TryAddTransient<DefaultSteppingDistributedLock>();
 
-        services.TryAddSingleton<MemoryTransactionStore>();
-        services.TryAddSingleton<ITransactionStore>(sp => sp.GetRequiredService<MemoryTransactionStore>());
+        services.TryAddTransient<MemoryTransactionStore>();
+        services.TryAddTransient<ITransactionStore, MemoryTransactionStore>();
 
         services.TryAddSingleton<SteppingClock>();
         services.TryAddSingleton<ISteppingClock>(sp => sp.GetRequiredService<SteppingClock>());

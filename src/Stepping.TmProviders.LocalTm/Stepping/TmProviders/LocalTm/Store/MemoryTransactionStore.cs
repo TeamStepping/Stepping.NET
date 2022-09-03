@@ -15,7 +15,7 @@ public class MemoryTransactionStore : ITransactionStore
 
     protected ILogger<MemoryTransactionStore> Logger { get; }
 
-    protected IOptionsMonitor<LocalTmOptions> OptionsMonitor { get; }
+    protected LocalTmOptions Options { get; }
 
     protected ISteppingJsonSerializer SteppingJsonSerializer { get; }
 
@@ -25,8 +25,43 @@ public class MemoryTransactionStore : ITransactionStore
         ISteppingJsonSerializer steppingJsonSerializer)
     {
         Logger = logger;
-        OptionsMonitor = optionsMonitor;
+        Options = optionsMonitor.CurrentValue;
         SteppingJsonSerializer = steppingJsonSerializer;
+    }
+
+    public virtual async Task<List<TmTransactionModel>> GetPendingListAsync(CancellationToken cancellationToken = default)
+    {
+        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
+
+        var timeout = Options.Timeout;
+
+        var query = _memoryStore
+            .Where(x =>
+                x.Value.Status != LocalTmConst.StatusFinish && x.Value.Status != LocalTmConst.StatusRollback &&
+                (x.Value.NextRetryTime == null || x.Value.NextRetryTime >= DateTime.UtcNow.Add(-timeout))
+            )
+            .OrderBy(x => x.Value.NextRetryTime)
+            .Select(x => x.Value);
+
+        var list = new List<TmTransactionModel>();
+        foreach (var tmTransaction in query)
+        {
+            list.Add(await DeepCloneAsync(tmTransaction));
+        }
+
+        return list;
+    }
+
+    public virtual async Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken = default)
+    {
+        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
+
+        if (!_memoryStore.TryGetValue(gid, out var tmTransaction))
+        {
+            throw new SteppingException($"Local transaction '{gid}' not exists.");
+        }
+
+        return await DeepCloneAsync(tmTransaction);
     }
 
     public virtual async Task CreateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default)
@@ -40,18 +75,6 @@ public class MemoryTransactionStore : ITransactionStore
         {
             throw new SteppingException($"Local transaction '{tmTransaction.Gid}' exists.");
         }
-    }
-
-    public virtual async Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken = default)
-    {
-        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
-
-        if (!_memoryStore.TryGetValue(gid, out var tmTransaction))
-        {
-            throw new SteppingException($"Local transaction '{gid}' not exists.");
-        }
-
-        return await DeepCloneAsync(tmTransaction);
     }
 
     public virtual async Task UpdateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default)
@@ -75,29 +98,6 @@ public class MemoryTransactionStore : ITransactionStore
                 return cloneTmTransaction;
             }
         );
-    }
-
-    public virtual async Task<List<TmTransactionModel>> GetPendingListAsync(CancellationToken cancellationToken = default)
-    {
-        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
-
-        var timeout = OptionsMonitor.CurrentValue.Timeout;
-
-        var query = _memoryStore
-            .Where(x =>
-                x.Value.Status != LocalTmConst.StatusFinish && x.Value.Status != LocalTmConst.StatusRollback &&
-                (x.Value.NextRetryTime == null || x.Value.NextRetryTime >= DateTime.UtcNow.Add(-timeout))
-            )
-            .OrderBy(x => x.Value.NextRetryTime)
-            .Select(x => x.Value);
-
-        var list = new List<TmTransactionModel>();
-        foreach (var tmTransaction in query)
-        {
-            list.Add(await DeepCloneAsync(tmTransaction));
-        }
-
-        return list;
     }
 
     protected virtual Task<TmTransactionModel> DeepCloneAsync(TmTransactionModel tmTransactionModel)

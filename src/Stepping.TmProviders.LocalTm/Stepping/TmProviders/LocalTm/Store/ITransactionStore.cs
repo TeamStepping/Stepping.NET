@@ -5,12 +5,6 @@ namespace Stepping.TmProviders.LocalTm.Store;
 
 public interface ITransactionStore
 {
-    Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken = default);
-
-    Task CreateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default);
-
-    Task UpdateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default);
-
     /// <summary>
     /// Get Pending TmTransaction List (read-only)
     /// <para>
@@ -23,4 +17,10 @@ public interface ITransactionStore
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<List<TmTransactionModel>> GetPendingListAsync(CancellationToken cancellationToken = default);
+
+    Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken = default);
+
+    Task CreateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default);
+
+    Task UpdateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default);
 }
