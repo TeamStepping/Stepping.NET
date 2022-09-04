@@ -6,6 +6,7 @@ using Stepping.TmProviders.LocalTm.EfCore;
 using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Options;
 using Stepping.TmProviders.LocalTm.Steps;
+using Stepping.TmProviders.LocalTm.Timing;
 
 namespace Stepping.TmProviders.LocalTm.Store;
 
@@ -17,24 +18,29 @@ public class EfCoreTransactionStore : ITransactionStore
 
     protected LocalTmOptions Options { get; }
 
+    protected ISteppingClock SteppingClock { get; }
+
     public EfCoreTransactionStore(
         LocalTmDbContext localTmDbContext,
         ISteppingJsonSerializer jsonSerializer,
-        IOptionsMonitor<LocalTmOptions> optionsMonitor)
+        IOptionsMonitor<LocalTmOptions> optionsMonitor,
+        ISteppingClock steppingClock)
     {
         LocalTmDbContext = localTmDbContext;
         JsonSerializer = jsonSerializer;
         Options = optionsMonitor.CurrentValue;
+        SteppingClock = steppingClock;
     }
 
     public virtual async Task<List<TmTransactionModel>> GetPendingListAsync(CancellationToken cancellationToken = default)
     {
-        var timeout = Options.Timeout;
+        var timeoutTime = SteppingClock.Now.Add(-Options.Timeout);
 
         var tmTransactions = await LocalTmDbContext.TmTransactions.AsNoTracking()
             .Where(x =>
                 x.Status != LocalTmConst.StatusFinish && x.Status != LocalTmConst.StatusRollback &&
-                (x.NextRetryTime == null || x.NextRetryTime >= DateTime.UtcNow.Add(-timeout))
+                (x.NextRetryTime == null || x.NextRetryTime >= timeoutTime) &&
+                x.CreationTime >= timeoutTime
             )
             .OrderBy(x => x.NextRetryTime)
             .ToListAsync(cancellationToken);

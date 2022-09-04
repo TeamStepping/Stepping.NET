@@ -8,6 +8,7 @@ using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.MongoDb;
 using Stepping.TmProviders.LocalTm.Options;
 using Stepping.TmProviders.LocalTm.Steps;
+using Stepping.TmProviders.LocalTm.Timing;
 
 namespace Stepping.TmProviders.LocalTm.Store;
 
@@ -21,28 +22,33 @@ public class MongoDbTransactionStore : ITransactionStore
 
     protected ILocalTmMongoDbInitializer LocalTmMongoDbInitializer { get; }
 
+    protected ISteppingClock SteppingClock { get; }
+
     public MongoDbTransactionStore(
         LocalTmMongoDbContext localTmMongoDbContext,
         ISteppingJsonSerializer jsonSerializer,
         IOptionsMonitor<LocalTmOptions> optionsMonitor,
-        ILocalTmMongoDbInitializer localTmMongoDbInitializer)
+        ILocalTmMongoDbInitializer localTmMongoDbInitializer,
+        ISteppingClock steppingClock)
     {
         LocalTmMongoDbContext = localTmMongoDbContext;
         JsonSerializer = jsonSerializer;
         Options = optionsMonitor.CurrentValue;
         LocalTmMongoDbInitializer = localTmMongoDbInitializer;
+        SteppingClock = steppingClock;
     }
 
     public virtual async Task<List<TmTransactionModel>> GetPendingListAsync(CancellationToken cancellationToken = default)
     {
         await LocalTmMongoDbInitializer.TryInitializeAsync();
 
-        var timeout = Options.Timeout;
+        var timeoutTime = SteppingClock.Now.Add(-Options.Timeout);
 
         var tmTransactions = await LocalTmMongoDbContext.GetTmTransactionCollection().AsQueryable()
             .Where(x =>
                 x.Status != LocalTmConst.StatusFinish && x.Status != LocalTmConst.StatusRollback &&
-                (x.NextRetryTime == null || x.NextRetryTime >= DateTime.UtcNow.Add(-timeout))
+                (x.NextRetryTime == null || x.NextRetryTime >= timeoutTime) &&
+                x.CreationTime >= timeoutTime
             )
             .OrderBy(x => x.NextRetryTime)
             .ToListAsync(cancellationToken: cancellationToken);
