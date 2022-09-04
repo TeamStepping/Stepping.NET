@@ -10,7 +10,7 @@ namespace Stepping.TmProviders.LocalTm.TransactionManagers;
 
 public class LocalTmManager : ILocalTmManager
 {
-    protected ISteppingDistributedLock DistributedLock { get; }
+    
 
     protected ITransactionStore TransactionStore { get; }
 
@@ -36,7 +36,6 @@ public class LocalTmManager : ILocalTmManager
         ILogger<LocalTmManager> logger,
         ISteppingClock steppingClock)
     {
-        DistributedLock = distributedLock;
         TransactionStore = transactionStore;
         LocalTmStepExecutor = localTmStepExecutor;
         DbContextProviderResolver = dbContextProviderResolver;
@@ -72,14 +71,6 @@ public class LocalTmManager : ILocalTmManager
 
     public virtual async Task ProcessPendingAsync(CancellationToken cancellationToken = default)
     {
-        await using var handle = await DistributedLock.TryAcquireAsync("LocalTm-ProcessPeding", cancellationToken: cancellationToken);
-
-        if (handle == null)
-        {
-            Logger.LogWarning("Local transaction process pending try acquire lock failed.");
-            return;
-        }
-
         var pendingTmTransactionModels = await TransactionStore.GetPendingListAsync(cancellationToken);
 
         foreach (var tmTransactionModel in pendingTmTransactionModels)

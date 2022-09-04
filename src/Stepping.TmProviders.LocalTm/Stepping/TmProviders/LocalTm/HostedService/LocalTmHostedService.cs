@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Stepping.TmProviders.LocalTm.DistributedLocks;
 using Stepping.TmProviders.LocalTm.TransactionManagers;
 
 namespace Stepping.TmProviders.LocalTm.HostedService;
@@ -33,9 +34,20 @@ public class LocalTmHostedService : IHostedService
     private async Task DoWorkAsync(CancellationToken cancellationToken)
     {
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
+
+        var steppingDistributedLock = scope.ServiceProvider.GetRequiredService<ISteppingDistributedLock>();
+
+        await using var handle = await steppingDistributedLock.TryAcquireAsync("LocalTmHostedService", cancellationToken: cancellationToken);
+
+        if (handle == null)
+        {
+            _logger.LogWarning("Local transaction process pending try acquire lock failed.");
+            return;
+        }
+
         await scope.ServiceProvider
-            .GetRequiredService<ILocalTmManager>()
-            .ProcessPendingAsync(cancellationToken);
+                .GetRequiredService<ILocalTmManager>()
+                .ProcessPendingAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
