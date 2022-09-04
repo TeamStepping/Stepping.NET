@@ -16,7 +16,7 @@ public class LocalTmHostedService : IHostedService
         IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
-        _timer = new PeriodicTimer(TimeSpan.FromSeconds(3));
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(2));
         _serviceScopeFactory = serviceScopeFactory;
     }
 
@@ -24,7 +24,7 @@ public class LocalTmHostedService : IHostedService
     {
         _logger.LogInformation("Timed Hosted Service running.");
 
-        while (await _timer.WaitForNextTickAsync())
+        while (await _timer.WaitForNextTickAsync(cancellationToken))
         {
             await DoWorkAsync(cancellationToken);
         }
