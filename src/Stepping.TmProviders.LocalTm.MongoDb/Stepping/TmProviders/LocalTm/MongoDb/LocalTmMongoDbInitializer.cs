@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Threading;
 using MongoDB.Driver;
 
 namespace Stepping.TmProviders.LocalTm.MongoDb;
@@ -30,6 +29,12 @@ internal class LocalTmMongoDbInitializer : ILocalTmMongoDbInitializer
         try
         {
             await _semaphoreSlim.WaitAsync();
+
+            // Double check
+            if (CacheEnabled && servers.All(x => CreatedServers.ContainsKey(x)))
+            {
+                return;
+            }
 
             var mongoCollection = LocalTmMongoDbContext.GetTmTransactionCollection();
 
