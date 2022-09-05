@@ -11,10 +11,11 @@
 
   <ItemGroup>
     <PackageReference Include="DistributedLock.Core" Version="1.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(MicrosoftPackagesVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj" />
+    <ProjectReference Include="..\Stepping.TmProviders.LocalTm.Core\Stepping.TmProviders.LocalTm.Core.csproj" />
   </ItemGroup>
 
 </Project>

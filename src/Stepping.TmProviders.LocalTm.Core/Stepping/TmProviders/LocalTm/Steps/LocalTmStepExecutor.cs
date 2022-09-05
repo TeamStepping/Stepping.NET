@@ -12,7 +12,7 @@ public class LocalTmStepExecutor : ILocalTmStepExecutor
 
     protected ISteppingJsonSerializer SteppingJsonSerializer { get; }
 
-    protected HttpClient HttpClient { get; }
+    protected IHttpClientFactory HttpClientFactory { get; }
 
     public LocalTmStepExecutor(
             IStepResolver stepResolver,
@@ -23,7 +23,7 @@ public class LocalTmStepExecutor : ILocalTmStepExecutor
         StepResolver = stepResolver;
         StepExecutor = stepExecutor;
         SteppingJsonSerializer = steppingJsonSerializer;
-        HttpClient = httpClientFactory.CreateClient(LocalTmConst.LocalTmHttpClient);
+        HttpClientFactory = httpClientFactory;
     }
 
     public virtual async Task ExecuteAsync(string gid, LocalTmStepInfoModel stepInfoModel, CancellationToken cancellationToken = default)
@@ -41,7 +41,8 @@ public class LocalTmStepExecutor : ILocalTmStepExecutor
         if (typeof(HttpRequestStep).IsAssignableFrom(stepType))
         {
             var httpRequestStep = (HttpRequestStep)step;
-            var response = await HttpClient.SendAsync(httpRequestStep.CreateHttpRequestMessage(SteppingJsonSerializer));
+            var response = await HttpClientFactory.CreateClient(LocalTmConst.LocalTmHttpClient)
+                .SendAsync(httpRequestStep.CreateHttpRequestMessage(SteppingJsonSerializer));
             response.EnsureSuccessStatusCode();
             return;
         }

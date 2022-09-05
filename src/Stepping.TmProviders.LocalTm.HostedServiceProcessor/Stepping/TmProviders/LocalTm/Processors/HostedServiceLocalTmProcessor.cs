@@ -4,16 +4,16 @@ using Microsoft.Extensions.Logging;
 using Stepping.TmProviders.LocalTm.DistributedLocks;
 using Stepping.TmProviders.LocalTm.TransactionManagers;
 
-namespace Stepping.TmProviders.LocalTm.HostedService;
+namespace Stepping.TmProviders.LocalTm.Processors;
 
-public class LocalTmHostedService : IHostedService
+public class HostedServiceLocalTmProcessor : IHostedService, ILocalTmProcessor
 {
-    private readonly ILogger<LocalTmHostedService> _logger;
+    private readonly ILogger<HostedServiceLocalTmProcessor> _logger;
     private readonly PeriodicTimer _timer;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public LocalTmHostedService(
-        ILogger<LocalTmHostedService> logger,
+    public HostedServiceLocalTmProcessor(
+        ILogger<HostedServiceLocalTmProcessor> logger,
         IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
@@ -27,11 +27,11 @@ public class LocalTmHostedService : IHostedService
 
         while (await _timer.WaitForNextTickAsync(cancellationToken))
         {
-            await DoWorkAsync(cancellationToken);
+            await ProcessAsync(cancellationToken);
         }
     }
 
-    private async Task DoWorkAsync(CancellationToken cancellationToken)
+    public async Task ProcessAsync(CancellationToken cancellationToken)
     {
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
 
@@ -41,7 +41,7 @@ public class LocalTmHostedService : IHostedService
 
         if (handle == null)
         {
-            _logger.LogWarning("Local transaction process pending try acquire lock failed.");
+            _logger.LogInformation("Local transaction process pending try acquire lock failed.");
             return;
         }
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Stepping.Core.Databases;
-using Stepping.TmProviders.LocalTm.DistributedLocks;
 using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Steps;
 using Stepping.TmProviders.LocalTm.Store;
@@ -10,8 +9,6 @@ namespace Stepping.TmProviders.LocalTm.TransactionManagers;
 
 public class LocalTmManager : ILocalTmManager
 {
-    
-
     protected ITransactionStore TransactionStore { get; }
 
     protected ILocalTmStepExecutor LocalTmStepExecutor { get; }
@@ -27,7 +24,6 @@ public class LocalTmManager : ILocalTmManager
     protected ISteppingClock SteppingClock { get; }
 
     public LocalTmManager(
-        ISteppingDistributedLock distributedLock,
         ITransactionStore transactionStore,
         ILocalTmStepExecutor localTmStepExecutor,
         ISteppingDbContextProviderResolver dbContextProviderResolver,
