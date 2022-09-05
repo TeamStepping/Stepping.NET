@@ -10,8 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj" />
-    <ProjectReference Include="..\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj" />
+    <ProjectReference Include="..\Stepping.TmProviders.LocalTm.Core\Stepping.TmProviders.LocalTm.Core.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(MicrosoftPackagesVersion)" />
+  </ItemGroup>
+  
 </Project>

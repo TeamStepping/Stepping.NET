@@ -10,8 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stepping.DbProviders.MongoDb\Stepping.DbProviders.MongoDb.csproj" />
-    <ProjectReference Include="..\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj" />
+    <ProjectReference Include="..\Stepping.TmProviders.LocalTm.Core\Stepping.TmProviders.LocalTm.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
   </ItemGroup>
 
 </Project>
