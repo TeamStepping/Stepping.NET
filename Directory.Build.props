@@ -12,5 +12,7 @@
     <MicrosoftPackagesVersion>6.0.*</MicrosoftPackagesVersion>
     <MicrosoftNetTestSdkVersion>17.2.*</MicrosoftNetTestSdkVersion>
 
+    <DistributedLockCoreVersion>1.0.5</DistributedLockCoreVersion>
+
   </PropertyGroup>
 </Project>

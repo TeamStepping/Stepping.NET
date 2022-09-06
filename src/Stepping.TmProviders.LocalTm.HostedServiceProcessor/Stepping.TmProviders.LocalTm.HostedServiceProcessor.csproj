@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.Core" Version="1.0.5" />
+    <PackageReference Include="DistributedLock.Core" Version="$(DistributedLockCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(MicrosoftPackagesVersion)" />
   </ItemGroup>
 
