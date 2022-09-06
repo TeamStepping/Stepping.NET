@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Stepping.Core.Databases;
+using Stepping.Core.Exceptions;
+using Stepping.Core.Infrastructures;
+using Stepping.Core.Steps;
 using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Steps;
 using Stepping.TmProviders.LocalTm.Store;
@@ -11,8 +14,6 @@ public class LocalTmManager : ILocalTmManager
 {
     protected ITransactionStore TransactionStore { get; }
 
-    protected ILocalTmStepExecutor LocalTmStepExecutor { get; }
-
     protected ISteppingDbContextProviderResolver DbContextProviderResolver { get; }
 
     protected IBarrierInfoModelFactory BarrierInfoModelFactory { get; }
@@ -23,22 +24,36 @@ public class LocalTmManager : ILocalTmManager
 
     protected ISteppingClock SteppingClock { get; }
 
+    protected IStepResolver StepResolver { get; }
+
+    protected IStepExecutor StepExecutor { get; }
+
+    protected ISteppingJsonSerializer SteppingJsonSerializer { get; }
+
+    protected IHttpClientFactory HttpClientFactory { get; }
+
     public LocalTmManager(
         ITransactionStore transactionStore,
-        ILocalTmStepExecutor localTmStepExecutor,
         ISteppingDbContextProviderResolver dbContextProviderResolver,
         IBarrierInfoModelFactory barrierInfoModelFactory,
         IDbBarrierInserterResolver dbBarrierInserterResolver,
         ILogger<LocalTmManager> logger,
-        ISteppingClock steppingClock)
+        ISteppingClock steppingClock,
+        IStepResolver stepResolver,
+        IStepExecutor stepExecutor,
+        ISteppingJsonSerializer steppingJsonSerializer,
+        IHttpClientFactory httpClientFactory)
     {
         TransactionStore = transactionStore;
-        LocalTmStepExecutor = localTmStepExecutor;
         DbContextProviderResolver = dbContextProviderResolver;
         BarrierInfoModelFactory = barrierInfoModelFactory;
         DbBarrierInserterResolver = dbBarrierInserterResolver;
         Logger = logger;
         SteppingClock = steppingClock;
+        StepResolver = stepResolver;
+        StepExecutor = stepExecutor;
+        SteppingJsonSerializer = steppingJsonSerializer;
+        HttpClientFactory = httpClientFactory;
     }
 
     public virtual async Task PrepareAsync(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo,
@@ -96,9 +111,9 @@ public class LocalTmManager : ILocalTmManager
 
         try
         {
-            foreach (var stepInfoModel in tmTransactionModel.Steps.Steps)
+            foreach (var stepInfoModel in tmTransactionModel.Steps.Steps.Where(x => !x.Executed))
             {
-                await LocalTmStepExecutor.ExecuteAsync(gid, stepInfoModel, cancellationToken);
+                await ExecuteStepsAsync(gid, stepInfoModel, cancellationToken);
                 stepInfoModel.MarkAsExecuted();
             }
 
@@ -110,7 +125,7 @@ public class LocalTmManager : ILocalTmManager
         {
             await UpdateNextRetryAsync(tmTransactionModel, cancellationToken);
 
-            Logger.LogWarning(ex, "Local transaction '{gid}' process submit failed. Wait for the next retry.", gid);
+            Logger.LogWarning(ex, "Local transaction '{gid}' process submitted failed. Wait for the next retry.", gid);
         }
     }
 
@@ -183,6 +198,29 @@ public class LocalTmManager : ILocalTmManager
         return Task.FromResult(true);
     }
 
+    protected virtual async Task ExecuteStepsAsync(string gid, LocalTmStepInfoModel stepInfoModel, CancellationToken cancellationToken = default)
+    {
+        var step = StepResolver.Resolve(stepInfoModel.StepName, stepInfoModel.ArgsToByteString);
+
+        if (step is IExecutableStep)
+        {
+            await StepExecutor.ExecuteAsync(gid, stepInfoModel.StepName, stepInfoModel.ArgsToByteString, cancellationToken);
+            return;
+        }
+
+        if (step is HttpRequestStep httpRequestStep)
+        {
+            var response = await HttpClientFactory.CreateClient(LocalTmConst.LocalTmHttpClient)
+                .SendAsync(httpRequestStep.CreateHttpRequestMessage(SteppingJsonSerializer), cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return;
+        }
+
+        throw new SteppingException($"Unknown step type: {step.GetType().FullName}.");
+    }
+
+    #region Store
+
     protected virtual async Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken)
     {
         return await TransactionStore.GetAsync(gid, cancellationToken);
@@ -226,4 +264,6 @@ public class LocalTmManager : ILocalTmManager
         tmTransactionModel.FinishTime = SteppingClock.Now;
         await UpdateAsync(tmTransactionModel, cancellationToken);
     }
+
+    #endregion
 }

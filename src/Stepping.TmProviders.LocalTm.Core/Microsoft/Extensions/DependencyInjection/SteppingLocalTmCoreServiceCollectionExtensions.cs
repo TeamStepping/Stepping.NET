@@ -23,9 +23,6 @@ public static class SteppingLocalTmCoreServiceCollectionExtensions
         services.TryAddTransient<ILocalTmStepConverter, LocalTmStepConverter>();
         services.TryAddTransient<LocalTmStepConverter>();
 
-        services.TryAddTransient<ILocalTmStepExecutor, LocalTmStepExecutor>();
-        services.TryAddTransient<LocalTmStepExecutor>();
-
         services.TryAddTransient<ITmClient, LocalTmClient>();
         services.TryAddTransient<LocalTmClient>();
 
