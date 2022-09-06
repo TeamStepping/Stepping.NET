@@ -24,7 +24,7 @@ public class DistributedJobTests : SteppingCoreTestBase
         await job
             .AddStep<FakeExecutableStep>() // Executable step
             .AddStep<FakeExecutableStep>() // Duplicate step
-            .AddStep(new FakeWithArgsExecutableStep("my-input")) // Executable step with args
+            .AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input"))) // Executable step with args
             .StartAsync();
 
         job.Steps.Count.ShouldBe(3);
