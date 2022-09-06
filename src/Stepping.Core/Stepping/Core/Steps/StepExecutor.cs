@@ -21,14 +21,11 @@ public class StepExecutor : IStepExecutor
         var args = await StepResolver.ResolveArgsAsync(executableStepName, argsToByteString);
         var step = StepResolver.Resolve(executableStepName, args);
 
-        var stepType = step.GetType();
-
-        if (!typeof(IExecutableStep).IsAssignableFrom(stepType))
+        if (step is not IExecutableStep executableStep)
         {
             throw new SteppingException("Cannot execute a non-executable step.");
         }
 
-        var executableStep = (IExecutableStep)step;
         await executableStep.ExecuteAsync(new StepExecutionContext(gid, ServiceProvider, cancellationToken));
     }
 }

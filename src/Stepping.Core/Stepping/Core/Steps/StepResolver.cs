@@ -66,9 +66,14 @@ public class StepResolver : IStepResolver
 
     protected virtual Type GetArgsType(Type stepType)
     {
+        if (stepType == null)
+        {
+            throw new ArgumentNullException(nameof(stepType));
+        }
+
         var baseType = stepType;
 
-        while ((baseType = baseType.BaseType) is not null)
+        while ((baseType = baseType.BaseType) != null)
         {
             if (!baseType.IsGenericType)
             {
