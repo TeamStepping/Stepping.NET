@@ -13,13 +13,16 @@ public class StepResolver : IStepResolver
 
     protected IServiceProvider ServiceProvider { get; }
     protected IStepNameProvider StepNameProvider { get; }
+    protected IStepArgsSerializer StepArgsSerializer { get; }
 
     public StepResolver(
         IServiceProvider serviceProvider,
-        IStepNameProvider stepNameProvider)
+        IStepNameProvider stepNameProvider,
+        IStepArgsSerializer stepArgsSerializer)
     {
         ServiceProvider = serviceProvider;
         StepNameProvider = stepNameProvider;
+        StepArgsSerializer = stepArgsSerializer;
     }
 
     public virtual IStep Resolve(string stepName, object? args = null) => (IStep)InternalResolve(stepName, args);
@@ -27,7 +30,29 @@ public class StepResolver : IStepResolver
     public virtual IStep Resolve<TStep>(object? args = null) where TStep : IStep =>
         (IStep)InternalResolve(StepNameProvider.Get<TStep>(), args);
 
+    public virtual async Task<object?> ResolveArgsAsync(string stepName, string? argsToByteString = null)
+    {
+        if (argsToByteString is null or "")
+        {
+            return null;
+        }
+
+        var stepTypeModel = GetStepTypeModel(stepName);
+        var argsType = GetArgsType(stepTypeModel.Type);
+
+        return await StepArgsSerializer.DeserializeAsync(argsToByteString, argsType);
+    }
+
     protected virtual object InternalResolve(string stepName, object? args = null)
+    {
+        var stepTypeModel = GetStepTypeModel(stepName);
+
+        return stepTypeModel.HasArgs
+            ? ActivatorUtilities.CreateInstance(ServiceProvider, stepTypeModel.Type, args!)
+            : ActivatorUtilities.CreateInstance(ServiceProvider, stepTypeModel.Type);
+    }
+
+    protected virtual StepResolverCachedTypeModel GetStepTypeModel(string stepName)
     {
         TryWarmUp(ServiceProvider);
 
@@ -36,9 +61,36 @@ public class StepResolver : IStepResolver
             throw new SteppingException("Invalid StepName.");
         }
 
-        return CachedTypes[stepName].HasArgs
-            ? ActivatorUtilities.CreateInstance(ServiceProvider, CachedTypes[stepName].Type, args!)
-            : ActivatorUtilities.CreateInstance(ServiceProvider, CachedTypes[stepName].Type);
+        return CachedTypes[stepName];
+    }
+
+    protected virtual Type GetArgsType(Type stepType)
+    {
+        if (stepType == null)
+        {
+            throw new ArgumentNullException(nameof(stepType));
+        }
+
+        var baseType = stepType;
+
+        while ((baseType = baseType.BaseType) != null)
+        {
+            if (!baseType.IsGenericType)
+            {
+                continue;
+            }
+
+            var generic = baseType.GetGenericTypeDefinition();
+
+            if (generic != typeof(ExecutableStep<>))
+            {
+                continue;
+            }
+
+            return baseType.GetGenericArguments()[0];
+        }
+
+        throw new InvalidOperationException();
     }
 
     protected static Dictionary<string, StepResolverCachedTypeModel> CreateCachedTypes(IServiceProvider serviceProvider)
