@@ -59,7 +59,7 @@ public class LocalTmManager : ILocalTmManager
     public virtual async Task PrepareAsync(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo,
         CancellationToken cancellationToken = default)
     {
-        var tmTransactionModel = new TmTransactionModel(gid, steps, steppingDbContextLookupInfo);
+        var tmTransactionModel = new TmTransactionModel(gid, steps, steppingDbContextLookupInfo, SteppingClock.Now);
 
         await CreateAsync(tmTransactionModel, cancellationToken);
 
@@ -200,7 +200,14 @@ public class LocalTmManager : ILocalTmManager
 
     protected virtual async Task ExecuteStepsAsync(string gid, LocalTmStepInfoModel stepInfoModel, CancellationToken cancellationToken = default)
     {
-        var step = StepResolver.Resolve(stepInfoModel.StepName, stepInfoModel.ArgsToByteString);
+        object? args = null;
+
+        if (!string.IsNullOrWhiteSpace(stepInfoModel.ArgsToByteString))
+        {
+            args = await StepResolver.ResolveArgsAsync(stepInfoModel.StepName, stepInfoModel.ArgsToByteString);
+        }
+
+        var step = StepResolver.Resolve(stepInfoModel.StepName, args);
 
         if (step is IExecutableStep)
         {
@@ -246,7 +253,7 @@ public class LocalTmManager : ILocalTmManager
 
     protected virtual async Task UpdateNextRetryAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
     {
-        tmTransactionModel.CalculateNextRetryTime();
+        tmTransactionModel.CalculateNextRetryTime(SteppingClock.Now);
         await UpdateAsync(tmTransactionModel, cancellationToken);
     }
 

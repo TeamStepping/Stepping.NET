@@ -31,16 +31,16 @@ public class TmTransactionModel
 
     protected TmTransactionModel() { }
 
-    public TmTransactionModel(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo)
+    public TmTransactionModel(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo, DateTime creationTime)
     {
         Gid = gid;
         Status = LocalTmConst.StatusPrepare;
         Steps = steps;
         SteppingDbContextLookupInfo = steppingDbContextLookupInfo;
-        CreationTime = DateTime.UtcNow;
+        CreationTime = creationTime;
     }
 
-    public void CalculateNextRetryTime()
+    public void CalculateNextRetryTime(DateTime now)
     {
         if (NextRetryInterval == null)
         {
@@ -49,6 +49,6 @@ public class TmTransactionModel
 
         NextRetryInterval++;
 
-        NextRetryTime = DateTime.UtcNow.AddSeconds(Math.Pow(2, NextRetryInterval.Value));
+        NextRetryTime = now.AddSeconds(Math.Pow(2, NextRetryInterval.Value));
     }
 }
