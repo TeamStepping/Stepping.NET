@@ -4,11 +4,11 @@ using Stepping.Core.Steps;
 namespace Stepping.TestBase.Fakes;
 
 [StepName(FakeWithArgsExecutableStepName)]
-public class FakeWithArgsExecutableStep : ExecutableStep<string>
+public class FakeWithArgsExecutableStep : ExecutableStep<FakeArgs>
 {
     public const string FakeWithArgsExecutableStepName = "FakeWithArgs";
 
-    public FakeWithArgsExecutableStep(string args) : base(args)
+    public FakeWithArgsExecutableStep(FakeArgs args) : base(args)
     {
     }
 

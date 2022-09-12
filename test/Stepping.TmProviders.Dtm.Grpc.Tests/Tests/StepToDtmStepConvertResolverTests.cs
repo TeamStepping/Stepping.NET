@@ -24,7 +24,7 @@ public class StepToDtmStepConvertResolverTests : SteppingTmProvidersDtmGrpcTestB
     [Fact]
     public async Task Should_Resolve_Executable_Step_With_Args()
     {
-        var step = new FakeWithArgsExecutableStep("my-input");
+        var step = new FakeWithArgsExecutableStep(new FakeArgs("my-input"));
 
         (await StepToDtmStepConvertResolver.ResolveAsync(step)).ShouldNotBeNull();
     }
