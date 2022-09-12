@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Net.Mail;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stepping.Core.Exceptions;
@@ -43,8 +42,8 @@ public class MemoryTransactionStore : ITransactionStore
         var query = _memoryStore
             .Where(x =>
                 x.Value.Status != LocalTmConst.StatusFinish && x.Value.Status != LocalTmConst.StatusRollback &&
-                (x.Value.NextRetryTime == null || x.Value.NextRetryTime >= timeoutTime) &&
-                x.Value.CreationTime >= timeoutTime
+                (x.Value.NextRetryTime == null || x.Value.NextRetryTime <= timeoutTime) &&
+                x.Value.CreationTime <= timeoutTime
             )
             .OrderBy(x => x.Value.NextRetryTime)
             .Select(x => x.Value);

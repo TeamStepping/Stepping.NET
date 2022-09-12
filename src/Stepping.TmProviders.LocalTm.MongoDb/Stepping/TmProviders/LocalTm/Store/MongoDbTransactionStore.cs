@@ -47,8 +47,8 @@ public class MongoDbTransactionStore : ITransactionStore
         var tmTransactions = await LocalTmMongoDbContext.GetTmTransactionCollection().AsQueryable()
             .Where(x =>
                 x.Status != LocalTmConst.StatusFinish && x.Status != LocalTmConst.StatusRollback &&
-                (x.NextRetryTime == null || x.NextRetryTime >= timeoutTime) &&
-                x.CreationTime >= timeoutTime
+                (x.NextRetryTime == null || x.NextRetryTime <= timeoutTime) &&
+                x.CreationTime <= timeoutTime
             )
             .OrderBy(x => x.NextRetryTime)
             .ToListAsync(cancellationToken: cancellationToken);
@@ -124,7 +124,7 @@ public class MongoDbTransactionStore : ITransactionStore
         var steps = JsonSerializer.Deserialize<LocalTmStepModel>(document.Steps);
         var steppingDbContextLookupInfo = JsonSerializer.Deserialize<SteppingDbContextLookupInfoModel>(document.SteppingDbContextLookupInfo);
 
-        return new TmTransactionModel(document.Gid, steps, steppingDbContextLookupInfo)
+        return new TmTransactionModel(document.Gid, steps, steppingDbContextLookupInfo, document.CreationTime)
         {
             Status = document.Status,
             CreationTime = document.CreationTime,

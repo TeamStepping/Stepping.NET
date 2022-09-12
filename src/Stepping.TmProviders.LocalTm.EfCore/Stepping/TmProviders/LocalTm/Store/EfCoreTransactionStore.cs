@@ -39,8 +39,8 @@ public class EfCoreTransactionStore : ITransactionStore
         var tmTransactions = await LocalTmDbContext.TmTransactions.AsNoTracking()
             .Where(x =>
                 x.Status != LocalTmConst.StatusFinish && x.Status != LocalTmConst.StatusRollback &&
-                (x.NextRetryTime == null || x.NextRetryTime >= timeoutTime) &&
-                x.CreationTime >= timeoutTime
+                (x.NextRetryTime == null || x.NextRetryTime <= timeoutTime) &&
+                x.CreationTime <= timeoutTime
             )
             .OrderBy(x => x.NextRetryTime)
             .ToListAsync(cancellationToken);
@@ -117,7 +117,7 @@ public class EfCoreTransactionStore : ITransactionStore
         var steps = JsonSerializer.Deserialize<LocalTmStepModel>(entity.Steps);
         var steppingDbContextLookupInfo = JsonSerializer.Deserialize<SteppingDbContextLookupInfoModel>(entity.SteppingDbContextLookupInfo);
 
-        return new TmTransactionModel(entity.Gid, steps, steppingDbContextLookupInfo)
+        return new TmTransactionModel(entity.Gid, steps, steppingDbContextLookupInfo, entity.CreationTime)
         {
             Status = entity.Status,
             CreationTime = entity.CreationTime,
