@@ -17,6 +17,16 @@ public class LocalTmMongoDbInitializerTests : SteppingTmProvidersLocalTmMongoDbT
         LocalTmMongoDbContext = ServiceProvider.GetRequiredService<LocalTmMongoDbContext>();
     }
 
+    protected override void ConfigureServices(ServiceCollection services)
+    {
+        base.ConfigureServices(services);
+
+        services.Configure<LocalTmMongoDbOptions>(options =>
+        {
+            options.DatabaseName = $"db_{Guid.NewGuid():N}";
+        });
+    }
+
     [Fact]
     public async Task Should_Initialize_Database()
     {
