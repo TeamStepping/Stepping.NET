@@ -3,7 +3,7 @@ using MongoDB.Driver;
 
 namespace Stepping.TmProviders.LocalTm.MongoDb;
 
-internal class LocalTmMongoDbInitializer : ILocalTmMongoDbInitializer
+public class LocalTmMongoDbInitializer : ILocalTmMongoDbInitializer
 {
     protected LocalTmMongoDbContext LocalTmMongoDbContext { get; }
 

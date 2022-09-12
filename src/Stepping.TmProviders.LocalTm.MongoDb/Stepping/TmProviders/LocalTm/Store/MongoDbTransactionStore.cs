@@ -96,7 +96,7 @@ public class MongoDbTransactionStore : ITransactionStore
 
         if (result.ModifiedCount == 0)
         {
-            throw new SteppingException("");
+            throw new SteppingException($"Local transaction {tmTransaction.ConcurrencyStamp} concurrency stamp is not match!");
         }
     }
 
