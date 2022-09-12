@@ -82,7 +82,7 @@ public class StepResolver : IStepResolver
 
             var generic = baseType.GetGenericTypeDefinition();
 
-            if (generic != typeof(ExecutableStep<>))
+            if (generic != typeof(StepWithArgsBase<>))
             {
                 continue;
             }

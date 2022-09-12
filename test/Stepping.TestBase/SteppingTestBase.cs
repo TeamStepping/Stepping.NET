@@ -34,8 +34,8 @@ public abstract class SteppingTestBase
 
         services.AddLogging();
 
-        services.AddTransient<IDbBarrierInserter, FakeDbBarrierInserter>();
-        services.TryAddTransient<FakeDbBarrierInserter>();
+        services.AddSingleton<FakeDbBarrierInserter>();
+        services.TryAddTransient<IDbBarrierInserter>(sp => sp.GetRequiredService<FakeDbBarrierInserter>());
 
         services.AddTransient<ISteppingDbContextProvider, FakeSteppingDbContextProvider>();
         services.TryAddTransient<FakeSteppingDbContextProvider>();
