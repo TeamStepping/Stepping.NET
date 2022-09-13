@@ -42,4 +42,20 @@ public class StepResolverTests : SteppingCoreTestBase
         args.GetType().ShouldBe(typeof(FakeArgs));
         ((FakeArgs)args).Name.ShouldBe("my-input");
     }
+
+    [Fact]
+    public async Task Should_Resolve_Step_By_Specified_Type()
+    {
+        const string endpoint = "https://api.github.com/orgs/TeamStepping";
+
+        var args = await StepResolver.ResolveArgsAsync(
+            RequestGitHubGetOrganizationStep.RequestGitHubGetOrganizationStepName,
+            Encoding.UTF8.GetString(await StepArgsSerializer.SerializeAsync(
+                new HttpRequestStepArgs(endpoint, HttpMethod.Get)))
+        );
+
+        args.ShouldNotBeNull();
+        args.GetType().ShouldBe(typeof(HttpRequestStepArgs));
+        ((HttpRequestStepArgs)args).Endpoint.ShouldBe(endpoint);
+    }
 }
