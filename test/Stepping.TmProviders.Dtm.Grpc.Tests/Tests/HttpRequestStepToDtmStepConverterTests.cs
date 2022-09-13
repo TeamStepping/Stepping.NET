@@ -24,11 +24,12 @@ public class HttpRequestStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpc
     [Fact]
     public async Task Should_Convert_Http_Request_Step_With_Http_Get()
     {
-        (await HttpRequestStepToDtmStepConverter.CanConvertAsync(new RequestGitHubGetOrganizationStep("stepping")))
-            .ShouldBeTrue();
+        var step = new RequestGitHubGetOrganizationStep("stepping");
+
+        (await HttpRequestStepToDtmStepConverter.CanConvertAsync(step)).ShouldBeTrue();
 
         var stepInfoModel = await HttpRequestStepToDtmStepConverter.ConvertAsync(
-            RequestGitHubGetOrganizationStep.RequestGitHubGetOrganizationStepName, "stepping");
+            RequestGitHubGetOrganizationStep.RequestGitHubGetOrganizationStepName, step.Args);
 
         stepInfoModel.Step.Count.ShouldBe(1);
         stepInfoModel.Step.ShouldContainKey(DtmConsts.ActionStepName);
@@ -39,11 +40,12 @@ public class HttpRequestStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpc
     [Fact]
     public async Task Should_Convert_Http_Request_Step_With_Http_Post()
     {
-        (await HttpRequestStepToDtmStepConverter.CanConvertAsync(new RequestGitHubRenderMarkdownStep("Hello, world.")))
-            .ShouldBeTrue();
+        var step = new RequestGitHubRenderMarkdownStep("Hello, world.");
+
+        (await HttpRequestStepToDtmStepConverter.CanConvertAsync(step)).ShouldBeTrue();
 
         var stepInfoModel = await HttpRequestStepToDtmStepConverter.ConvertAsync(
-            RequestGitHubRenderMarkdownStep.RequestGitHubRenderMarkdownName, "stepping");
+            RequestGitHubRenderMarkdownStep.RequestGitHubRenderMarkdownName, step.Args);
 
         stepInfoModel.Step.Count.ShouldBe(1);
         stepInfoModel.Step.ShouldContainKey(DtmConsts.ActionStepName);

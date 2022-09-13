@@ -5,7 +5,7 @@ using Stepping.Core.Infrastructures;
 namespace Stepping.Core.Steps;
 
 [StepName(HttpRequestStepName)]
-public class HttpRequestStep : StepWithArgsBase<HttpRequestStepArgs>, IResolveByStep<HttpRequestStep>
+public class HttpRequestStep : StepWithArgsBase<HttpRequestStepArgs>, IResolveAsStep<HttpRequestStep>
 {
     public const string HttpRequestStepName = "HttpRequest";
 
