@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Shouldly;
-using Stepping.TmProviders.LocalTm.Core.Tests;
 using Xunit;
 
 namespace Stepping.TmProviders.LocalTm.MongoDb.Tests.Tests;
 
+[Collection(MongoTestCollection.Name)]
 public class LocalTmMongoDbInitializerTests : SteppingTmProvidersLocalTmMongoDbTestBase
 {
     protected ILocalTmMongoDbInitializer DbInitializer { get; }

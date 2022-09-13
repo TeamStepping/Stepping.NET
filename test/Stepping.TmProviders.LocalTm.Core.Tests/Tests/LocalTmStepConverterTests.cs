@@ -24,16 +24,25 @@ public class LocalTmStepConverterTests : SteppingTmProvidersLocalTmCoreTestBase
     public async Task Should_Convert_Steps_To_Model()
     {
         var fakeWithArgsExecutableStep = new FakeWithArgsExecutableStep(new FakeArgs("my-input"));
+        var httpRequestStep = new HttpRequestStep(
+            new HttpRequestStepArgs("https://www.google.com/search?q=Stepping", HttpMethod.Get, null, new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>("User-Agent", "HttpRequestStep") }
+            )
+        );
+        var requestGitHubGetRepoStep = new RequestGitHubGetRepoStep("TeamStepping", "Stepping.NET");
 
         var steps = new List<IStep>
         {
             new FakeExecutableStep(),
-            fakeWithArgsExecutableStep
+            fakeWithArgsExecutableStep,
+            httpRequestStep,
+            requestGitHubGetRepoStep
         };
 
         var model = await LocalTmStepConverter.ConvertAsync(steps);
 
-        model.Steps.Count.ShouldBe(2);
+        model.Steps.Count.ShouldBe(4);
         model.Steps[0].StepName.ShouldBe(FakeExecutableStep.FakeExecutableStepName);
         model.Steps[0].ArgsToByteString.ShouldBeNull();
         model.Steps[0].Executed.ShouldBe(false);
@@ -45,5 +54,21 @@ public class LocalTmStepConverterTests : SteppingTmProvidersLocalTmCoreTestBase
             )
         );
         model.Steps[1].Executed.ShouldBe(false);
+
+        model.Steps[2].StepName.ShouldBe(HttpRequestStep.HttpRequestStepName);
+        model.Steps[2].ArgsToByteString.ShouldBe(
+            Encoding.UTF8.GetString(
+                await StepArgsSerializer.SerializeAsync(httpRequestStep.GetArgs())
+            )
+        );
+        model.Steps[2].Executed.ShouldBe(false);
+
+        model.Steps[3].StepName.ShouldBe(HttpRequestStep.HttpRequestStepName);
+        model.Steps[3].ArgsToByteString.ShouldBe(
+            Encoding.UTF8.GetString(
+                await StepArgsSerializer.SerializeAsync(requestGitHubGetRepoStep.GetArgs())
+            )
+        );
+        model.Steps[3].Executed.ShouldBe(false);
     }
 }

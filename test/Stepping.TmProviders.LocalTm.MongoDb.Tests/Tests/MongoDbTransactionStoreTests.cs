@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Shouldly;
 using Stepping.Core.Databases;
 using Stepping.Core.Exceptions;
 using Stepping.TestBase.Fakes;
-using Stepping.TmProviders.LocalTm.Core.Tests;
 using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Options;
 using Stepping.TmProviders.LocalTm.Steps;
@@ -20,6 +14,7 @@ using Xunit;
 
 namespace Stepping.TmProviders.LocalTm.MongoDb.Tests.Tests;
 
+[Collection(MongoTestCollection.Name)]
 public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTestBase
 {
     protected ITransactionStore TransactionStore { get; }

@@ -57,7 +57,7 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
     }
 
     [Fact]
-    public async Task Should_Not_Submit_If_Status_Is_Not_Prepase()
+    public async Task Should_Not_Submit_If_Status_Is_Not_Prepare()
     {
         var (gid, _, _) = await PrepareAsync();
 

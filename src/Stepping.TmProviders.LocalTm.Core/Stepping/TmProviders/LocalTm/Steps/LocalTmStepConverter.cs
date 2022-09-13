@@ -19,11 +19,7 @@ public class LocalTmStepConverter : ILocalTmStepConverter
         var result = new LocalTmStepModel();
         foreach (var step in steps)
         {
-            var stepType = step.GetType();
-            if (typeof(HttpRequestStep).IsAssignableFrom(stepType))
-            {
-                stepType = typeof(HttpRequestStep);
-            }
+            var stepType = step is HttpRequestStep ? typeof(HttpRequestStep) : step.GetType();
             result.Steps.Add(new LocalTmStepInfoModel(StepNameProvider.Get(stepType), await StepArgsSerializeAsync(step)));
         }
         return result;
