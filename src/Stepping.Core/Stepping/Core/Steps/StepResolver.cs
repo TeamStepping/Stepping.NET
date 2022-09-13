@@ -93,6 +93,18 @@ public class StepResolver : IStepResolver
         throw new InvalidOperationException();
     }
 
+    protected static Type GetResolvableStepType(Type stepType)
+    {
+        if (stepType == null)
+        {
+            throw new ArgumentNullException(nameof(stepType));
+        }
+
+        var resolveByStepInterface = stepType.GetInterfaces().FirstOrDefault(x => x == typeof(IResolveByStep<>));
+
+        return resolveByStepInterface is null ? stepType : resolveByStepInterface.GetGenericArguments()[0];
+    }
+
     protected static Dictionary<string, StepResolverCachedTypeModel> CreateCachedTypes(IServiceProvider serviceProvider)
     {
         var options = serviceProvider.GetRequiredService<IOptions<SteppingOptions>>();
@@ -101,7 +113,9 @@ public class StepResolver : IStepResolver
         return options.Value.StepTypes
             .ToDictionary(
                 stepNameProvider.Get,
-                type => new StepResolverCachedTypeModel(type, typeof(IStepWithArgs).IsAssignableFrom(type)));
+                type => new StepResolverCachedTypeModel(
+                    GetResolvableStepType(type), typeof(IStepWithArgs).IsAssignableFrom(type))
+            );
     }
 
     public static void TryWarmUp(IServiceProvider serviceProvider)
