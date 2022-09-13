@@ -57,5 +57,9 @@ public class StepResolverTests : SteppingCoreTestBase
         args.ShouldNotBeNull();
         args.GetType().ShouldBe(typeof(HttpRequestStepArgs));
         ((HttpRequestStepArgs)args).Endpoint.ShouldBe(endpoint);
+
+        var step = StepResolver.Resolve(RequestGitHubGetOrganizationStep.RequestGitHubGetOrganizationStepName, args);
+
+        step.ShouldBeOfType<HttpRequestStep>();
     }
 }

@@ -100,9 +100,10 @@ public class StepResolver : IStepResolver
             throw new ArgumentNullException(nameof(stepType));
         }
 
-        var resolveByStepInterface = stepType.GetInterfaces().FirstOrDefault(x => x == typeof(IResolveByStep<>));
+        var resolveAsStepInterface = stepType.GetInterfaces().FirstOrDefault(x =>
+            x.IsGenericType && typeof(IResolveAsStep<>).IsAssignableFrom(x.GetGenericTypeDefinition()));
 
-        return resolveByStepInterface is null ? stepType : resolveByStepInterface.GetGenericArguments()[0];
+        return resolveAsStepInterface is null ? stepType : resolveAsStepInterface.GetGenericArguments()[0];
     }
 
     protected static Dictionary<string, StepResolverCachedTypeModel> CreateCachedTypes(IServiceProvider serviceProvider)
