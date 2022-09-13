@@ -63,7 +63,7 @@ public class LocalTmStepConverterTests : SteppingTmProvidersLocalTmCoreTestBase
         );
         model.Steps[2].Executed.ShouldBe(false);
 
-        model.Steps[3].StepName.ShouldBe(HttpRequestStep.HttpRequestStepName);
+        model.Steps[3].StepName.ShouldBe(RequestGitHubGetRepoStep.RequestGitHubGetRepoStepName);
         model.Steps[3].ArgsToByteString.ShouldBe(
             Encoding.UTF8.GetString(
                 await StepArgsSerializer.SerializeAsync(requestGitHubGetRepoStep.GetArgs())
