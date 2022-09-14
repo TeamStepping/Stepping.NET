@@ -95,6 +95,11 @@ public class DtmGrpcTmClient : ITmClient
     {
         var configurations = job.GetDtmJobConfigurations();
 
+        if (Options.ActionApiToken is not null or "")
+        {
+            configurations.BranchHeaders.TryAdd(DtmRequestHeaderNames.ActionApiToken, Options.ActionApiToken);
+        }
+
         var transOptions = new DtmTransOptions
         {
             WaitResult = configurations.WaitResult,
@@ -111,8 +116,7 @@ public class DtmGrpcTmClient : ITmClient
 
         foreach (var step in job.Steps)
         {
-            var dtmStepInfoModel =
-                await StepToDtmStepConvertResolver.ResolveAsync(step);
+            var dtmStepInfoModel = await StepToDtmStepConvertResolver.ResolveAsync(step);
 
             dtmSteps.Add(dtmStepInfoModel.Step);
             dtmBinPayloads.Add(dtmStepInfoModel.BinPayload);
