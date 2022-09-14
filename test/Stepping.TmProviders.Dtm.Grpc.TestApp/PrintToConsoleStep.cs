@@ -6,7 +6,7 @@ public class PrintToConsoleStep : ExecutableStep
 {
     public override Task ExecuteAsync(StepExecutionContext context)
     {
-        Console.WriteLine("Step `PrintToConsoleStep` executed.");
+        Console.WriteLine("Step 0 `PrintToConsoleStep` executed.");
 
         return Task.CompletedTask;
     }

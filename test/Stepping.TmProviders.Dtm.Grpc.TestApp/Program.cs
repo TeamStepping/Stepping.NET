@@ -18,8 +18,7 @@ builder.Services.AddSteppingDtmGrpc(options =>
 
 var app = builder.Build();
 
-app.UseRouting();
-app.UseEndpoints(b => b.MapGrpcService<SteppingService>());
+app.MapGrpcService<SteppingService>();
 
 var distributedJobFactory = app.Services.GetRequiredService<IDistributedJobFactory>();
 
@@ -27,35 +26,35 @@ var job = await distributedJobFactory.CreateJobAsync();
 
 job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
 job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
-    "http://localhost:5235/step1",
-    HttpMethod.Post,
-    new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + POST + payload
+        "http://localhost:5236/step1",
+        HttpMethod.Post,
+        new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + POST
 );
 job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
-    "http://localhost:5235/step2",
-    HttpMethod.Get,
-    new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + GET + payload
+        "http://localhost:5236/step2?hello=world",
+        HttpMethod.Get)) // HttpRequestStep + GET
 );
 
 await job.StartAsync();
 
-app.MapPost("/step1", context =>
+app.MapPost("/step1", async context =>
 {
-    if (context.Request.Form.ContainsKey("hello") || context.Request.Form["hello"] != "world")
+    var input = await context.Request.ReadFromJsonAsync<IDictionary<string, string>>();
+    if (input is null || !input.ContainsKey("hello") || input["hello"] != "world")
     {
         Console.WriteLine("Step 1 failed to execute since the form data `hello` was not found.");
         context.Response.StatusCode = 500;
-        return Task.CompletedTask;
     }
 
     Console.WriteLine("Step 1 executed.");
     context.Response.StatusCode = 200;
-    return Task.CompletedTask;
 });
 
 app.MapGet("/step2", context =>
 {
-    if (context.Request.Query.ContainsKey("hello") || context.Request.Query["hello"] != "world")
+    context.Response.OnCompleted(async () => { await app.StopAsync(); });
+
+    if (!context.Request.Query.ContainsKey("hello") || context.Request.Query["hello"] != "world")
     {
         Console.WriteLine("Step 2 failed to execute since the query data `hello` was not found.");
         context.Response.StatusCode = 500;
