@@ -4,10 +4,10 @@ option csharp_namespace = "Stepping.TmProviders.Dtm.Grpc.Clients";
 option go_package = "./dtm";
 import "google/protobuf/empty.proto";
 
-package dtm;
+package dtmgimp;
 
 // The dtm service definition.
-service DtmServer {
+service Dtm {
   rpc Submit(DtmRequest) returns (google.protobuf.Empty) {}
   rpc Prepare(DtmRequest) returns (google.protobuf.Empty) {}
 }

@@ -25,10 +25,10 @@ public static class SteppingDtmGrpcServiceCollectionExtensions
     {
         services.TryAddSingleton<IActionApiTokenChecker, DefaultActionApiTokenChecker>();
 
-        services.TryAddTransient<IStepToDtmStepConverter, ExecutableStepToDtmStepConverter>();
+        services.AddTransient<IStepToDtmStepConverter, ExecutableStepToDtmStepConverter>();
         services.TryAddTransient<ExecutableStepToDtmStepConverter>();
 
-        services.TryAddTransient<IStepToDtmStepConverter, HttpRequestStepToDtmStepConverter>();
+        services.AddTransient<IStepToDtmStepConverter, HttpRequestStepToDtmStepConverter>();
         services.TryAddTransient<HttpRequestStepToDtmStepConverter>();
 
         services.TryAddTransient<IStepToDtmStepConvertResolver, StepToDtmStepConvertResolver>();
@@ -37,7 +37,7 @@ public static class SteppingDtmGrpcServiceCollectionExtensions
         services.TryAddTransient<ITmClient, DtmGrpcTmClient>();
         services.TryAddTransient<DtmGrpcTmClient>();
 
-        services.AddGrpcClient<DtmServer.DtmServerClient>((serviceProvider, options) =>
+        services.AddGrpcClient<Dtm.DtmClient>((serviceProvider, options) =>
         {
             var dtmGrpcOptions = serviceProvider.GetRequiredService<IOptions<SteppingDtmGrpcOptions>>().Value;
             options.Address = new Uri(dtmGrpcOptions.DtmGrpcUrl);
