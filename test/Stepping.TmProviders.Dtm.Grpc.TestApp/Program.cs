@@ -25,16 +25,16 @@ var distributedJobFactory = app.Services.GetRequiredService<IDistributedJobFacto
 
 var job = await distributedJobFactory.CreateJobAsync();
 
-job.AddStep<PrintToConsoleStep>();
+job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
 job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
     "http://localhost:5235/step1",
     HttpMethod.Post,
-    new Dictionary<string, object> { { "hello", "world" } }))
+    new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + POST + payload
 );
 job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
     "http://localhost:5235/step2",
     HttpMethod.Get,
-    new Dictionary<string, object> { { "hello", "world" } }))
+    new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + GET + payload
 );
 
 await job.StartAsync();
