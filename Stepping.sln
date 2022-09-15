@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm.Grpc.TestApp", "test\Stepping.TmProviders.Dtm.Grpc.TestApp\Stepping.TmProviders.Dtm.Grpc.TestApp.csproj", "{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalTm.TestApp", "test\Stepping.TmProviders.LocalTm.TestApp\Stepping.TmProviders.LocalTm.TestApp.csproj", "{04AFB8CC-3836-4B88-91D6-025EA0796EE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,10 @@ Global
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,6 +150,7 @@ Global
 		{55178B9F-EC00-4065-AFAF-4353584E5E5C} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{DC01F00F-4115-4430-8842-D043833D53A6} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {877404AF-4462-4711-899B-CEFB977FDC03}
