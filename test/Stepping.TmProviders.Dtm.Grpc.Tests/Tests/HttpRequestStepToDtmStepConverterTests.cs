@@ -38,6 +38,22 @@ public class HttpRequestStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpc
     }
 
     [Fact]
+    public async Task Should_Throw_If_Http_Request_Step_With_Http_Get_And_Payload()
+    {
+        var step = new RequestGitHubGetOrganizationStep("stepping");
+
+        step.Args.Payload["ping"] = "pong";
+
+        (await HttpRequestStepToDtmStepConverter.CanConvertAsync(step)).ShouldBeTrue();
+
+        await Should.ThrowAsync<SteppingException>(() =>
+            HttpRequestStepToDtmStepConverter.ConvertAsync(
+                RequestGitHubGetOrganizationStep.RequestGitHubGetOrganizationStepName, step.Args),
+            "DTM doesn't support GET with payload."
+        );
+    }
+
+    [Fact]
     public async Task Should_Convert_Http_Request_Step_With_Http_Post()
     {
         var step = new RequestGitHubRenderMarkdownStep("Hello, world.");
