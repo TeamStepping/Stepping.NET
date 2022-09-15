@@ -6,9 +6,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SteppingLocalTmEfCoreServiceCollectionExtensions
 {
-    public static IServiceCollection AddSteppingLocalTmEfCore(this IServiceCollection services, Action<DbContextOptionsBuilder> setupDbContextOptionsBuilderA)
+    public static IServiceCollection AddSteppingLocalTmEfCore(this IServiceCollection services, Action<DbContextOptionsBuilder> setupDbContextOptionsBuilder)
     {
-        services.AddDbContext<LocalTmDbContext>(options => setupDbContextOptionsBuilderA.Invoke(options));
+        services.AddDbContext<LocalTmDbContext>(setupDbContextOptionsBuilder.Invoke);
 
         services.AddTransient<EfCoreTransactionStore>();
         services.AddTransient<ITransactionStore, EfCoreTransactionStore>();
