@@ -37,13 +37,13 @@ public class MemoryTransactionStore : ITransactionStore
     {
         Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
 
-        var timeoutTime = SteppingClock.Now.Add(-Options.Timeout);
+        var now = SteppingClock.Now;
+        var timeoutTime = now.Add(-Options.Timeout);
 
         var query = _memoryStore
             .Where(x =>
                 x.Value.Status != LocalTmConst.StatusFinish && x.Value.Status != LocalTmConst.StatusRollback &&
-                (x.Value.NextRetryTime == null || x.Value.NextRetryTime <= timeoutTime) &&
-                x.Value.CreationTime <= timeoutTime
+                ((x.Value.NextRetryTime == null && x.Value.CreationTime <= timeoutTime) || x.Value.NextRetryTime <= now)
             )
             .OrderBy(x => x.Value.NextRetryTime)
             .Select(x => x.Value);

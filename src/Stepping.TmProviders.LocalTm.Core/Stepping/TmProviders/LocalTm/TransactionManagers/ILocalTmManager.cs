@@ -1,16 +1,14 @@
-﻿using Stepping.Core.Databases;
-using Stepping.TmProviders.LocalTm.Steps;
+﻿using Stepping.Core.Jobs;
 
 namespace Stepping.TmProviders.LocalTm.TransactionManagers;
 
 public interface ILocalTmManager
 {
-    Task PrepareAsync(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo,
-        CancellationToken cancellationToken = default);
+    Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default);
 
-    Task SubmitAsync(string gid, LocalTmStepModel steps, CancellationToken cancellationToken = default);
+    Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default);
 
     Task ProcessPendingAsync(CancellationToken cancellationToken = default);
 
-    Task ProcessSubmittedAsync(string gid, CancellationToken cancellationToken = default);
+    Task ProcessSubmittedAsync(IDistributedJob job, CancellationToken cancellationToken = default);
 }

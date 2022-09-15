@@ -2,6 +2,7 @@
 using Stepping.Core.Databases;
 using Stepping.Core.Exceptions;
 using Stepping.Core.Infrastructures;
+using Stepping.Core.Jobs;
 using Stepping.Core.Steps;
 using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Steps;
@@ -32,6 +33,10 @@ public class LocalTmManager : ILocalTmManager
 
     protected IHttpClientFactory HttpClientFactory { get; }
 
+    protected ILocalTmStepConverter LocalTmStepConverter { get; }
+
+    protected ISteppingDbContextLookupInfoProvider DbContextLookupInfoProvider { get; }
+
     public LocalTmManager(
         ITransactionStore transactionStore,
         ISteppingDbContextProviderResolver dbContextProviderResolver,
@@ -42,7 +47,9 @@ public class LocalTmManager : ILocalTmManager
         IStepResolver stepResolver,
         IStepExecutor stepExecutor,
         ISteppingJsonSerializer steppingJsonSerializer,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        ILocalTmStepConverter localTmStepConverter,
+        ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
     {
         TransactionStore = transactionStore;
         DbContextProviderResolver = dbContextProviderResolver;
@@ -54,25 +61,30 @@ public class LocalTmManager : ILocalTmManager
         StepExecutor = stepExecutor;
         SteppingJsonSerializer = steppingJsonSerializer;
         HttpClientFactory = httpClientFactory;
+        LocalTmStepConverter = localTmStepConverter;
+        DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
 
-    public virtual async Task PrepareAsync(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo,
-        CancellationToken cancellationToken = default)
+    public virtual async Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
-        var tmTransactionModel = new TmTransactionModel(gid, steps, steppingDbContextLookupInfo, SteppingClock.Now);
+        var steps = await LocalTmStepConverter.ConvertAsync(job.Steps);
+        var steppingDbContextLookupInfo = await DbContextLookupInfoProvider.GetAsync(job.DbContext!);
+
+        var tmTransactionModel = new TmTransactionModel(job.Gid, steps, steppingDbContextLookupInfo, SteppingClock.Now);
 
         await CreateAsync(tmTransactionModel, cancellationToken);
 
-        Logger.LogInformation("Local transaction '{gid}' prepared.", gid);
+        Logger.LogInformation("Local transaction '{gid}' prepared.", job.Gid);
     }
 
-    public virtual async Task SubmitAsync(string gid, LocalTmStepModel steps, CancellationToken cancellationToken = default)
+    public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
-        var tmTransactionModel = await FindAsync(gid, cancellationToken);
+        var tmTransactionModel = await FindAsync(job.Gid, cancellationToken);
 
         if (tmTransactionModel == null)
         {
-            tmTransactionModel = new TmTransactionModel(gid, steps, null, SteppingClock.Now)
+            var steps = await LocalTmStepConverter.ConvertAsync(job.Steps);
+            tmTransactionModel = new TmTransactionModel(job.Gid, steps, null, SteppingClock.Now)
             {
                 Status = LocalTmConst.StatusSubmit
             };
@@ -89,7 +101,7 @@ public class LocalTmManager : ILocalTmManager
             await UpdateSubmitAsync(tmTransactionModel, cancellationToken);
         }
 
-        Logger.LogInformation("Local transaction '{gid}' committed.", gid);
+        Logger.LogInformation("Local transaction '{gid}' committed.", job.Gid);
     }
 
     public virtual async Task ProcessPendingAsync(CancellationToken cancellationToken = default)
@@ -112,7 +124,12 @@ public class LocalTmManager : ILocalTmManager
         }
     }
 
-    public virtual async Task ProcessSubmittedAsync(string gid, CancellationToken cancellationToken = default)
+    public virtual Task ProcessSubmittedAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    {
+        return ProcessSubmittedAsync(job.Gid, cancellationToken);
+    }
+
+    protected virtual async Task ProcessSubmittedAsync(string gid, CancellationToken cancellationToken = default)
     {
         var tmTransactionModel = await GetAsync(gid, cancellationToken);
 

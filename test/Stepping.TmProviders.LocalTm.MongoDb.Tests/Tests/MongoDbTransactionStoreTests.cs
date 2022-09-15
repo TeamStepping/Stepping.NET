@@ -38,10 +38,17 @@ public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTes
         await TransactionStore.CreateAsync(await GenerateTmTransactionModelAsync(SteppingClock.Now.Add(-LocalTmOptions.Timeout)));
         await TransactionStore.CreateAsync(await GenerateTmTransactionModelAsync(SteppingClock.Now.AddMinutes(-2)));
         await TransactionStore.CreateAsync(await GenerateTmTransactionModelAsync(SteppingClock.Now.AddHours(-1)));
+        var nextModel1 = await GenerateTmTransactionModelAsync(SteppingClock.Now);
+        nextModel1.NextRetryTime = SteppingClock.Now;
+        nextModel1.NextRetryInterval = 1;
+        await TransactionStore.CreateAsync(nextModel1);
+        var nextModel2 = await GenerateTmTransactionModelAsync(SteppingClock.Now);
+        nextModel2.CalculateNextRetryTime(SteppingClock.Now.AddSeconds(5));
+        await TransactionStore.CreateAsync(nextModel2);
 
         var transaction = await TransactionStore.GetPendingListAsync();
 
-        transaction.Count.ShouldBe(3);
+        transaction.Count.ShouldBe(4);
     }
 
     [Fact]

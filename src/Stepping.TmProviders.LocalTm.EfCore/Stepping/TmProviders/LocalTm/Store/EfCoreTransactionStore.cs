@@ -34,13 +34,14 @@ public class EfCoreTransactionStore : ITransactionStore
 
     public virtual async Task<List<TmTransactionModel>> GetPendingListAsync(CancellationToken cancellationToken = default)
     {
-        var timeoutTime = SteppingClock.Now.Add(-Options.Timeout);
+        var now = SteppingClock.Now;
+        var timeoutTime = now.Add(-Options.Timeout);
 
         var tmTransactions = await LocalTmDbContext.TmTransactions.AsNoTracking()
             .Where(x =>
                 x.Status != LocalTmConst.StatusFinish && x.Status != LocalTmConst.StatusRollback &&
-                (x.NextRetryTime == null || x.NextRetryTime <= timeoutTime) &&
-                x.CreationTime <= timeoutTime
+                ((x.NextRetryTime == null && x.CreationTime <= timeoutTime) || x.NextRetryTime <= now)
+
             )
             .OrderBy(x => x.NextRetryTime)
             .ToListAsync(cancellationToken);

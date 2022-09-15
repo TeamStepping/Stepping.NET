@@ -43,12 +43,7 @@ public class LocalTmClientTests : SteppingTmProvidersLocalTmCoreTestBase
         await LocalTmClient.PrepareAsync(job);
 
         await LocalTmManager.Received().PrepareAsync(
-             Arg.Is<string>(x => x == job.Gid),
-             Arg.Is<LocalTmStepModel>(x =>
-                 x.Steps.Count == 2 &&
-                 x.Steps[0].StepName == FakeExecutableStep.FakeExecutableStepName &&
-                 x.Steps[1].StepName == FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName),
-             Arg.Is<SteppingDbContextLookupInfoModel>(x => x.CustomInfo == "some-info")
+             Arg.Is<IDistributedJob>(x => x == job)
         );
     }
 
@@ -63,15 +58,11 @@ public class LocalTmClientTests : SteppingTmProvidersLocalTmCoreTestBase
         await LocalTmClient.SubmitAsync(job);
 
         await LocalTmManager.Received().SubmitAsync(
-             Arg.Is<string>(x => x == job.Gid),
-             Arg.Is<LocalTmStepModel>(x =>
-                 x.Steps.Count == 2 &&
-                 x.Steps[0].StepName == FakeExecutableStep.FakeExecutableStepName &&
-                 x.Steps[1].StepName == FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName)
+             Arg.Is<IDistributedJob>(x => x == job)
         );
 
         await LocalTmManager.Received().ProcessSubmittedAsync(
-             Arg.Is<string>(x => x == job.Gid)
+             Arg.Is<IDistributedJob>(x => x == job)
         );
     }
 
@@ -86,15 +77,11 @@ public class LocalTmClientTests : SteppingTmProvidersLocalTmCoreTestBase
         await LocalTmClient.SubmitAsync(job);
 
         await LocalTmManager.Received().SubmitAsync(
-             Arg.Is<string>(x => x == job.Gid),
-             Arg.Is<LocalTmStepModel>(x =>
-                 x.Steps.Count == 2 &&
-                 x.Steps[0].StepName == FakeExecutableStep.FakeExecutableStepName &&
-                 x.Steps[1].StepName == FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName)
+             Arg.Is<IDistributedJob>(x => x == job)
         );
 
         await LocalTmManager.Received().ProcessSubmittedAsync(
-             Arg.Is<string>(x => x == job.Gid)
+             Arg.Is<IDistributedJob>(x => x == job)
         );
     }
 }

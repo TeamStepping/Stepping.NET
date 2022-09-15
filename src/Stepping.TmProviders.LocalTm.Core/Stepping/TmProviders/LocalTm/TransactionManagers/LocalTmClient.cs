@@ -25,18 +25,13 @@ public class LocalTmClient : ITmClient
 
     public virtual async Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
-        var steps = await LocalTmStepConverter.ConvertAsync(job.Steps);
-        var steppingDbContextLookupInfo = await DbContextLookupInfoProvider.GetAsync(job.DbContext!);
-
-        await LocalTmManager.PrepareAsync(job.Gid, steps, steppingDbContextLookupInfo, cancellationToken);
+        await LocalTmManager.PrepareAsync(job, cancellationToken);
     }
 
     public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
-        var steps = await LocalTmStepConverter.ConvertAsync(job.Steps);
+        await LocalTmManager.SubmitAsync(job, cancellationToken);
 
-        await LocalTmManager.SubmitAsync(job.Gid, steps, cancellationToken);
-
-        await LocalTmManager.ProcessSubmittedAsync(job.Gid, cancellationToken);
+        await LocalTmManager.ProcessSubmittedAsync(job, cancellationToken);
     }
 }
