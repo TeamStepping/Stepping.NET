@@ -37,6 +37,8 @@ job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
 
 await job.StartAsync();
 
+app.Map("/", () => "Hello world");
+
 app.MapPost("/step1", async context =>
 {
     var input = await context.Request.ReadFromJsonAsync<IDictionary<string, string>>();
