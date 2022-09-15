@@ -42,13 +42,10 @@ public class TmTransactionModel
 
     public void CalculateNextRetryTime(DateTime now)
     {
-        if (NextRetryInterval == null)
-        {
-            NextRetryInterval = 0;
-        }
+        NextRetryInterval ??= 0;
 
         NextRetryInterval++;
 
-        NextRetryTime = now.AddSeconds(Math.Pow(2, NextRetryInterval.Value));
+        NextRetryTime = now.AddSeconds(Math.Pow(2, NextRetryInterval!.Value));
     }
 }

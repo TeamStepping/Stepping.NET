@@ -20,25 +20,24 @@ var app = builder.Build();
 Task.Run(async () =>
 {
     await Task.Delay(TimeSpan.FromSeconds(2));
-    using (var scope = app.Services.CreateScope())
-    {
-        var distributedJobFactory = scope.ServiceProvider.GetRequiredService<IDistributedJobFactory>();
+    using var scope = app.Services.CreateScope();
 
-        var job = await distributedJobFactory.CreateJobAsync();
+    var distributedJobFactory = scope.ServiceProvider.GetRequiredService<IDistributedJobFactory>();
 
-        job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
-        job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
-                "http://localhost:5236/step1",
-                HttpMethod.Post,
-                new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + POST
-        );
-        job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
-                "http://localhost:5236/step2?hello=world",
-                HttpMethod.Get)) // HttpRequestStep + GET
-        );
+    var job = await distributedJobFactory.CreateJobAsync();
 
-        await job.StartAsync();
-    }
+    job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
+    job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
+            "http://localhost:5236/step1",
+            HttpMethod.Post,
+            new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + POST
+    );
+    job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
+            "http://localhost:5236/step2?hello=world",
+            HttpMethod.Get)) // HttpRequestStep + GET
+    );
+
+    await job.StartAsync();
 });
 
 app.MapPost("/step1", async context =>
@@ -54,8 +53,18 @@ app.MapPost("/step1", async context =>
     context.Response.StatusCode = 200;
 });
 
+var canExecuteStep2 = false;
+
 app.MapGet("/step2", context =>
 {
+    if (!canExecuteStep2)
+    {
+        canExecuteStep2 = true;
+        Console.WriteLine("Step 2 deliberately failed to execute and waited for the TM to pick it up.");
+        context.Response.StatusCode = 500;
+        return Task.CompletedTask;
+    }
+
     context.Response.OnCompleted(async () => { await app.StopAsync(); });
 
     if (!context.Request.Query.ContainsKey("hello") || context.Request.Query["hello"] != "world")
