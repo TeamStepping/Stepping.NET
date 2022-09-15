@@ -6,7 +6,7 @@ using Stepping.TmProviders.LocalTm.TransactionManagers;
 
 namespace Stepping.TmProviders.LocalTm.Processors;
 
-public class HostedServiceLocalTmProcessor : IHostedService, ILocalTmProcessor
+public class HostedServiceLocalTmProcessor : BackgroundService, ILocalTmProcessor
 {
     private readonly ILogger<HostedServiceLocalTmProcessor> _logger;
     private readonly PeriodicTimer _timer;
@@ -21,13 +21,13 @@ public class HostedServiceLocalTmProcessor : IHostedService, ILocalTmProcessor
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Timed Hosted Service running.");
 
-        while (await _timer.WaitForNextTickAsync(cancellationToken))
+        while (await _timer.WaitForNextTickAsync(stoppingToken))
         {
-            await ProcessAsync(cancellationToken);
+            await ProcessAsync(stoppingToken);
         }
     }
 
@@ -48,11 +48,5 @@ public class HostedServiceLocalTmProcessor : IHostedService, ILocalTmProcessor
         await scope.ServiceProvider
                 .GetRequiredService<ILocalTmManager>()
                 .ProcessPendingAsync(cancellationToken);
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        _timer?.Dispose();
-        return Task.CompletedTask;
     }
 }

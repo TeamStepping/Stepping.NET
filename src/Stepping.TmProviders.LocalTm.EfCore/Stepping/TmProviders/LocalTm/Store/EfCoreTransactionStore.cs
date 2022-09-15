@@ -56,6 +56,14 @@ public class EfCoreTransactionStore : ITransactionStore
         return ConvertToModel(entity);
     }
 
+    public virtual async Task<TmTransactionModel?> FindAsync(string gid, CancellationToken cancellationToken = default)
+    {
+        var entity = await LocalTmDbContext.TmTransactions.AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Gid == gid, cancellationToken);
+
+        return entity != null ? ConvertToModel(entity) : null;
+    }
+
     public virtual async Task CreateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default)
     {
         var entity = ConvertToEntity(tmTransaction);
@@ -89,7 +97,7 @@ public class EfCoreTransactionStore : ITransactionStore
             RollbackTime = model.RollbackTime,
             NextRetryInterval = model.NextRetryInterval,
             NextRetryTime = model.NextRetryTime,
-            SteppingDbContextLookupInfo = JsonSerializer.Serialize(model.SteppingDbContextLookupInfo),
+            SteppingDbContextLookupInfo = model.SteppingDbContextLookupInfo != null ? JsonSerializer.Serialize(model.SteppingDbContextLookupInfo) : null,
             ConcurrencyStamp = model.ConcurrencyStamp,
         };
     }
@@ -106,7 +114,7 @@ public class EfCoreTransactionStore : ITransactionStore
         entity.RollbackTime = model.RollbackTime;
         entity.NextRetryInterval = model.NextRetryInterval;
         entity.NextRetryTime = model.NextRetryTime;
-        entity.SteppingDbContextLookupInfo = JsonSerializer.Serialize(model.SteppingDbContextLookupInfo);
+        entity.SteppingDbContextLookupInfo = model.SteppingDbContextLookupInfo != null ? JsonSerializer.Serialize(model.SteppingDbContextLookupInfo) : null;
         entity.ConcurrencyStamp = model.ConcurrencyStamp;
 
         return entity;
@@ -115,7 +123,7 @@ public class EfCoreTransactionStore : ITransactionStore
     protected virtual TmTransactionModel ConvertToModel(TmTransaction entity)
     {
         var steps = JsonSerializer.Deserialize<LocalTmStepModel>(entity.Steps);
-        var steppingDbContextLookupInfo = JsonSerializer.Deserialize<SteppingDbContextLookupInfoModel>(entity.SteppingDbContextLookupInfo);
+        var steppingDbContextLookupInfo = entity.SteppingDbContextLookupInfo != null ? JsonSerializer.Deserialize<SteppingDbContextLookupInfoModel>(entity.SteppingDbContextLookupInfo) : null;
 
         return new TmTransactionModel(entity.Gid, steps, steppingDbContextLookupInfo, entity.CreationTime)
         {

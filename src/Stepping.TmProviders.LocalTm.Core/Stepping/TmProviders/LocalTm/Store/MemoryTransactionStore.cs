@@ -63,7 +63,19 @@ public class MemoryTransactionStore : ITransactionStore
 
         if (!_memoryStore.TryGetValue(gid, out var tmTransaction))
         {
-            throw new SteppingException($"Local transaction '{gid}' not exists.");
+            throw new InvalidOperationException($"Local transaction '{gid}' not exists.");
+        }
+
+        return await DeepCloneAsync(tmTransaction);
+    }
+
+    public virtual async Task<TmTransactionModel?> FindAsync(string gid, CancellationToken cancellationToken = default)
+    {
+        Logger.LogWarning("You are using the ITransactionStore's memory implementation, please do not use it in production environment!");
+
+        if (!_memoryStore.TryGetValue(gid, out var tmTransaction))
+        {
+            return null;
         }
 
         return await DeepCloneAsync(tmTransaction);

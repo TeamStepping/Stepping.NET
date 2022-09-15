@@ -33,7 +33,9 @@ public class LocalTmClient : ITmClient
 
     public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
     {
-        await LocalTmManager.SubmitAsync(job.Gid, cancellationToken);
+        var steps = await LocalTmStepConverter.ConvertAsync(job.Steps);
+
+        await LocalTmManager.SubmitAsync(job.Gid, steps, cancellationToken);
 
         await LocalTmManager.ProcessSubmittedAsync(job.Gid, cancellationToken);
     }

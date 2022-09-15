@@ -9,32 +9,37 @@ using Stepping.TmProviders.LocalTm.TestApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var conn = CreateDatabaseAndGetConnection();
 builder.Services.AddStepping(options => { options.RegisterSteps(typeof(PrintToConsoleStep)); });
 builder.Services.AddSteppingLocalTm();
-builder.Services.AddSteppingLocalTmEfCore(b => { b.UseSqlite(CreateDatabaseAndGetConnection()); });
+builder.Services.AddSteppingLocalTmEfCore(b => { b.UseSqlite(conn); });
 builder.Services.AddSteppingLocalTmHostedServiceProcessor();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+Task.Run(async () =>
 {
-    var distributedJobFactory = scope.ServiceProvider.GetRequiredService<IDistributedJobFactory>();
+    await Task.Delay(TimeSpan.FromSeconds(2));
+    using (var scope = app.Services.CreateScope())
+    {
+        var distributedJobFactory = scope.ServiceProvider.GetRequiredService<IDistributedJobFactory>();
 
-    var job = await distributedJobFactory.CreateJobAsync();
+        var job = await distributedJobFactory.CreateJobAsync();
 
-    job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
-    job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
-            "http://localhost:5236/step1",
-            HttpMethod.Post,
-            new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + POST
-    );
-    job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
-            "http://localhost:5236/step2?hello=world",
-            HttpMethod.Get)) // HttpRequestStep + GET
-    );
+        job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
+        job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
+                "http://localhost:5236/step1",
+                HttpMethod.Post,
+                new Dictionary<string, object> { { "hello", "world" } })) // HttpRequestStep + POST
+        );
+        job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(
+                "http://localhost:5236/step2?hello=world",
+                HttpMethod.Get)) // HttpRequestStep + GET
+        );
 
-    await job.StartAsync();
-}
+        await job.StartAsync();
+    }
+});
 
 app.MapPost("/step1", async context =>
 {
@@ -64,6 +69,8 @@ app.MapGet("/step2", context =>
     context.Response.StatusCode = 200;
     return Task.CompletedTask;
 });
+
+app.Map("/", () => "Hello world");
 
 app.Run();
 

@@ -4,7 +4,9 @@ using Stepping.Core.Databases;
 using Stepping.Core.Jobs;
 using Stepping.Core.TransactionManagers;
 using Stepping.TestBase.Fakes;
+using Stepping.TmProviders.LocalTm.Models;
 using Stepping.TmProviders.LocalTm.Steps;
+using Stepping.TmProviders.LocalTm.Store;
 using Stepping.TmProviders.LocalTm.TransactionManagers;
 using Xunit;
 
@@ -61,7 +63,34 @@ public class LocalTmClientTests : SteppingTmProvidersLocalTmCoreTestBase
         await LocalTmClient.SubmitAsync(job);
 
         await LocalTmManager.Received().SubmitAsync(
+             Arg.Is<string>(x => x == job.Gid),
+             Arg.Is<LocalTmStepModel>(x =>
+                 x.Steps.Count == 2 &&
+                 x.Steps[0].StepName == FakeExecutableStep.FakeExecutableStepName &&
+                 x.Steps[1].StepName == FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName)
+        );
+
+        await LocalTmManager.Received().ProcessSubmittedAsync(
              Arg.Is<string>(x => x == job.Gid)
+        );
+    }
+
+    [Fact]
+    public async Task Should_Create_Submited()
+    {
+        var job = await DistributedJobFactory.CreateJobAsync();
+
+        job.AddStep<FakeExecutableStep>();
+        job.AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input")));
+
+        await LocalTmClient.SubmitAsync(job);
+
+        await LocalTmManager.Received().SubmitAsync(
+             Arg.Is<string>(x => x == job.Gid),
+             Arg.Is<LocalTmStepModel>(x =>
+                 x.Steps.Count == 2 &&
+                 x.Steps[0].StepName == FakeExecutableStep.FakeExecutableStepName &&
+                 x.Steps[1].StepName == FakeWithArgsExecutableStep.FakeWithArgsExecutableStepName)
         );
 
         await LocalTmManager.Received().ProcessSubmittedAsync(

@@ -24,7 +24,7 @@ public class TmTransaction
 
     public DateTime? NextRetryTime { get; set; }
 
-    public string SteppingDbContextLookupInfo { get; set; } = null!;
+    public string? SteppingDbContextLookupInfo { get; set; }
 
     public string? ConcurrencyStamp { get; set; }
 }

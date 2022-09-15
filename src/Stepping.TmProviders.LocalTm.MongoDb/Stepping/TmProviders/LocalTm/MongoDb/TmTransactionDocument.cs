@@ -36,7 +36,7 @@ public class TmTransactionDocument
     public DateTime? NextRetryTime { get; set; }
 
     [BsonElement("SteppingDbContextLookupInfo")]
-    public string SteppingDbContextLookupInfo { get; set; } = null!;
+    public string? SteppingDbContextLookupInfo { get; set; }
 
     [BsonElement("ConcurrencyStamp")]
     public string? ConcurrencyStamp { get; set; }

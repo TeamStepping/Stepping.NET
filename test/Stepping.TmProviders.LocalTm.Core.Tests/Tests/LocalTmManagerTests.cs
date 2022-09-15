@@ -47,9 +47,26 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
     [Fact]
     public async Task Should_Update_Submit()
     {
-        var (gid, _, _) = await PrepareAsync();
+        var (gid, stepModel, _) = await PrepareAsync();
 
-        await LocalTmManager.SubmitAsync(gid);
+        await LocalTmManager.SubmitAsync(gid, stepModel);
+
+        var model = await TransactionStore.GetAsync(gid);
+        model.Gid.ShouldBe(gid);
+        model.Status.ShouldBe(LocalTmConst.StatusSubmit);
+    }
+
+    [Fact]
+    public async Task Should_Create_Submit()
+    {
+        var gid = Guid.NewGuid().ToString();
+
+        var job = await DistributedJobFactory.CreateJobAsync();
+        job.AddStep<FakeExecutableStep>();
+        job.AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input")));
+        var stepModel = await LocalTmStepConverter.ConvertAsync(job.Steps);
+
+        await LocalTmManager.SubmitAsync(gid, stepModel);
 
         var model = await TransactionStore.GetAsync(gid);
         model.Gid.ShouldBe(gid);
@@ -59,7 +76,7 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
     [Fact]
     public async Task Should_Not_Submit_If_Status_Is_Not_Prepare()
     {
-        var (gid, _, _) = await PrepareAsync();
+        var (gid, stepModel, _) = await PrepareAsync();
 
         var existModel = await TransactionStore.GetAsync(gid);
         existModel.Status = LocalTmConst.StatusRollback;
@@ -67,7 +84,7 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
 
         await TransactionStore.UpdateAsync(existModel);
 
-        await LocalTmManager.SubmitAsync(gid);
+        await LocalTmManager.SubmitAsync(gid, stepModel);
 
         var model = await TransactionStore.GetAsync(gid);
         model.Status.ShouldBe(LocalTmConst.StatusRollback);
@@ -82,8 +99,8 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
         tmModel1.CreationTime = SteppingClock.Now.AddMinutes(-2);
         await TransactionStore.UpdateAsync(tmModel1);
 
-        var (gid2, _, _) = await PrepareAsync();
-        await LocalTmManager.SubmitAsync(gid2);
+        var (gid2, stepModel2, _) = await PrepareAsync();
+        await LocalTmManager.SubmitAsync(gid2, stepModel2);
         var tmModel2 = await TransactionStore.GetAsync(gid2);
         tmModel2.CreationTime = SteppingClock.Now.AddMinutes(-2);
         await TransactionStore.UpdateAsync(tmModel2);
@@ -94,6 +111,17 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
         tmModel3.CreationTime = SteppingClock.Now.AddMinutes(-2);
         await TransactionStore.UpdateAsync(tmModel3);
 
+        var gid4 = Guid.NewGuid().ToString();
+
+        var job = await DistributedJobFactory.CreateJobAsync(gid4);
+        job.AddStep<FakeExecutableStep>();
+        job.AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input")));
+        var stepModel4 = await LocalTmStepConverter.ConvertAsync(job.Steps);
+        await LocalTmManager.SubmitAsync(gid4, stepModel4);
+        var tmModel4 = await TransactionStore.GetAsync(gid4);
+        tmModel4.CreationTime = SteppingClock.Now.AddMinutes(-2);
+        await TransactionStore.UpdateAsync(tmModel4);
+
         await LocalTmManager.ProcessPendingAsync();
 
         var exitsTmModel1 = await TransactionStore.GetAsync(gid1);
@@ -102,17 +130,19 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
         exitsTmModel2.Status.ShouldBe(LocalTmConst.StatusFinish);
         var exitsTmModel3 = await TransactionStore.GetAsync(gid3);
         exitsTmModel3.Status.ShouldBe(LocalTmConst.StatusRollback);
+        var exitsTmModel4 = await TransactionStore.GetAsync(gid4);
+        exitsTmModel4.Status.ShouldBe(LocalTmConst.StatusFinish);
     }
 
     [Fact]
     public async Task Should_ProcessSubmitted()
     {
-        var (gid, _, _) = await PrepareAsync(job =>
+        var (gid, stepModel, _) = await PrepareAsync(job =>
         {
             job.AddStep(new RequestGitHubGetRepoStep("TeamStepping", "Stepping.NET"));
         });
 
-        await LocalTmManager.SubmitAsync(gid);
+        await LocalTmManager.SubmitAsync(gid, stepModel);
 
         await LocalTmManager.ProcessSubmittedAsync(gid);
 
@@ -128,12 +158,12 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
     [Fact]
     public async Task Should_Retry_If_Steps_Exectue_Failed()
     {
-        var (gid, _, _) = await PrepareAsync(job =>
+        var (gid, stepModel, _) = await PrepareAsync(job =>
         {
             job.AddStep<FakeControlExecutableStep>();
         });
 
-        await LocalTmManager.SubmitAsync(gid);
+        await LocalTmManager.SubmitAsync(gid, stepModel);
 
         FakeControlExecutableStep.Throw = true;
 
@@ -183,10 +213,10 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
             await DbBarrierInserter.MustInsertBarrierAsync(await BarrierInfoModelFactory.CreateForCommitAsync(gid), job.DbContext!);
         }
 
-        var existModel = await LocalTmStepConverter.ConvertAsync(job.Steps);
+        var stepModel = await LocalTmStepConverter.ConvertAsync(job.Steps);
 
-        await LocalTmManager.PrepareAsync(gid, existModel, steppingDbContextLookupInfo);
+        await LocalTmManager.PrepareAsync(gid, stepModel, steppingDbContextLookupInfo);
 
-        return (gid, existModel, steppingDbContextLookupInfo);
+        return (gid, stepModel, steppingDbContextLookupInfo);
     }
 }

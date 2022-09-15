@@ -25,13 +25,13 @@ public class TmTransactionModel
 
     public DateTime? NextRetryTime { get; set; }
 
-    public SteppingDbContextLookupInfoModel SteppingDbContextLookupInfo { get; set; } = null!;
+    public SteppingDbContextLookupInfoModel? SteppingDbContextLookupInfo { get; set; }
 
     public string? ConcurrencyStamp { get; set; }
 
     protected TmTransactionModel() { }
 
-    public TmTransactionModel(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo, DateTime creationTime)
+    public TmTransactionModel(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel? steppingDbContextLookupInfo, DateTime creationTime)
     {
         Gid = gid;
         Status = LocalTmConst.StatusPrepare;

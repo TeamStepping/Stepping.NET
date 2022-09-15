@@ -20,6 +20,8 @@ public interface ITransactionStore
 
     Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken = default);
 
+    Task<TmTransactionModel?> FindAsync(string gid, CancellationToken cancellationToken = default);
+
     Task CreateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default);

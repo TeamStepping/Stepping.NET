@@ -66,6 +66,16 @@ public class MongoDbTransactionStore : ITransactionStore
         return ConvertToModel(document);
     }
 
+    public virtual async Task<TmTransactionModel?> FindAsync(string gid, CancellationToken cancellationToken = default)
+    {
+        await LocalTmMongoDbInitializer.TryInitializeAsync();
+
+        var document = await LocalTmMongoDbContext.GetTmTransactionCollection().AsQueryable()
+            .SingleOrDefaultAsync(x => x.Gid == gid, cancellationToken: cancellationToken);
+
+        return document != null ? ConvertToModel(document) : null;
+    }
+
     public virtual async Task CreateAsync(TmTransactionModel tmTransaction, CancellationToken cancellationToken = default)
     {
         await LocalTmMongoDbInitializer.TryInitializeAsync();
@@ -114,7 +124,7 @@ public class MongoDbTransactionStore : ITransactionStore
             RollbackTime = model.RollbackTime,
             NextRetryInterval = model.NextRetryInterval,
             NextRetryTime = model.NextRetryTime,
-            SteppingDbContextLookupInfo = JsonSerializer.Serialize(model.SteppingDbContextLookupInfo),
+            SteppingDbContextLookupInfo = model.SteppingDbContextLookupInfo != null ? JsonSerializer.Serialize(model.SteppingDbContextLookupInfo) : null,
             ConcurrencyStamp = model.ConcurrencyStamp,
         };
     }
@@ -122,7 +132,7 @@ public class MongoDbTransactionStore : ITransactionStore
     protected virtual TmTransactionModel ConvertToModel(TmTransactionDocument document)
     {
         var steps = JsonSerializer.Deserialize<LocalTmStepModel>(document.Steps);
-        var steppingDbContextLookupInfo = JsonSerializer.Deserialize<SteppingDbContextLookupInfoModel>(document.SteppingDbContextLookupInfo);
+        var steppingDbContextLookupInfo = document.SteppingDbContextLookupInfo != null ? JsonSerializer.Deserialize<SteppingDbContextLookupInfoModel>(document.SteppingDbContextLookupInfo) : null;
 
         return new TmTransactionModel(document.Gid, steps, steppingDbContextLookupInfo, document.CreationTime)
         {

@@ -8,7 +8,7 @@ public interface ILocalTmManager
     Task PrepareAsync(string gid, LocalTmStepModel steps, SteppingDbContextLookupInfoModel steppingDbContextLookupInfo,
         CancellationToken cancellationToken = default);
 
-    Task SubmitAsync(string gid, CancellationToken cancellationToken = default);
+    Task SubmitAsync(string gid, LocalTmStepModel steps, CancellationToken cancellationToken = default);
 
     Task ProcessPendingAsync(CancellationToken cancellationToken = default);
 

@@ -45,7 +45,7 @@ public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTes
     }
 
     [Fact]
-    public async Task Should_Get_Transaction_Transaction()
+    public async Task Should_Get_Transaction()
     {
         var createModel = await GenerateTmTransactionModelAsync();
 
@@ -62,13 +62,12 @@ public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTes
         model.FinishTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(model.FinishTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
         model.ConcurrencyStamp.ShouldNotBeNullOrWhiteSpace();
         model.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(createModel.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
-        model.SteppingDbContextLookupInfo.ShouldNotBeNull();
-        model.SteppingDbContextLookupInfo.DbProviderName.ShouldBe(createModel.SteppingDbContextLookupInfo.DbProviderName);
-        model.SteppingDbContextLookupInfo.HashedConnectionString.ShouldBe(createModel.SteppingDbContextLookupInfo.HashedConnectionString);
-        model.SteppingDbContextLookupInfo.DbContextType.ShouldBe(createModel.SteppingDbContextLookupInfo.DbContextType);
-        model.SteppingDbContextLookupInfo.Database.ShouldBe(createModel.SteppingDbContextLookupInfo.Database);
-        model.SteppingDbContextLookupInfo.TenantId.ShouldBe(createModel.SteppingDbContextLookupInfo.TenantId);
-        model.SteppingDbContextLookupInfo.CustomInfo.ShouldBe(createModel.SteppingDbContextLookupInfo.CustomInfo);
+        model.SteppingDbContextLookupInfo?.DbProviderName.ShouldBe(createModel.SteppingDbContextLookupInfo?.DbProviderName);
+        model.SteppingDbContextLookupInfo?.HashedConnectionString.ShouldBe(createModel.SteppingDbContextLookupInfo?.HashedConnectionString);
+        model.SteppingDbContextLookupInfo?.DbContextType.ShouldBe(createModel.SteppingDbContextLookupInfo?.DbContextType);
+        model.SteppingDbContextLookupInfo?.Database.ShouldBe(createModel.SteppingDbContextLookupInfo?.Database);
+        model.SteppingDbContextLookupInfo?.TenantId.ShouldBe(createModel.SteppingDbContextLookupInfo?.TenantId);
+        model.SteppingDbContextLookupInfo?.CustomInfo.ShouldBe(createModel.SteppingDbContextLookupInfo?.CustomInfo);
         model.Steps.ShouldNotBeNull();
         model.Steps.Steps.Count.ShouldBe(createModel.Steps.Steps.Count);
         model.Steps.Steps[0].StepName.ShouldBe(createModel.Steps.Steps[0].StepName);
@@ -77,9 +76,47 @@ public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTes
     }
 
     [Fact]
-    public async Task Should_Not_Get_Transaction_If_Gid_Exists()
+    public async Task Should_Throw_Exception_If_Gid_Not_Exists()
     {
         await Should.ThrowAsync<InvalidOperationException>(async () => await TransactionStore.GetAsync(Guid.NewGuid().ToString("N")));
+    }
+
+    [Fact]
+    public async Task Should_Get_Transaction_If_Gid_Exists()
+    {
+        var createModel = await GenerateTmTransactionModelAsync();
+
+        await TransactionStore.CreateAsync(createModel);
+
+        var model = await TransactionStore.FindAsync(createModel.Gid);
+        model.ShouldNotBeNull();
+        model.Gid.ShouldBe(createModel.Gid);
+        model.Status.ShouldBe(createModel.Status);
+        model.CreationTime.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(createModel.CreationTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+        model.NextRetryTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(model.NextRetryTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+        model.NextRetryInterval.ShouldBe(model.NextRetryInterval);
+        model.RollbackReason.ShouldBe(model.RollbackReason);
+        model.RollbackTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(model.RollbackTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+        model.FinishTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(model.FinishTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+        model.ConcurrencyStamp.ShouldNotBeNullOrWhiteSpace();
+        model.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(createModel.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+        model.SteppingDbContextLookupInfo?.DbProviderName.ShouldBe(createModel.SteppingDbContextLookupInfo?.DbProviderName);
+        model.SteppingDbContextLookupInfo?.HashedConnectionString.ShouldBe(createModel.SteppingDbContextLookupInfo?.HashedConnectionString);
+        model.SteppingDbContextLookupInfo?.DbContextType.ShouldBe(createModel.SteppingDbContextLookupInfo?.DbContextType);
+        model.SteppingDbContextLookupInfo?.Database.ShouldBe(createModel.SteppingDbContextLookupInfo?.Database);
+        model.SteppingDbContextLookupInfo?.TenantId.ShouldBe(createModel.SteppingDbContextLookupInfo?.TenantId);
+        model.SteppingDbContextLookupInfo?.CustomInfo.ShouldBe(createModel.SteppingDbContextLookupInfo?.CustomInfo);
+        model.Steps.ShouldNotBeNull();
+        model.Steps.Steps.Count.ShouldBe(createModel.Steps.Steps.Count);
+        model.Steps.Steps[0].StepName.ShouldBe(createModel.Steps.Steps[0].StepName);
+        model.Steps.Steps[0].ArgsToByteString.ShouldBe(createModel.Steps.Steps[0].ArgsToByteString);
+        model.Steps.Steps[0].Executed.ShouldBe(createModel.Steps.Steps[0].Executed);
+    }
+
+    [Fact]
+    public async Task Should_Return_Null_Transaction_If_Gid_Exists()
+    {
+        (await TransactionStore.FindAsync(Guid.NewGuid().ToString("N"))).ShouldBeNull();
     }
 
     [Fact]
@@ -100,13 +137,12 @@ public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTes
         model.FinishTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(model.FinishTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
         model.ConcurrencyStamp.ShouldNotBeNullOrWhiteSpace();
         model.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(existModel.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
-        model.SteppingDbContextLookupInfo.ShouldNotBeNull();
-        model.SteppingDbContextLookupInfo.DbProviderName.ShouldBe(existModel.SteppingDbContextLookupInfo.DbProviderName);
-        model.SteppingDbContextLookupInfo.HashedConnectionString.ShouldBe(existModel.SteppingDbContextLookupInfo.HashedConnectionString);
-        model.SteppingDbContextLookupInfo.DbContextType.ShouldBe(existModel.SteppingDbContextLookupInfo.DbContextType);
-        model.SteppingDbContextLookupInfo.Database.ShouldBe(existModel.SteppingDbContextLookupInfo.Database);
-        model.SteppingDbContextLookupInfo.TenantId.ShouldBe(existModel.SteppingDbContextLookupInfo.TenantId);
-        model.SteppingDbContextLookupInfo.CustomInfo.ShouldBe(existModel.SteppingDbContextLookupInfo.CustomInfo);
+        model.SteppingDbContextLookupInfo?.DbProviderName.ShouldBe(existModel.SteppingDbContextLookupInfo?.DbProviderName);
+        model.SteppingDbContextLookupInfo?.HashedConnectionString.ShouldBe(existModel.SteppingDbContextLookupInfo?.HashedConnectionString);
+        model.SteppingDbContextLookupInfo?.DbContextType.ShouldBe(existModel.SteppingDbContextLookupInfo?.DbContextType);
+        model.SteppingDbContextLookupInfo?.Database.ShouldBe(existModel.SteppingDbContextLookupInfo?.Database);
+        model.SteppingDbContextLookupInfo?.TenantId.ShouldBe(existModel.SteppingDbContextLookupInfo?.TenantId);
+        model.SteppingDbContextLookupInfo?.CustomInfo.ShouldBe(existModel.SteppingDbContextLookupInfo?.CustomInfo);
         model.Steps.ShouldNotBeNull();
         model.Steps.Steps.Count.ShouldBe(existModel.Steps.Steps.Count);
         model.Steps.Steps[0].StepName.ShouldBe(existModel.Steps.Steps[0].StepName);
@@ -152,13 +188,12 @@ public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTes
         model.ConcurrencyStamp.ShouldNotBeNullOrWhiteSpace();
         model.ConcurrencyStamp.ShouldNotBe(oldConcurrencyStamp);
         model.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ").ShouldBe(existModel.UpdateTime?.ToString("yyyy-MM-ddTHH:mm:ssZ"));
-        model.SteppingDbContextLookupInfo.ShouldNotBeNull();
-        model.SteppingDbContextLookupInfo.DbProviderName.ShouldBe(existModel.SteppingDbContextLookupInfo.DbProviderName);
-        model.SteppingDbContextLookupInfo.HashedConnectionString.ShouldBe(existModel.SteppingDbContextLookupInfo.HashedConnectionString);
-        model.SteppingDbContextLookupInfo.DbContextType.ShouldBe(existModel.SteppingDbContextLookupInfo.DbContextType);
-        model.SteppingDbContextLookupInfo.Database.ShouldBe(existModel.SteppingDbContextLookupInfo.Database);
-        model.SteppingDbContextLookupInfo.TenantId.ShouldBe(existModel.SteppingDbContextLookupInfo.TenantId);
-        model.SteppingDbContextLookupInfo.CustomInfo.ShouldBe(existModel.SteppingDbContextLookupInfo.CustomInfo);
+        model.SteppingDbContextLookupInfo?.DbProviderName.ShouldBe(existModel.SteppingDbContextLookupInfo?.DbProviderName);
+        model.SteppingDbContextLookupInfo?.HashedConnectionString.ShouldBe(existModel.SteppingDbContextLookupInfo?.HashedConnectionString);
+        model.SteppingDbContextLookupInfo?.DbContextType.ShouldBe(existModel.SteppingDbContextLookupInfo?.DbContextType);
+        model.SteppingDbContextLookupInfo?.Database.ShouldBe(existModel.SteppingDbContextLookupInfo?.Database);
+        model.SteppingDbContextLookupInfo?.TenantId.ShouldBe(existModel.SteppingDbContextLookupInfo?.TenantId);
+        model.SteppingDbContextLookupInfo?.CustomInfo.ShouldBe(existModel.SteppingDbContextLookupInfo?.CustomInfo);
         model.Steps.ShouldNotBeNull();
         model.Steps.Steps.Count.ShouldBe(existModel.Steps.Steps.Count);
         model.Steps.Steps[0].StepName.ShouldBe(existModel.Steps.Steps[0].StepName);

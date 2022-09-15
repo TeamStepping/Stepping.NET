@@ -66,16 +66,28 @@ public class LocalTmManager : ILocalTmManager
         Logger.LogInformation("Local transaction '{gid}' prepared.", gid);
     }
 
-    public virtual async Task SubmitAsync(string gid, CancellationToken cancellationToken = default)
+    public virtual async Task SubmitAsync(string gid, LocalTmStepModel steps, CancellationToken cancellationToken = default)
     {
-        var tmTransactionModel = await GetAsync(gid, cancellationToken);
+        var tmTransactionModel = await FindAsync(gid, cancellationToken);
 
-        if (!await IsInStatusAsync(tmTransactionModel, LocalTmConst.StatusPrepare))
+        if (tmTransactionModel == null)
         {
-            return;
-        }
+            tmTransactionModel = new TmTransactionModel(gid, steps, null, SteppingClock.Now)
+            {
+                Status = LocalTmConst.StatusSubmit
+            };
 
-        await UpdateSubmitAsync(tmTransactionModel, cancellationToken);
+            await CreateAsync(tmTransactionModel, cancellationToken);
+        }
+        else
+        {
+            if (!await IsInStatusAsync(tmTransactionModel, LocalTmConst.StatusPrepare))
+            {
+                return;
+            }
+
+            await UpdateSubmitAsync(tmTransactionModel, cancellationToken);
+        }
 
         Logger.LogInformation("Local transaction '{gid}' committed.", gid);
     }
@@ -168,6 +180,12 @@ public class LocalTmManager : ILocalTmManager
     protected virtual async Task<bool> TryInsertBarrierAsRollbackAsync(TmTransactionModel tmTransactionModel, CancellationToken cancellationToken)
     {
         var dbContextLookupInfoModel = tmTransactionModel.SteppingDbContextLookupInfo;
+
+        if (dbContextLookupInfoModel == null)
+        {
+            throw new SteppingException("Local transaction '{gid}' SteppingDbContextLookupInfo is null.");
+        }
+
         var dbContextProvider = await DbContextProviderResolver.ResolveAsync(dbContextLookupInfoModel.DbProviderName);
         var dbContext = await dbContextProvider.GetAsync(dbContextLookupInfoModel);
 
@@ -227,6 +245,11 @@ public class LocalTmManager : ILocalTmManager
     }
 
     #region Store
+
+    protected virtual async Task<TmTransactionModel?> FindAsync(string gid, CancellationToken cancellationToken)
+    {
+        return await TransactionStore.FindAsync(gid, cancellationToken);
+    }
 
     protected virtual async Task<TmTransactionModel> GetAsync(string gid, CancellationToken cancellationToken)
     {
