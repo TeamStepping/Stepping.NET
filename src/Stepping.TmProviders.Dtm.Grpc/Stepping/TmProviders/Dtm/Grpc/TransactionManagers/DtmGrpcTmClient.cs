@@ -18,7 +18,7 @@ public class DtmGrpcTmClient : ITmClient
 {
     protected SteppingDtmGrpcOptions Options { get; }
     protected ISteppingJsonSerializer JsonSerializer { get; }
-    protected DtmServer.DtmServerClient DtmServerClient { get; }
+    protected Clients.Dtm.DtmClient DtmClient { get; }
 
     protected IStepToDtmStepConvertResolver StepToDtmStepConvertResolver { get; }
     protected ISteppingDbContextLookupInfoProvider DbContextLookupInfoProvider { get; }
@@ -26,13 +26,13 @@ public class DtmGrpcTmClient : ITmClient
     public DtmGrpcTmClient(
         IOptions<SteppingDtmGrpcOptions> options,
         ISteppingJsonSerializer jsonSerializer,
-        DtmServer.DtmServerClient dtmServerClient,
+        Clients.Dtm.DtmClient dtmClient,
         IStepToDtmStepConvertResolver stepToDtmStepConvertResolver,
         ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
     {
         Options = options.Value;
         JsonSerializer = jsonSerializer;
-        DtmServerClient = dtmServerClient;
+        DtmClient = dtmClient;
         StepToDtmStepConvertResolver = stepToDtmStepConvertResolver;
         DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
@@ -49,7 +49,7 @@ public class DtmGrpcTmClient : ITmClient
             await AddDbContextLookupInfoHeadersAsync(job);
         }
 
-        await InvokeDtmServerAsync(DtmServerClient.PrepareAsync, await BuildDtmRequestAsync(job), cancellationToken);
+        await InvokeDtmServerAsync(DtmClient.PrepareAsync, await BuildDtmRequestAsync(job), cancellationToken);
     }
 
     protected delegate AsyncUnaryCall<TResult> GrpcMethod<TResult>(DtmRequest dtmRequest, CallOptions callOptions);
@@ -67,7 +67,7 @@ public class DtmGrpcTmClient : ITmClient
             throw new SteppingException("Duplicate sending submit to TM.");
         }
 
-        await InvokeDtmServerAsync(DtmServerClient.SubmitAsync, await BuildDtmRequestAsync(job), cancellationToken);
+        await InvokeDtmServerAsync(DtmClient.SubmitAsync, await BuildDtmRequestAsync(job), cancellationToken);
     }
 
     protected virtual async Task AddDbContextLookupInfoHeadersAsync(IDistributedJob job)
@@ -95,6 +95,11 @@ public class DtmGrpcTmClient : ITmClient
     {
         var configurations = job.GetDtmJobConfigurations();
 
+        if (Options.ActionApiToken is not null or "")
+        {
+            configurations.BranchHeaders.TryAdd(DtmRequestHeaderNames.ActionApiToken, Options.ActionApiToken);
+        }
+
         var transOptions = new DtmTransOptions
         {
             WaitResult = configurations.WaitResult,
@@ -111,8 +116,7 @@ public class DtmGrpcTmClient : ITmClient
 
         foreach (var step in job.Steps)
         {
-            var dtmStepInfoModel =
-                await StepToDtmStepConvertResolver.ResolveAsync(step);
+            var dtmStepInfoModel = await StepToDtmStepConvertResolver.ResolveAsync(step);
 
             dtmSteps.Add(dtmStepInfoModel.Step);
             dtmBinPayloads.Add(dtmStepInfoModel.BinPayload);

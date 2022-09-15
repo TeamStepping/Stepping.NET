@@ -16,10 +16,10 @@ public class FakeDtmGrpcTmClient : DtmGrpcTmClient
     public FakeDtmGrpcTmClient(
         IOptions<SteppingDtmGrpcOptions> options,
         ISteppingJsonSerializer jsonSerializer,
-        DtmServer.DtmServerClient dtmServerClient,
+        Clients.Dtm.DtmClient dtmClient,
         IStepToDtmStepConvertResolver stepToDtmStepConvertResolver,
         ISteppingDbContextLookupInfoProvider dbContextLookupInfoProvider)
-        : base(options, jsonSerializer, dtmServerClient, stepToDtmStepConvertResolver, dbContextLookupInfoProvider)
+        : base(options, jsonSerializer, dtmClient, stepToDtmStepConvertResolver, dbContextLookupInfoProvider)
     {
     }
 

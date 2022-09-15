@@ -25,6 +25,19 @@ See DTM's [official document](https://en.dtm.pub/guide/install.html) to learn ho
    ```
 3. Configure gRPC services:
    ```csharp
-   app.UseRouting();
-   app.UseEndpoints(builder => builder.MapGrpcService<SteppingService>());
+   app.MapGrpcService<SteppingService>();
+   ```
+4. If you use HTTP (not HTTPS), please enable HTTP 2 for gRPC. For example, configure the `appsettings.json` if you use kestrel:
+   ```json
+   "Kestrel": {
+       "Endpoints": {
+           "Grpc": {
+               "Url": "http://localhost:5000",
+               "Protocols": "Http2"
+           },
+           "Http": {
+               "Url": "http://localhost:5001"
+           }
+       }
+   }
    ```

@@ -38,6 +38,11 @@ public class HttpRequestStepToDtmStepConverter : IStepToDtmStepConverter
             throw new SteppingException("DTM support only GET and POST methods for HTTP request.");
         }
 
+        if (requestArgs.HttpMethod == HttpMethod.Get && requestArgs.Payload.Any())
+        {
+            throw new SteppingException("DTM doesn't support GET with payload.");
+        }
+
         if (requestArgs.Headers.Any())
         {
             throw new SteppingException(
