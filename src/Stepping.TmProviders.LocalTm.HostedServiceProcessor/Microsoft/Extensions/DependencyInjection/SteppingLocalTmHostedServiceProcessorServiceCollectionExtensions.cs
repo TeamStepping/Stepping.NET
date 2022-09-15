@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SteppingLocalTmHostedServiceProcessorServiceCollectionExtensions
 {
-    public static IServiceCollection AddLocalTmHostedServiceProcessor(this IServiceCollection services,
+    public static IServiceCollection AddSteppingLocalTmHostedServiceProcessor(this IServiceCollection services,
         Func<IServiceProvider, IDistributedLockProvider>? setupDistributedLockProvider = null)
     {
         if (setupDistributedLockProvider == null)
