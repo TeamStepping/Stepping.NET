@@ -50,8 +50,18 @@ app.MapPost("/step1", async context =>
     context.Response.StatusCode = 200;
 });
 
+var canExecuteStep2 = false;
+
 app.MapGet("/step2", context =>
 {
+    if (!canExecuteStep2)
+    {
+        canExecuteStep2 = true;
+        Console.WriteLine("Step 2 deliberately failed to execute and waited for the TM to pick it up.");
+        context.Response.StatusCode = 500;
+        return Task.CompletedTask;
+    }
+
     context.Response.OnCompleted(async () => { await app.StopAsync(); });
 
     if (!context.Request.Query.ContainsKey("hello") || context.Request.Query["hello"] != "world")
