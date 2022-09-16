@@ -33,7 +33,7 @@ public class HostedServiceLocalTmProcessor : BackgroundService, ILocalTmProcesso
 
     public async Task ProcessAsync(CancellationToken cancellationToken)
     {
-        await using var scope = _serviceScopeFactory.CreateAsyncScope();
+        using var scope = _serviceScopeFactory.CreateScope();
 
         var steppingDistributedLock = scope.ServiceProvider.GetRequiredService<ISteppingDistributedLock>();
 
