@@ -5,7 +5,7 @@ namespace Stepping.TmProviders.Dtm.Grpc.Secrets;
 
 public class DefaultActionApiTokenChecker : IActionApiTokenChecker
 {
-    protected SteppingDtmGrpcOptions Options { get; init; }
+    protected SteppingDtmGrpcOptions Options { get; set; }
 
     public DefaultActionApiTokenChecker(IOptions<SteppingDtmGrpcOptions> options)
     {
