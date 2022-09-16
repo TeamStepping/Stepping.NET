@@ -40,8 +40,10 @@ Stepping provides a simple built-in TM implementation. It runs with your app as 
    ```
 
    `HostedServiceLocalTmProcessor` is only available for standalone environments by default. If you are using it in a clustered environment, you need to configure the distributed lock provider.  
+
    Local-TM uses [DistributedLock](https://github.com/madelson/DistributedLock) as a distributed lock implementation. It implements multiple distributed lock providers, and you can choose one for Local-TM `HostedServiceProcessor`. See its [own documentation](https://github.com/madelson/DistributedLock) for details.
 
    ```csharp
+   // Configure redis distributed lock provider for HostedServiceProcessor
    services.AddSteppingLocalTmHostedServiceProcessor(new RedisDistributedSynchronizationProvider(database));
    ```
