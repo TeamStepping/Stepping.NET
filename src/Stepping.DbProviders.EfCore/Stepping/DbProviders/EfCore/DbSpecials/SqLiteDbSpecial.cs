@@ -1,5 +1,4 @@
-﻿using Stepping.Core;
-using Stepping.Core.Options;
+﻿using Stepping.Core.Options;
 
 namespace Stepping.DbProviders.EfCore.DbSpecials;
 
@@ -14,6 +13,16 @@ public class SqLiteDbSpecial : IDbSpecial
         "select reason from {0} where gid=@gid and branch_id=@branch_id and op=@op and barrier_id=@barrier_id";
 
     public string Name { get; } = "sqlite";
+
+    public string GetExistBarrierTableSql(SteppingOptions options)
+    {
+        var configuredTableName = options.BarrierTableName ?? DefaultBarrierTableName;
+        var tableName = configuredTableName;
+
+        return $@"
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';
+";
+    }
 
     public virtual string GetCreateBarrierTableSql(SteppingOptions options)
     {

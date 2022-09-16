@@ -7,7 +7,7 @@ public abstract class SteppingDbProvidersMongoTestBase : SteppingTestBase
 {
     protected override void ConfigureServices(ServiceCollection services)
     {
-        MongoDbInitializer.CacheEnabled = false;
+        MongoDbInitializer.CacheDisabled = true;
 
         services.AddSteppingMongoDb(options =>
         {

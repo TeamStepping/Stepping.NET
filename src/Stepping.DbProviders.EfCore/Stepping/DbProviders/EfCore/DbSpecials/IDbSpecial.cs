@@ -5,6 +5,8 @@ namespace Stepping.DbProviders.EfCore.DbSpecials;
 
 public interface IDbSpecial
 {
+    string GetExistBarrierTableSql(SteppingOptions options);
+
     string GetCreateBarrierTableSql(SteppingOptions options);
 
     string GetInsertIgnoreSqlTemplate(string? tableName);

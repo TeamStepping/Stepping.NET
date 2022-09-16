@@ -14,6 +14,19 @@ public class PostgreSqlDbSpecial : IDbSpecial
     public static string QueryPreparedSqlFormat { get; set; } =
         "select reason from {0} where gid=@gid and branch_id=@branch_id and op=@op and barrier_id=@barrier_id";
 
+    public string GetExistBarrierTableSql(SteppingOptions options)
+    {
+        var configuredTableName = options.BarrierTableName ?? DefaultBarrierTableName;
+        var split = configuredTableName.Split('.', 2, StringSplitOptions.RemoveEmptyEntries);
+
+        var schemaName = split.Length == 2 ? split[0] : null;
+        var tableName = split.Length == 2 ? split[1] : configuredTableName;
+
+        return $@"
+SELECT COUNT(table_name) FROM information_schema.tables WHERE table_schema LIKE '{schemaName}' AND table_type LIKE 'BASE TABLE' AND table_name = '{tableName}';
+";
+    }
+
     public virtual string GetCreateBarrierTableSql(SteppingOptions options)
     {
         var configuredTableName = options.BarrierTableName ?? DefaultBarrierTableName;
