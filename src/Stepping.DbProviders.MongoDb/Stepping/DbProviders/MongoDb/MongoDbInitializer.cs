@@ -11,7 +11,7 @@ public class MongoDbInitializer : IDbInitializer
     private ILogger<MongoDbInitializer> Logger { get; }
 
     protected static ConcurrentDictionary<string, bool> CreatedServers { get; } = new();
-    public static bool CacheEnabled { get; set; }
+    public static bool CacheDisabled { get; set; }
 
     public MongoDbInitializer(
         IBarrierCollectionProvider barrierCollectionProvider,
@@ -27,7 +27,7 @@ public class MongoDbInitializer : IDbInitializer
 
         var servers = dbContext.Client.Settings.Servers.Select(x => x.ToString()).ToList();
 
-        if (CacheEnabled && servers.All(x => CreatedServers.ContainsKey(x)))
+        if (!CacheDisabled && servers.All(x => CreatedServers.ContainsKey(x)))
         {
             return;
         }
