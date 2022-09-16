@@ -1,16 +1,19 @@
 <Project>
-  <PropertyGroup>
+    <PropertyGroup>
 
-    <GrpcVersion>2.47.*</GrpcVersion>
-    <GoogleProtobufVersion>3.21.*</GoogleProtobufVersion>
-    
-    <DapperVersion>2.0.*</DapperVersion>
-    <MongoDbDriverVersion>2.16.*</MongoDbDriverVersion>
-    
-    <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
-    
-    <MicrosoftPackagesVersion>6.0.*</MicrosoftPackagesVersion>
-    <MicrosoftNetTestSdkVersion>17.2.*</MicrosoftNetTestSdkVersion>
+        <GrpcVersion>2.47.*</GrpcVersion>
+        <GoogleProtobufVersion>3.21.*</GoogleProtobufVersion>
 
-  </PropertyGroup>
+        <EfCoreVersion>6.0.*</EfCoreVersion>
+        <EfCoreVersionForNetStandard21>5.0.*</EfCoreVersionForNetStandard21>
+
+        <DapperVersion>2.0.*</DapperVersion>
+        <MongoDbDriverVersion>2.16.*</MongoDbDriverVersion>
+
+        <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
+
+        <MicrosoftPackagesVersion>6.0.*</MicrosoftPackagesVersion>
+        <MicrosoftNetTestSdkVersion>17.2.*</MicrosoftNetTestSdkVersion>
+
+    </PropertyGroup>
 </Project>
