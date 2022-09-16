@@ -41,7 +41,6 @@ public class EfCoreTransactionStore : ITransactionStore
             .Where(x =>
                 x.Status != LocalTmConst.StatusFinish && x.Status != LocalTmConst.StatusRollback &&
                 ((x.NextRetryTime == null && x.CreationTime <= timeoutTime) || x.NextRetryTime <= now)
-
             )
             .OrderBy(x => x.NextRetryTime)
             .ToListAsync(cancellationToken);
