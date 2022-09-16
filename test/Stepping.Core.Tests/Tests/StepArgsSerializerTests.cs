@@ -7,7 +7,19 @@ namespace Stepping.Core.Tests.Tests;
 
 public class StepArgsSerializerTests : SteppingCoreTestBase
 {
-    public record MyArgs(int Num, string Str, DateTime Time);
+    class MyArgs
+    {
+        public int Num { get; set; }
+        public string Str { get; set; }
+        public DateTime Time { get; set; }
+
+        public MyArgs(int num, string str, DateTime time)
+        {
+            Num = num;
+            Str = str;
+            Time = time;
+        }
+    }
 
     protected static readonly object Args = new MyArgs(1, "text", DateTime.Today);
 

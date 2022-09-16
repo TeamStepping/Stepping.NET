@@ -99,7 +99,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
 
         sessionHandle1.Dispose();
 
-#if NET5_0
+#if NETCOREAPP3_1
         task.Wait(CancellationToken.None);
 #else
         await task.WaitAsync(CancellationToken.None);
@@ -142,7 +142,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
 
         sessionHandle1.Dispose();
 
-#if NET5_0
+#if NETCOREAPP3_1
         task.Wait(CancellationToken.None);
 #else
         await task.WaitAsync(CancellationToken.None);

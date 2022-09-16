@@ -97,7 +97,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
         await transaction1.DisposeAsync();
         await dbContext1.DisposeAsync();
 
-#if NET5_0
+#if NETCOREAPP3_1
         task.Wait(CancellationToken.None);
 #else
         await task.WaitAsync(CancellationToken.None);
@@ -141,7 +141,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
         await transaction1.DisposeAsync();
         await dbContext1.DisposeAsync();
 
-#if NET5_0
+#if NETCOREAPP3_1
         task.Wait(CancellationToken.None);
 #else
         await task.WaitAsync(CancellationToken.None);
