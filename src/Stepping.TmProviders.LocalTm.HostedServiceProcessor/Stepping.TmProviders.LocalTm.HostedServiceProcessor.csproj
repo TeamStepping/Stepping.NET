@@ -10,8 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DistributedLock.Core" Version="$(DistributedLockCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(MicrosoftPackagesVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Stepping.TmProviders.LocalTm.Core\Stepping.TmProviders.LocalTm.Core.csproj" />
-    <ProjectReference Include="..\Stepping.TmProviders.LocalTm.HostedServiceProcessor\Stepping.TmProviders.LocalTm.HostedServiceProcessor.csproj" />
   </ItemGroup>
 
 </Project>

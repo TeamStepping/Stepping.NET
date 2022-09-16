@@ -3,7 +3,7 @@
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace />
@@ -11,7 +11,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Stepping.TmProviders.LocalTm.Core\Stepping.TmProviders.LocalTm.Core.csproj" />
-    <ProjectReference Include="..\Stepping.TmProviders.LocalTm.HostedServiceProcessor\Stepping.TmProviders.LocalTm.HostedServiceProcessor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
   </ItemGroup>
 
 </Project>

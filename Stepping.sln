@@ -1,30 +1,49 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.Core", "src\Stepping.Core\Stepping.Core.csproj", "{B498BC14-E20A-439D-840F-076CA2C40E31}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.Core", "src\Stepping.Core\Stepping.Core.csproj", "{B498BC14-E20A-439D-840F-076CA2C40E31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm.Grpc", "src\Stepping.TmProviders.Dtm.Grpc\Stepping.TmProviders.Dtm.Grpc.csproj", "{55116019-F0FA-46C7-BC0F-FCC550AE2881}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TmProviders.Dtm.Grpc", "src\Stepping.TmProviders.Dtm.Grpc\Stepping.TmProviders.Dtm.Grpc.csproj", "{55116019-F0FA-46C7-BC0F-FCC550AE2881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalTm", "src\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj", "{5AC4B579-20B2-4BA5-B624-8C329CBD5B47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TmProviders.LocalTm", "src\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj", "{5AC4B579-20B2-4BA5-B624-8C329CBD5B47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.EfCore", "src\Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj", "{F37B3C40-7D66-4E40-9FB2-F722CECB953E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.DbProviders.EfCore", "src\Stepping.DbProviders.EfCore\Stepping.DbProviders.EfCore.csproj", "{F37B3C40-7D66-4E40-9FB2-F722CECB953E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.MongoDb", "src\Stepping.DbProviders.MongoDb\Stepping.DbProviders.MongoDb.csproj", "{A61DA92F-A16E-471C-97A9-4D60D4C7F15E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.DbProviders.MongoDb", "src\Stepping.DbProviders.MongoDb\Stepping.DbProviders.MongoDb.csproj", "{A61DA92F-A16E-471C-97A9-4D60D4C7F15E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6C260B44-F5E0-4E03-8C37-0CC479C592F0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9A5887ED-22DB-4216-AB0E-69CBC9607436}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TestBase", "test\Stepping.TestBase\Stepping.TestBase.csproj", "{5361DB4C-0E6A-4011-842D-A36EE576498A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TestBase", "test\Stepping.TestBase\Stepping.TestBase.csproj", "{5361DB4C-0E6A-4011-842D-A36EE576498A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.Core.Tests", "test\Stepping.Core.Tests\Stepping.Core.Tests.csproj", "{CA24C74B-AB48-4FB9-84FC-DF433C37A338}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.Core.Tests", "test\Stepping.Core.Tests\Stepping.Core.Tests.csproj", "{CA24C74B-AB48-4FB9-84FC-DF433C37A338}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.EfCore.Tests", "test\Stepping.DbProviders.EfCore.Tests\Stepping.DbProviders.EfCore.Tests.csproj", "{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.DbProviders.EfCore.Tests", "test\Stepping.DbProviders.EfCore.Tests\Stepping.DbProviders.EfCore.Tests.csproj", "{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.DbProviders.MongoDb.Tests", "test\Stepping.DbProviders.MongoDb.Tests\Stepping.DbProviders.MongoDb.Tests.csproj", "{A1703140-4869-4EC5-9E34-6B3C311CA1B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.DbProviders.MongoDb.Tests", "test\Stepping.DbProviders.MongoDb.Tests\Stepping.DbProviders.MongoDb.Tests.csproj", "{A1703140-4869-4EC5-9E34-6B3C311CA1B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm.Grpc.Tests", "test\Stepping.TmProviders.Dtm.Grpc.Tests\Stepping.TmProviders.Dtm.Grpc.Tests.csproj", "{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TmProviders.Dtm.Grpc.Tests", "test\Stepping.TmProviders.Dtm.Grpc.Tests\Stepping.TmProviders.Dtm.Grpc.Tests.csproj", "{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TmProviders.LocalTm.EfCore", "src\Stepping.TmProviders.LocalTm.EfCore\Stepping.TmProviders.LocalTm.EfCore.csproj", "{D7C33D3B-8295-461A-B7AD-313687C3A4CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TmProviders.LocalTm.MongoDb", "src\Stepping.TmProviders.LocalTm.MongoDb\Stepping.TmProviders.LocalTm.MongoDb.csproj", "{79449F48-F987-45D1-A896-00217795C16C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TmProviders.LocalTm.Core", "src\Stepping.TmProviders.LocalTm.Core\Stepping.TmProviders.LocalTm.Core.csproj", "{B895190A-FEF7-4184-A79D-B26B86C103DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stepping.TmProviders.LocalTm.HostedServiceProcessor", "src\Stepping.TmProviders.LocalTm.HostedServiceProcessor\Stepping.TmProviders.LocalTm.HostedServiceProcessor.csproj", "{81D64DB8-D521-425A-86E6-8BE4295B7B63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalTm.Core.Tests", "test\Stepping.TmProviders.LocalTm.Core.Tests\Stepping.TmProviders.LocalTm.Core.Tests.csproj", "{0952E16D-C3F9-4E6B-A733-818554AF02DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalTm.EfCore.Tests", "test\Stepping.TmProviders.LocalTm.EfCore.Tests\Stepping.TmProviders.LocalTm.EfCore.Tests.csproj", "{55178B9F-EC00-4065-AFAF-4353584E5E5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalTm.MongoDb.Tests", "test\Stepping.TmProviders.LocalTm.MongoDb.Tests\Stepping.TmProviders.LocalTm.MongoDb.Tests.csproj", "{DC01F00F-4115-4430-8842-D043833D53A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.Dtm.Grpc.TestApp", "test\Stepping.TmProviders.Dtm.Grpc.TestApp\Stepping.TmProviders.Dtm.Grpc.TestApp.csproj", "{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stepping.TmProviders.LocalTm.TestApp", "test\Stepping.TmProviders.LocalTm.TestApp\Stepping.TmProviders.LocalTm.TestApp.csproj", "{04AFB8CC-3836-4B88-91D6-025EA0796EE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,22 +91,68 @@ Global
 		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7C33D3B-8295-461A-B7AD-313687C3A4CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7C33D3B-8295-461A-B7AD-313687C3A4CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7C33D3B-8295-461A-B7AD-313687C3A4CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7C33D3B-8295-461A-B7AD-313687C3A4CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79449F48-F987-45D1-A896-00217795C16C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79449F48-F987-45D1-A896-00217795C16C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79449F48-F987-45D1-A896-00217795C16C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79449F48-F987-45D1-A896-00217795C16C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B895190A-FEF7-4184-A79D-B26B86C103DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B895190A-FEF7-4184-A79D-B26B86C103DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B895190A-FEF7-4184-A79D-B26B86C103DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B895190A-FEF7-4184-A79D-B26B86C103DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81D64DB8-D521-425A-86E6-8BE4295B7B63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81D64DB8-D521-425A-86E6-8BE4295B7B63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81D64DB8-D521-425A-86E6-8BE4295B7B63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81D64DB8-D521-425A-86E6-8BE4295B7B63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0952E16D-C3F9-4E6B-A733-818554AF02DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0952E16D-C3F9-4E6B-A733-818554AF02DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0952E16D-C3F9-4E6B-A733-818554AF02DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0952E16D-C3F9-4E6B-A733-818554AF02DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55178B9F-EC00-4065-AFAF-4353584E5E5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55178B9F-EC00-4065-AFAF-4353584E5E5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55178B9F-EC00-4065-AFAF-4353584E5E5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55178B9F-EC00-4065-AFAF-4353584E5E5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC01F00F-4115-4430-8842-D043833D53A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC01F00F-4115-4430-8842-D043833D53A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC01F00F-4115-4430-8842-D043833D53A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC01F00F-4115-4430-8842-D043833D53A6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B498BC14-E20A-439D-840F-076CA2C40E31} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
-		{F37B3C40-7D66-4E40-9FB2-F722CECB953E} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
-		{A61DA92F-A16E-471C-97A9-4D60D4C7F15E} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
 		{55116019-F0FA-46C7-BC0F-FCC550AE2881} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
 		{5AC4B579-20B2-4BA5-B624-8C329CBD5B47} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{F37B3C40-7D66-4E40-9FB2-F722CECB953E} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{A61DA92F-A16E-471C-97A9-4D60D4C7F15E} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
 		{5361DB4C-0E6A-4011-842D-A36EE576498A} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{CA24C74B-AB48-4FB9-84FC-DF433C37A338} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{9CEC48A2-94F6-4693-9A1B-B781BE03BC3A} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{A1703140-4869-4EC5-9E34-6B3C311CA1B5} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{E7C89E2E-5B70-4F50-8D9F-5AF0F65E653B} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{D7C33D3B-8295-461A-B7AD-313687C3A4CA} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{79449F48-F987-45D1-A896-00217795C16C} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{B895190A-FEF7-4184-A79D-B26B86C103DD} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{81D64DB8-D521-425A-86E6-8BE4295B7B63} = {6C260B44-F5E0-4E03-8C37-0CC479C592F0}
+		{0952E16D-C3F9-4E6B-A733-818554AF02DF} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{55178B9F-EC00-4065-AFAF-4353584E5E5C} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{DC01F00F-4115-4430-8842-D043833D53A6} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
 		{697F5D0A-1EAD-4043-BF9B-CB6ED162FF69} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+		{04AFB8CC-3836-4B88-91D6-025EA0796EE3} = {9A5887ED-22DB-4216-AB0E-69CBC9607436}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {877404AF-4462-4711-899B-CEFB977FDC03}
 	EndGlobalSection
 EndGlobal
