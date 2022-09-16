@@ -8,6 +8,8 @@ public abstract class SteppingDbProvidersEfCoreTestBase : SteppingTestBase
 {
     protected override void ConfigureServices(ServiceCollection services)
     {
+        EfCoreDbInitializer.CacheDisabled = true;
+
         services.AddSteppingEfCore();
         services.AddEntityFrameworkSqlite();
 

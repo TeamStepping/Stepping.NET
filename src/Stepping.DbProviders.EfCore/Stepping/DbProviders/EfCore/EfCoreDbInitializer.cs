@@ -14,7 +14,7 @@ public class EfCoreDbInitializer : IDbInitializer
     private ILogger<EfCoreDbInitializer> Logger { get; }
 
     protected static ConcurrentDictionary<string, bool> CreatedConnectionStrings { get; } = new();
-    public static bool CacheEnabled { get; set; }
+    public static bool CacheDisabled { get; set; }
 
     protected SteppingOptions Options { get; }
 
@@ -32,7 +32,7 @@ public class EfCoreDbInitializer : IDbInitializer
 
         var connectionString = dbContext.ConnectionString;
 
-        if (CacheEnabled && CreatedConnectionStrings.ContainsKey(connectionString!))
+        if (!CacheDisabled && CreatedConnectionStrings.ContainsKey(connectionString!))
         {
             return;
         }
