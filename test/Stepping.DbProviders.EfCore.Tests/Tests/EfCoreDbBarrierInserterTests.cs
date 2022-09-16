@@ -66,8 +66,10 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
     public async Task Should_Insert_Rollback_Success_If_Another_Transaction_Commit()
     {
         var dbContext1 = ServiceProvider.GetRequiredService<FakeSharedDbContext>();
-        var transaction1 = await dbContext1.Database.BeginTransactionAsync();
         var steppingDbContext1 = new EfCoreSteppingDbContext(dbContext1);
+        await InitializeBarrierTableAsync(steppingDbContext1);
+
+        var transaction1 = await dbContext1.Database.BeginTransactionAsync();
 
         var barrierInfoModel = new BarrierInfoModel(SteppingConsts.TypeMsg, Guid.NewGuid().ToString(),
             SteppingConsts.MsgBranchId, SteppingConsts.MsgOp, SteppingConsts.MsgBarrierId,
@@ -84,7 +86,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
             await using var scope = ServiceProvider.CreateAsyncScope();
             var dbContext2 = scope.ServiceProvider.GetRequiredService<FakeSharedDbContext>();
             var steppingDbContext2 = new EfCoreSteppingDbContext(dbContext2);
-            
+
             // Todo: sometimes throw `System.ArgumentOutOfRangeException Specified argument was out of the range of valid values. at SQLitePCL.SQLite3Provider_e_sqlite3.SQLitePCL.ISQLite3Provider.sqlite3_prepare_v2(sqlite3 db, ReadOnlySpan`1 sql, IntPtr& stm, ReadOnlySpan`1& tail)`
             result = await DbBarrierInserter.TryInsertBarrierAsync(barrierInfoModel, steppingDbContext2);
         });
@@ -95,7 +97,11 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
         await transaction1.DisposeAsync();
         await dbContext1.DisposeAsync();
 
+#if NET5_0
+        task.Wait(CancellationToken.None);
+#else
         await task.WaitAsync(CancellationToken.None);
+#endif
 
         result.ShouldBeFalse();
     }
@@ -104,8 +110,10 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
     public async Task Should_Insert_Rollback_Success_If_Another_Transaction_Rollback()
     {
         var dbContext1 = ServiceProvider.GetRequiredService<FakeSharedDbContext>();
-        var transaction1 = await dbContext1.Database.BeginTransactionAsync();
         var steppingDbContext1 = new EfCoreSteppingDbContext(dbContext1);
+        await InitializeBarrierTableAsync(steppingDbContext1);
+
+        var transaction1 = await dbContext1.Database.BeginTransactionAsync();
 
         var barrierInfoModel = new BarrierInfoModel(SteppingConsts.TypeMsg, Guid.NewGuid().ToString(),
             SteppingConsts.MsgBranchId, SteppingConsts.MsgOp, SteppingConsts.MsgBarrierId,
@@ -122,7 +130,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
             await using var scope = ServiceProvider.CreateAsyncScope();
             var dbContext2 = scope.ServiceProvider.GetRequiredService<FakeSharedDbContext>();
             var steppingDbContext2 = new EfCoreSteppingDbContext(dbContext2);
-            
+
             // Todo: sometimes throw `System.ArgumentOutOfRangeException Specified argument was out of the range of valid values. at SQLitePCL.SQLite3Provider_e_sqlite3.SQLitePCL.ISQLite3Provider.sqlite3_prepare_v2(sqlite3 db, ReadOnlySpan`1 sql, IntPtr& stm, ReadOnlySpan`1& tail)`
             result = await DbBarrierInserter.TryInsertBarrierAsync(barrierInfoModel, steppingDbContext2);
         });
@@ -133,8 +141,18 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
         await transaction1.DisposeAsync();
         await dbContext1.DisposeAsync();
 
+#if NET5_0
+        task.Wait(CancellationToken.None);
+#else
         await task.WaitAsync(CancellationToken.None);
+#endif
 
         result.ShouldBeTrue();
+    }
+
+    private async Task InitializeBarrierTableAsync(EfCoreSteppingDbContext efCoreSteppingDbContext)
+    {
+        var dbInitializer = ServiceProvider.GetRequiredService<IDbInitializer>();
+        await dbInitializer.TryInitializeAsync(new EfCoreDbInitializingInfoModel(efCoreSteppingDbContext));
     }
 }

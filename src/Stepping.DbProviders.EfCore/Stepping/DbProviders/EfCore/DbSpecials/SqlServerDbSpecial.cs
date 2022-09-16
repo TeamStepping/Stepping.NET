@@ -13,6 +13,19 @@ public class SqlServerDbSpecial : IDbSpecial
     public static string QueryPreparedSqlFormat { get; set; } =
         "select reason from {0} where gid=@gid and branch_id=@branch_id and op=@op and barrier_id=@barrier_id";
 
+    public string GetExistBarrierTableSql(SteppingOptions options)
+    {
+        var configuredTableName = options.BarrierTableName ?? DefaultBarrierTableName;
+        var split = configuredTableName.Split('.', 2, StringSplitOptions.RemoveEmptyEntries);
+
+        var schemaName = split.Length == 2 ? split[0] : null;
+        var tableName = split.Length == 2 ? split[1] : configuredTableName;
+
+        return $@"
+SELECT COUNT(*) FROM sys.tables WHERE name = '{tableName}' AND SCHEMA_NAME(schema_id) = '{schemaName}';
+";
+    }
+
     public virtual string GetCreateBarrierTableSql(SteppingOptions options)
     {
         var configuredTableName = options.BarrierTableName ?? DefaultBarrierTableName;

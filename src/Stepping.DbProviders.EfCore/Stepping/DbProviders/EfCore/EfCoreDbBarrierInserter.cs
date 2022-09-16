@@ -75,7 +75,8 @@ public class EfCoreDbBarrierInserter : IDbBarrierInserter
                     branch_id = barrierInfoModel.BranchId,
                     op = barrierInfoModel.Op,
                     barrier_id = barrierInfoModel.BarrierId
-                });
+                },
+                efCoreDbContext.DbContext.Database.CurrentTransaction?.GetDbTransaction());
 
             if (reason.Equals(barrierInfoModel.Reason))
             {
