@@ -1,5 +1,4 @@
-﻿using Stepping.Core;
-using Stepping.Core.Options;
+﻿using Stepping.Core.Options;
 
 namespace Stepping.DbProviders.EfCore.DbSpecials;
 
@@ -12,6 +11,19 @@ public class MySqlDbSpecial : IDbSpecial
 
     public static string QueryPreparedSqlFormat { get; set; } =
         "select reason from {0} where gid=@gid and branch_id=@branch_id and op=@op and barrier_id=@barrier_id";
+
+    public string GetExistBarrierTableSql(SteppingOptions options)
+    {
+        var configuredTableName = options.BarrierTableName ?? DefaultBarrierTableName;
+        var split = configuredTableName.Split('.', 2, StringSplitOptions.RemoveEmptyEntries);
+
+        var databaseName = split.Length == 2 ? split[0] : null;
+        var tableName = split.Length == 2 ? split[1] : configuredTableName;
+
+        return $@"
+SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '{databaseName}') AND (TABLE_NAME = '{tableName}');
+";
+    }
 
     public virtual string GetCreateBarrierTableSql(SteppingOptions options)
     {
