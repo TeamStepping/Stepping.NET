@@ -28,7 +28,10 @@ Stepping provides a simple built-in TM implementation. It runs with your app as 
    services.AddSteppingLocalTm();
 
    // Configure store serivce
-   services.AddSteppingLocalTmEfCore(options => { options.UseSqlServer(connectionString); });
+   services.AddSteppingLocalTmEfCore(options => 
+   { 
+      options.UseSqlServer(connectionString, builder => builder.MigrationsAssembly(typeof(Program).Assembly.FullName));
+   });
    services.AddSteppingLocalTmMongoDb(options =>
    {
       options.ConnectionString = connectionString;
@@ -37,6 +40,13 @@ Stepping provides a simple built-in TM implementation. It runs with your app as 
 
    // Configure hosted service
    services.AddSteppingLocalTmHostedServiceProcessor();
+   ```
+
+   > If you are using the EfCore persistence implementation, you should execute the EfCore migration command before you run it for the first time.
+
+   ```chsarp
+   dotnet ef migrations add AddedLocalTm --context LocalTmDbContext
+   dotnet ef database update
    ```
 
    `HostedServiceLocalTmProcessor` is only available for standalone environments by default. If you are using it in a clustered environment, you need to configure the distributed lock provider.  
