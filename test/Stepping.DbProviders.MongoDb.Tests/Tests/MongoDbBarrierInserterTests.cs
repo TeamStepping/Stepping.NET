@@ -88,7 +88,8 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         await using var scope = ServiceProvider.CreateAsyncScope();
         var client2 = new MongoClient(MongoDbFixture.ConnectionString);
         var database2 = client2.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext2 = new MongoDbSteppingDbContext(client2, database2, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext2 =
+            new MongoDbSteppingDbContext(client2, database2, null, MongoDbFixture.ConnectionString);
 
         var task = Task.Run(async () =>
             result = await DbBarrierInserter.TryInsertBarrierAsync(barrierInfoModel, steppingDbContext2));
@@ -98,7 +99,11 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
 
         sessionHandle1.Dispose();
 
+#if NETCOREAPP3_1
+        task.Wait(CancellationToken.None);
+#else
         await task.WaitAsync(CancellationToken.None);
+#endif
 
         result.ShouldBeFalse();
     }
@@ -126,7 +131,8 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         await using var scope = ServiceProvider.CreateAsyncScope();
         var client2 = new MongoClient(MongoDbFixture.ConnectionString);
         var database2 = client2.GetDatabase(MongoDbTestConsts.Database);
-        var steppingDbContext2 = new MongoDbSteppingDbContext(client2, database2, null, MongoDbFixture.ConnectionString);
+        var steppingDbContext2 =
+            new MongoDbSteppingDbContext(client2, database2, null, MongoDbFixture.ConnectionString);
 
         var task = Task.Run(async () =>
             result = await DbBarrierInserter.TryInsertBarrierAsync(barrierInfoModel, steppingDbContext2));
@@ -136,7 +142,11 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
 
         sessionHandle1.Dispose();
 
+#if NETCOREAPP3_1
+        task.Wait(CancellationToken.None);
+#else
         await task.WaitAsync(CancellationToken.None);
+#endif
 
         result.ShouldBeTrue();
     }
