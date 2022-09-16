@@ -5,20 +5,43 @@ Stepping provides a simple built-in TM implementation. It runs with your app as 
 ### Install in Your Project
 
 1. Install the NuGet package:
-   ```shell
+
+   ```powershell
    # Install the main package
    Install-Package Stepping.TmProviders.LocalTm
    
    # Install one of the persistence implementation packages
    Install-Package Stepping.TmProviders.LocalTm.EfCore
    Install-Package Stepping.TmProviders.LocalTm.MongoDb
-   Install-Package Stepping.TmProviders.LocalTm.Redis
    ```
+
+   Local-TM use `HostedService` to implement background tasks by default. If you want to implement background tasks yourself, you use `Stepping.TmProviders.LocalTm.Core` instead of `Stepping.TmProviders.LocalTm`
+
+   ```powershell
+   Install-Package Stepping.TmProviders.LocalTm.Core
+   ```
+
 2. Configure services:
+
    ```csharp
+   // Configure core service
    services.AddSteppingLocalTm();
-   
-   services.AddSteppingLocalTmEfCore({todo});
-   services.AddSteppingLocalTmMongoDb({todo});
-   services.AddSteppingLocalTmRedis({todo});
+
+   // Configure store serivce
+   services.AddSteppingLocalTmEfCore(options => { options.UseSqlServer(connectionString); });
+   services.AddSteppingLocalTmMongoDb(options =>
+   {
+      options.ConnectionString = connectionString;
+      options.DatabaseName = database;
+   });
+
+   // Configure hosted service
+   services.AddSteppingLocalTmHostedServiceProcessor();
+   ```
+
+   `HostedServiceLocalTmProcessor` is only available for standalone environments by default. If you are using it in a clustered environment, you need to configure the distributed lock provider.  
+   Local-TM uses [DistributedLock](https://github.com/madelson/DistributedLock) as a distributed lock implementation. It implements multiple distributed lock providers, and you can choose one for Local-TM `HostedServiceProcessor`. See its [own documentation](https://github.com/madelson/DistributedLock) for details.
+
+   ```csharp
+   services.AddSteppingLocalTmHostedServiceProcessor(new RedisDistributedSynchronizationProvider(database));
    ```
