@@ -48,7 +48,7 @@ public class MongoDbTransactionStore : ITransactionStore
         var tmTransactions = await LocalTmMongoDbContext.GetTmTransactionCollection().AsQueryable()
             .Where(x =>
                 x.Status != LocalTmConst.StatusFinish && x.Status != LocalTmConst.StatusRollback &&
-                ((x.NextRetryTime == null && x.CreationTime <= timeoutTime ) || x.NextRetryTime <= now)
+                ((x.NextRetryTime == null && x.CreationTime <= timeoutTime) || x.NextRetryTime <= now)
             )
             .OrderBy(x => x.NextRetryTime)
             .ToListAsync(cancellationToken: cancellationToken);

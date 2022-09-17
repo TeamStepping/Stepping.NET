@@ -18,7 +18,7 @@ public abstract class SteppingTmProvidersDtmGrpcTestBase : SteppingTestBase
         });
 
         base.ConfigureServices(services);
-        
+
         services.AddSingleton<IActionApiTokenChecker, FakeDefaultActionApiTokenChecker>();
 
         services.AddTransient<ITmClient, FakeDtmGrpcTmClient>();

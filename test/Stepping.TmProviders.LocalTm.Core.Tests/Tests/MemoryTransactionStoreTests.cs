@@ -121,7 +121,7 @@ public class MemoryTransactionStoreTests : SteppingTmProvidersLocalTmCoreTestBas
     [Fact]
     public async Task Should_Return_Null_Transaction_If_Gid_Exists()
     {
-         (await TransactionStore.FindAsync(Guid.NewGuid().ToString("N"))).ShouldBeNull();
+        (await TransactionStore.FindAsync(Guid.NewGuid().ToString("N"))).ShouldBeNull();
     }
 
     [Fact]

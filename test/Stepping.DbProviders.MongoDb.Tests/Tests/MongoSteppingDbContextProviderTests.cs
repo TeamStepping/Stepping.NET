@@ -24,7 +24,7 @@ public class MongoSteppingDbContextProviderTests : SteppingDbProvidersMongoTestB
     public async Task Should_Get_SteppingDbContext()
     {
         SteppingDbContextProvider.DbProviderName.ShouldBe(SteppingDbProviderMongoDbConsts.DbProviderName);
-    
+
         var dbContext = await SteppingDbContextProvider.GetAsync(new SteppingDbContextLookupInfoModel(
             SteppingDbProviderMongoDbConsts.DbProviderName,
             await ConnectionStringHasher.HashAsync(MongoDbFixture.ConnectionString),
@@ -32,7 +32,7 @@ public class MongoSteppingDbContextProviderTests : SteppingDbProvidersMongoTestB
             MongoDbTestConsts.Database,
             await TenantIdProvider.GetCurrentAsync(),
             "my-custom-info"));
-    
+
         dbContext.ShouldNotBeNull();
         dbContext.ConnectionString.ShouldBe(MongoDbFixture.ConnectionString);
         dbContext.CustomInfo.ShouldBe("my-custom-info");
