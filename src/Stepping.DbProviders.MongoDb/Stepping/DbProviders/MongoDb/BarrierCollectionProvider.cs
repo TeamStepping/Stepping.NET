@@ -13,7 +13,7 @@ public class BarrierCollectionProvider : IBarrierCollectionProvider
     {
         Options = options.Value;
     }
-    
+
     public virtual Task<IMongoCollection<SteppingBarrierDocument>> GetAsync(MongoDbSteppingDbContext context)
     {
         var configuredTableName = Options.BarrierTableName ?? SteppingBarrierConsts.DefaultBarrierCollectionName;

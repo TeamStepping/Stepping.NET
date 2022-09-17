@@ -9,6 +9,6 @@ public static class DtmConsts
     public const string ResultOngoing = "ONGOING";
 
     public const string ResultDuplicated = "DUPLICATED";
-    
+
     public const string ActionStepName = "action";
 }

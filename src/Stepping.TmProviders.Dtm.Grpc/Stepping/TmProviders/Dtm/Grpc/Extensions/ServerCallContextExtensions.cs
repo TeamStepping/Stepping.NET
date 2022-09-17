@@ -16,13 +16,13 @@ public static class ServerCallContextExtensions
             context.FindHeader(DtmRequestHeaderNames.TenantId),
             context.FindHeader(DtmRequestHeaderNames.CustomInfo));
     }
-    
+
     public static string GetHeader(this ServerCallContext context, string headerName)
     {
         return context.FindHeader(headerName) ??
                throw new SteppingException($"Cannot get {headerName} from the gRPC request headers.");
     }
-    
+
     public static string? FindHeader(this ServerCallContext context, string headerName)
     {
         return context.RequestHeaders.GetValue(headerName);

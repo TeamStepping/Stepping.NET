@@ -1,0 +1,61 @@
+name: "Test code"
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@master
+        with:
+          dotnet-version: |
+            3.1.x
+            6.0.x
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Check formatting
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          dotnet format --no-restore --verify-no-changes --severity warn || (echo "Run 'dotnet format' to fix issues" && exit 1)
+
+      - name: Build solution [Release]
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: dotnet build --no-restore -c Release
+      - name: Build solution [Debug]
+        run: dotnet build --no-restore -c Debug
+
+      - name: Test solution [Debug] without code coverage
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        run: dotnet test --no-restore --no-build
+
+      - name: Test solution [Debug] with code coverage
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: >
+          dotnet test
+          --no-restore
+          --no-build
+          --collect "XPlat Code Coverage"
+
+      - name: Codecov
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        uses: codecov/codecov-action@v2

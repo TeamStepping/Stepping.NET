@@ -6,7 +6,7 @@ namespace Stepping.DbProviders.EfCore.Tests.Fakes;
 public class FakeDbContext : DbContext
 {
     public const string ConnectionString = "Data Source=:memory:";
-    
+
     private SqliteConnection? _connection;
 
     public virtual DbSet<Book> Books { get; set; } = null!;
@@ -19,7 +19,7 @@ public class FakeDbContext : DbContext
     {
         _connection = new SqliteConnection(ConnectionString);
         _connection.Open();
-        
+
         optionsBuilder.UseSqlite(_connection);
     }
 

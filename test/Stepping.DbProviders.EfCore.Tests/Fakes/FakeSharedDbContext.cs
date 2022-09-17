@@ -6,7 +6,7 @@ namespace Stepping.DbProviders.EfCore.Tests.Fakes;
 public class FakeSharedDbContext : DbContext
 {
     public const string ConnectionString = "Data Source=SteppingTestDb;Mode=Memory;Cache=Shared";
-    
+
     private SqliteConnection? _connection;
 
     public virtual DbSet<Book> Books { get; set; } = null!;
@@ -19,7 +19,7 @@ public class FakeSharedDbContext : DbContext
     {
         _connection = new SqliteConnection(ConnectionString);
         _connection.Open();
-        
+
         optionsBuilder.UseSqlite(_connection);
     }
 

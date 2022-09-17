@@ -12,7 +12,7 @@ public class MultiTenancyTests : SteppingCoreTestBase
     {
         services.AddTransient<ISteppingTenantIdProvider, FakeSteppingTenantIdProvider>();
         services.AddTransient<FakeSteppingTenantIdProvider>();
-        
+
         base.ConfigureServices(services);
     }
 
@@ -20,7 +20,7 @@ public class MultiTenancyTests : SteppingCoreTestBase
     public async Task Should_Get_Tenant_Id()
     {
         var provider = ServiceProvider.GetRequiredService<ISteppingTenantIdProvider>();
-        
+
         (await provider.GetCurrentAsync()).ShouldBe(FakeSteppingTenantIdProvider.MyTenantId);
     }
 }

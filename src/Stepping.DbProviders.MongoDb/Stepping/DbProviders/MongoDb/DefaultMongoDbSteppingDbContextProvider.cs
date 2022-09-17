@@ -34,7 +34,7 @@ public class DefaultMongoDbSteppingDbContextProvider : ISteppingDbContextProvide
             throw new SteppingException(
                 "Invalid connection string. Please customize the connection string lookup implementation yourself.");
         }
-        
+
         var client = new MongoClient(connectionString);
 
         return new MongoDbSteppingDbContext(

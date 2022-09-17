@@ -1,17 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <LangVersion>10.0</LangVersion>
-
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+    <Import Project="..\..\common.testing.props"/>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
-        <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)"/>
+        <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj"/>
     </ItemGroup>
 
 </Project>
