@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Shouldly;
 using Stepping.Core;
 using Stepping.Core.Databases;
-using Stepping.Core.Infrastructures;
 using Stepping.Core.Jobs;
 using Stepping.Core.TransactionManagers;
 using Stepping.TestBase.Fakes;

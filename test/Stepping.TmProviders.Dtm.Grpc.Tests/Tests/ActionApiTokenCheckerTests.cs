@@ -21,15 +21,19 @@ public class ActionApiTokenCheckerTests : SteppingTmProvidersDtmGrpcTestBase
     [Fact]
     public async Task Should_Check_Token()
     {
+        var originalToken = FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken;
         FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken = "correct-token";
 
         (await ActionApiTokenChecker.IsCorrectAsync("correct-token")).ShouldBeTrue();
         (await ActionApiTokenChecker.IsCorrectAsync("invalid-token")).ShouldBeFalse();
+
+        FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken = originalToken;
     }
 
     [Fact]
     public async Task Should_Always_Be_Correct_If_Token_In_Options_Is_Null_Or_Empty()
     {
+        var originalToken = FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken;
         FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken = null;
 
         (await ActionApiTokenChecker.IsCorrectAsync(null)).ShouldBeTrue();
@@ -41,5 +45,7 @@ public class ActionApiTokenCheckerTests : SteppingTmProvidersDtmGrpcTestBase
         (await ActionApiTokenChecker.IsCorrectAsync(null)).ShouldBeTrue();
         (await ActionApiTokenChecker.IsCorrectAsync("")).ShouldBeTrue();
         (await ActionApiTokenChecker.IsCorrectAsync("some-token")).ShouldBeTrue();
+
+        FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken = originalToken;
     }
 }
