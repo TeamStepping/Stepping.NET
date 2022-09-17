@@ -49,4 +49,5 @@ jobs:
         run: dotnet test --no-restore --no-build
 
       - name: Codecov
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: codecov/codecov-action@v2
