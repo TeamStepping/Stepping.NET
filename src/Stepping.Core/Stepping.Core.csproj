@@ -15,8 +15,4 @@
         <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Remove="Stepping\Core\Steps\StepBase.cs" />
-    </ItemGroup>
-
 </Project>
