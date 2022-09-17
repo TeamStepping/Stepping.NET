@@ -50,7 +50,6 @@ jobs:
 
       - name: Test solution [Debug] with code coverage
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        working-directory: src
         run: >
           dotnet test
           --no-restore
