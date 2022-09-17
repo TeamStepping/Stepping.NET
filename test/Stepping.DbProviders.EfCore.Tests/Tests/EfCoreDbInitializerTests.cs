@@ -21,7 +21,7 @@ public class EfCoreDbInitializerTests : SteppingDbProvidersEfCoreTestBase
     public async Task Should_Initialize_Database()
     {
         var dbContext = ServiceProvider.GetRequiredService<FakeDbContext>();
-        
+
         (await IsBarrierTableCreatedAsync(dbContext)).ShouldBeFalse();
 
         await DbInitializer.TryInitializeAsync(
@@ -34,7 +34,7 @@ public class EfCoreDbInitializerTests : SteppingDbProvidersEfCoreTestBase
     public async Task Should_Not_Throw_If_Duplicate_Initializing()
     {
         var dbContext = ServiceProvider.GetRequiredService<FakeDbContext>();
-        
+
         (await IsBarrierTableCreatedAsync(dbContext)).ShouldBeFalse();
 
         await DbInitializer.TryInitializeAsync(

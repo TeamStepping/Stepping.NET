@@ -34,11 +34,11 @@ public class StepArgsSerializerTests : SteppingCoreTestBase
     public async Task Should_Serialize_And_Deserialize_Args()
     {
         var bytes = await StepArgsSerializer.SerializeAsync(Args);
-        
+
         bytes.ShouldNotBeEmpty();
-        
+
         var args = await StepArgsSerializer.DeserializeAsync(bytes, typeof(MyArgs));
-        
+
         args.ShouldBeEquivalentTo(Args);
     }
 }

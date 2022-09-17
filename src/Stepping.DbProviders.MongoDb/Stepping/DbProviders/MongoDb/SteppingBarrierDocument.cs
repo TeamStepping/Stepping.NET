@@ -22,11 +22,11 @@ public class SteppingBarrierDocument
 
     [BsonElement("reason")]
     public string Reason { get; set; } = null!;
-        
+
     protected SteppingBarrierDocument()
     {
     }
-        
+
     public SteppingBarrierDocument(
         string transType, string gid, string branchId, string op, string barrierId, string reason)
     {

@@ -35,7 +35,7 @@ public class ActionApiTokenCheckerTests : SteppingTmProvidersDtmGrpcTestBase
         (await ActionApiTokenChecker.IsCorrectAsync(null)).ShouldBeTrue();
         (await ActionApiTokenChecker.IsCorrectAsync("")).ShouldBeTrue();
         (await ActionApiTokenChecker.IsCorrectAsync("some-token")).ShouldBeTrue();
-        
+
         FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken = "";
 
         (await ActionApiTokenChecker.IsCorrectAsync(null)).ShouldBeTrue();
