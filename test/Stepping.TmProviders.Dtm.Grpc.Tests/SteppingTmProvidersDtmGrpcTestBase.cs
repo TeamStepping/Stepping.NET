@@ -12,9 +12,9 @@ public abstract class SteppingTmProvidersDtmGrpcTestBase : SteppingTestBase
     {
         services.AddSteppingDtmGrpc(options =>
         {
-            options.ActionApiToken = "KLyqz0VS3mOc6VY1";
-            options.AppGrpcUrl = "http://fakeurl.com:5000";
-            options.DtmGrpcUrl = "http://fakeurl.com:36790";
+            options.ActionApiToken = FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken;
+            options.AppGrpcUrl = FakeDefaultActionApiTokenChecker.FakeOptions.AppGrpcUrl;
+            options.DtmGrpcUrl = FakeDefaultActionApiTokenChecker.FakeOptions.DtmGrpcUrl;
         });
 
         base.ConfigureServices(services);

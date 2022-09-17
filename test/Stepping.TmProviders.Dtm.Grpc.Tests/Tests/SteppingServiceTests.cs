@@ -7,6 +7,7 @@ using Stepping.Core.Databases;
 using Stepping.TestBase.Fakes;
 using Stepping.TmProviders.Dtm.Grpc.Secrets;
 using Stepping.TmProviders.Dtm.Grpc.Services.Generated;
+using Stepping.TmProviders.Dtm.Grpc.Tests.Fakes;
 using Xunit;
 using SteppingService = Stepping.TmProviders.Dtm.Grpc.Services.SteppingService;
 
@@ -65,7 +66,7 @@ public class SteppingServiceTests : SteppingTmProvidersDtmGrpcTestBase
             requestHeaders: new Metadata
             {
                 { DtmRequestHeaderNames.DtmGid, "my-gid" },
-                { DtmRequestHeaderNames.ActionApiToken, "" }
+                { DtmRequestHeaderNames.ActionApiToken, FakeDefaultActionApiTokenChecker.FakeOptions.ActionApiToken! }
             },
             cancellationToken: CancellationToken.None,
             peer: "10.0.0.25:5001",

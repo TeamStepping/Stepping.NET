@@ -26,7 +26,7 @@ public class FakeDtmGrpcTmClient : DtmGrpcTmClient
     protected override Task InvokeDtmServerAsync<TResult>(GrpcMethod<TResult> method, DtmRequest dtmRequest,
         CancellationToken cancellationToken = default)
     {
-        LastInvoking = new ValueTuple<string, DtmRequest>(method.GetMethodInfo().Name, dtmRequest);
+        LastInvoking = new ValueTuple<string, DtmRequest>(method.GetMethodInfo()!.Name, dtmRequest);
 
         return Task.CompletedTask;
     }

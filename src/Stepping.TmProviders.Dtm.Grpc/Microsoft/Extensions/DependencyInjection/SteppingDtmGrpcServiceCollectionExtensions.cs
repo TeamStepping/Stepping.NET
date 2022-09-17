@@ -14,9 +14,9 @@ public static class SteppingDtmGrpcServiceCollectionExtensions
     public static IServiceCollection AddSteppingDtmGrpc(this IServiceCollection services,
         Action<SteppingDtmGrpcOptions> setupAction)
     {
-        services.AddSteppingDtmGrpcServices();
-
         services.Configure(setupAction);
+
+        services.AddSteppingDtmGrpcServices();
 
         return services;
     }
