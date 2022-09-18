@@ -26,8 +26,8 @@ The TM will eventually complete the added steps:
 ```csharp
 var job = await distributedJobFactory.CreateJobAsync();
 
-job.AddStep(new CreateOrderStep(orderCreatingArgs));
-job.AddStep<SendOrderCreatedEmailStep>();
+job.AddStep(new RequestBank1TransferOutStep(args)); // step with args
+job.AddStep<RequestBank2TransferInStep>(); // step without args
 
 await job.StartAsync();
 ```
