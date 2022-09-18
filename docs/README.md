@@ -1,11 +1,11 @@
-![logo-white](https://user-images.githubusercontent.com/30018771/178152345-49f6e952-d8f9-4999-96ac-682ff81641e0.png)
-
 # Stepping.NET
 
 ![build and test](https://img.shields.io/github/workflow/status/TeamStepping/Stepping.NET/Test%20code/main?style=flat-square)
 [![codecov](https://codecov.io/gh/TeamStepping/Stepping.NET/branch/main/graph/badge.svg?token=jUKLCxa6HF)](https://codecov.io/gh/TeamStepping/Stepping.NET)
 [![NuGet](https://img.shields.io/nuget/v/Stepping.Core.svg?style=flat-square)](https://www.nuget.org/packages/Stepping.Core)
 [![NuGet Download](https://img.shields.io/nuget/dt/Stepping.Core.svg?style=flat-square)](https://www.nuget.org/packages/Stepping.Core)
+
+[![WhatCanSteppingDo](https://user-images.githubusercontent.com/30018771/190894723-dd4f1a17-f8f2-4d81-bea1-32f6ab7d4782.png)](https://excalidraw.com/#json=sSS0SSIWEQ3hLKuEgKQbf,g1ijMIFvKb7L8BuoiQYd0w)
 
 Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) jobs implementation. You can use it as a workflow engine, event outbox/inbox, email/SMS sender, remote invoker, and more. 
 
@@ -26,8 +26,8 @@ The TM will eventually complete the added steps:
 ```csharp
 var job = await distributedJobFactory.CreateJobAsync();
 
-job.AddStep(new CreateOrderStep(orderCreatingArgs));
-job.AddStep<SendOrderCreatedEmailStep>();
+job.AddStep(new RequestBank1TransferOutStep(args)); // step with args
+job.AddStep<RequestBank2TransferInStep>(); // step without args
 
 await job.StartAsync();
 ```
