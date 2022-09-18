@@ -7,6 +7,8 @@
 [![NuGet](https://img.shields.io/nuget/v/Stepping.Core.svg?style=flat-square)](https://www.nuget.org/packages/Stepping.Core)
 [![NuGet Download](https://img.shields.io/nuget/dt/Stepping.Core.svg?style=flat-square)](https://www.nuget.org/packages/Stepping.Core)
 
+[![WhatCanSteppingDo](https://user-images.githubusercontent.com/30018771/190894723-dd4f1a17-f8f2-4d81-bea1-32f6ab7d4782.png)](https://excalidraw.com/#json=sSS0SSIWEQ3hLKuEgKQbf,g1ijMIFvKb7L8BuoiQYd0w)
+
 Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) jobs implementation. You can use it as a workflow engine, event outbox/inbox, email/SMS sender, remote invoker, and more. 
 
 It can also work with a DB transaction and supports the multi-DB scenario. That means the jobs are **ensured to be eventually done** after the DB transactions commit. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
