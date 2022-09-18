@@ -13,6 +13,8 @@ Stepping will **eventually complete** the steps you require. If the app crashes 
 
 It can also work with a DB transaction. Stepping will **eventually complete** the steps you require after the DB transaction commits. You don't need to worry about the inconsistency problem caused by the app crashes after the transaction commits but before the steps' execution. That is implemented based on DTM's [2-phase messaging](https://en.dtm.pub/practice/msg.html) pattern.
 
+> Stepping also supports the "multi-tenant with multi-DB" scenario, meaning it works no matter how many different databases there are in your app.
+
 ## What are `Job` and `Step` in Stepping?
 
 `Job` is a distributed transaction unit, and `Step` is a specific task inside a job.
