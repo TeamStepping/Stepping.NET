@@ -33,7 +33,7 @@ jobs:
         run: echo ::set-output name=value::${GITHUB_REF##*/}
 
       - name: Exit if the versions are different
-        if: ${{ steps.commonVersion.outputs.first_match }} != ${{ steps.tagVersion.outputs.value }}
+        if: ${{ steps.commonVersion.outputs.first_match != steps.tagVersion.outputs.value }}
         run: |
           echo Version in common.props: ${{ steps.commonVersion.outputs.first_match }}
           echo Version of git tag name: ${{ steps.tagVersion.outputs.value }}
@@ -51,5 +51,5 @@ jobs:
       - name: List the packages
         run: ls dest
 
-#      - name: Push to NuGet
-#        run: dotnet nuget push dest\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Push to NuGet
+        run: dotnet nuget push dest\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
