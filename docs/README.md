@@ -17,7 +17,7 @@ A job contains one or many steps, and the transaction manager will execute them 
 
 [![WhatCanSteppingDo](https://user-images.githubusercontent.com/30018771/190894723-dd4f1a17-f8f2-4d81-bea1-32f6ab7d4782.png)](https://excalidraw.com/#json=sSS0SSIWEQ3hLKuEgKQbf,g1ijMIFvKb7L8BuoiQYd0w)
 
-### Executes Steps and Ensures Atomicity
+### Want To Execute Steps and Ensure Atomicity
 
 When you start a job, Stepping will **eventually complete** the steps you require. If the app crashes during the executions, the transaction manager will continue to execute the rest steps after it recovers.
 
@@ -25,7 +25,7 @@ Stepping will complete your steps one by one. If a step fails, it will be tried 
 
 Stepping may already complete the current step when your app crashes during the execution. When your app recovers, Stepping will execute it redundantly. **Therefore, all your steps should be [idempotent](https://coffeecodeclimb.com/2020/07/26/atomicity-and-idempotency-for-dummies/#idempotence).**
 
-### Ensures Executing Steps After a DB Transaction Commits
+### Want To Ensure Executing Steps After a DB Transaction Commits
 
 When you start a job with a DB transaction, Stepping will **eventually complete** the steps you require after the DB transaction commits.
 
