@@ -51,6 +51,13 @@ jobs:
       - name: List the packages
         run: ls dest
 
+      - name: Publishing approval request
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: gdlcf88
+          minimum-approvals: 1
+
       - name: Push to NuGet
         working-directory: dest
         run: dotnet nuget push *.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
