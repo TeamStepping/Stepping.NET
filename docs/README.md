@@ -7,11 +7,11 @@
 
 [![WhatCanSteppingDo](https://user-images.githubusercontent.com/30018771/190894723-dd4f1a17-f8f2-4d81-bea1-32f6ab7d4782.png)](https://excalidraw.com/#json=sSS0SSIWEQ3hLKuEgKQbf,g1ijMIFvKb7L8BuoiQYd0w)
 
-Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) jobs implementation. You can use it as a workflow engine, event outbox/inbox, email/SMS sender, remote invoker, and more. 
+Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) jobs implementation. You can use it as a workflow engine, event outbox/inbox, email/SMS sender, remote invoker, and more.
 
-It can also work with a DB transaction and supports the multi-DB scenario. That means the jobs are **ensured to be eventually done** after the DB transactions commit. You don't need to worry about inconsistencies caused by the app crashes after the transaction commit but before the steps are executed.
+Stepping will **eventually complete** the steps you require. If the app crashes during the executions, the transaction manager will continue to execute the rest steps.
 
-The distributed transaction is based on DTM's [2-phase messaging](https://en.dtm.pub/practice/msg.html) pattern.
+It can also work with a DB transaction. Stepping will **eventually complete** the steps you require after the DB transaction commits. You don't need to worry about the inconsistency problem caused by the app crashes after the transaction commits but before the steps' execution. That is implemented based on DTM's [2-phase messaging](https://en.dtm.pub/practice/msg.html) pattern.
 
 ## What are `Job` and `Step` in Stepping?
 
