@@ -1,5 +1,3 @@
-![logo-white](https://user-images.githubusercontent.com/30018771/178152345-49f6e952-d8f9-4999-96ac-682ff81641e0.png)
-
 # Stepping.NET
 
 ![build and test](https://img.shields.io/github/workflow/status/TeamStepping/Stepping.NET/Test%20code/main?style=flat-square)
