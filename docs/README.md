@@ -9,7 +9,7 @@
 
 Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) jobs implementation. You can use it as a workflow engine, event outbox/inbox, email/SMS sender, remote invoker, and more.
 
-Stepping will **eventually complete** the steps you require. If the app crashes during the executions, the transaction manager will continue to execute the rest steps.
+Stepping will **eventually complete** the steps you require. If the app crashes during the executions, the transaction manager will continue to execute the rest steps after it recovers.
 
 It can also work with a DB transaction. Stepping will **eventually complete** the steps you require after the DB transaction commits. You don't need to worry about the inconsistency problem caused by the app crashes after the transaction commits but before the steps' execution. That is implemented based on DTM's [2-phase messaging](https://en.dtm.pub/practice/msg.html) pattern.
 
