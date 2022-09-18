@@ -19,11 +19,11 @@ It can also work with a DB transaction. Stepping will **eventually complete** th
 
 `Job` is a distributed transaction unit, and `Step` is a specific task inside a job.
 
-A job contains some steps, and the TM will execute them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
+A job contains one or many steps, and the transaction manager will execute them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
 ## Examples
 
-The TM will eventually complete the added steps:
+The transaction manager will eventually complete the added steps:
 
 ```csharp
 var job = await distributedJobFactory.CreateJobAsync();
