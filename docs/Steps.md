@@ -6,6 +6,7 @@ Supported step types:
 * [Executable Step](#executable-step)
 * [HTTP Request Step](#http-request-step)
 * [gRPC Request Step](#grpc-request-step)
+* [Saga Step](#saga-step)
 
 ### Executable Step
 
@@ -81,4 +82,18 @@ If a step is for HTTP request, `HttpRequestStep` is better than `ExecutableStep`
 
 ### gRPC Request Step
 
+Todo. 
+
+```csharp
+public class SomeCustomStep : GrpcRequestStep
+{
+}
+```
+
+### Saga Step
+
 Todo.
+
+```csharp
+job.AddStep(new SagaStep<T1, C1>(args));
+```
