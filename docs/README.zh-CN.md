@@ -7,6 +7,8 @@
 
 Stepping 是一个基于 [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) 的分布式作业实现。它可以作为工作流引擎，事件收/发件箱，用于邮箱/短信发送，用于远程接口调用等场景。
 
+我们已为以下语言提供了文档：[English](./README.md)，[简体中文](./README.zh-CN.md)。
+
 ## Stepping 中 `Job` 和 `Step` 是什么?
 
 `Job` 是一个分布式事务单元，而 `Step` 是 job 中一个特定的任务。
