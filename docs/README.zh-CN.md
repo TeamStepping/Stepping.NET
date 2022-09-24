@@ -81,14 +81,17 @@ Stepping 支持 `EF Core`，`ADO.NET`(即将到来)，及 `MongoDB`。
 
 Stepping 要求使用事务管理器。你可以选择一种你喜欢的事务管理器。
 
-### DTM Server
-
-DTM 是一个成熟的事务管理器，并且能够为 Stepping 提供能力。选择 DTM 你将可以使用更多的分布式事务模式，例如 Saga、TCC和XA。
-
-请参阅 [DTM 文档](./Dtm.md)。
-
 ### Local-TM
 
 Stepping 提供了一种简单的内置事务管理器实现。Local-TM 与你的应用一起运行。在这种模式下，每个应用都作为自己发布的 jobs 的事务管理器。
 
+这种事务管理器适用于开发和测试环境，以及并发度较低的应用，不用额外维护组件
+
 请参阅 [Local-TM 文档](./LocalTm.md)。
+
+### DTM Server
+
+DTM 是一个成熟的事务管理器，并且能够为 Stepping 提供能力。选择 DTM ，对于并发度高的应用，性能表现更好。你也可以使用DTM的SDK，支持更多的分布式事务模式，例如 Saga、TCC和XA。
+
+请参阅 [DTM 文档](./Dtm.md)。
+
