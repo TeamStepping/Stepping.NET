@@ -7,6 +7,8 @@
 
 Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) jobs implementation. You can use it as a workflow engine, event outbox/inbox, email/SMS sender, remote invoker, and more.
 
+We have provided documentation for the following languages: [English](./README.md), [简体中文](./README.zh-CN.md).
+
 ## What are `Job` and `Step` in Stepping?
 
 `Job` is a distributed transaction unit, and `Step` is a specific task inside a job.
