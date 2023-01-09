@@ -83,7 +83,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
 
         var task = Task.Run(async () =>
         {
-            await using var scope = ServiceProvider.CreateAsyncScope();
+            using var scope = ServiceProvider.CreateScope();
             var dbContext2 = scope.ServiceProvider.GetRequiredService<FakeSharedDbContext>();
             var steppingDbContext2 = new EfCoreSteppingDbContext(dbContext2);
 
@@ -127,7 +127,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
 
         var task = Task.Run(async () =>
         {
-            await using var scope = ServiceProvider.CreateAsyncScope();
+            using var scope = ServiceProvider.CreateScope();
             var dbContext2 = scope.ServiceProvider.GetRequiredService<FakeSharedDbContext>();
             var steppingDbContext2 = new EfCoreSteppingDbContext(dbContext2);
 

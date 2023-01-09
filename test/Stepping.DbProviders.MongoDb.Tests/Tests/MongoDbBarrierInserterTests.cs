@@ -85,7 +85,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
 
         barrierInfoModel.Reason = SteppingConsts.MsgBarrierReasonRollback;
 
-        await using var scope = ServiceProvider.CreateAsyncScope();
+        using var scope = ServiceProvider.CreateScope();
         var client2 = new MongoClient(MongoDbFixture.ConnectionString);
         var database2 = client2.GetDatabase(MongoDbTestConsts.Database);
         var steppingDbContext2 =
@@ -128,7 +128,7 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
 
         barrierInfoModel.Reason = SteppingConsts.MsgBarrierReasonRollback;
 
-        await using var scope = ServiceProvider.CreateAsyncScope();
+        using var scope = ServiceProvider.CreateScope();
         var client2 = new MongoClient(MongoDbFixture.ConnectionString);
         var database2 = client2.GetDatabase(MongoDbTestConsts.Database);
         var steppingDbContext2 =
