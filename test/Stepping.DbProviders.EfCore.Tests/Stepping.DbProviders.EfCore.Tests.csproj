@@ -3,7 +3,8 @@
     <Import Project="..\..\common.testing.props"/>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" Condition="'$(TargetFramework)' == 'net6.0'"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" Condition="'$(TargetFramework)' == 'net7.0'"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNet6)" Condition="'$(TargetFramework)' == 'net6.0'"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNetStandard21)" Condition="'$(TargetFramework)' == 'netcoreapp3.1'"/>
 
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)"/>
