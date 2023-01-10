@@ -34,13 +34,14 @@ public class DistributedJobTests : SteppingCoreTestBase
     }
 
     [Fact]
-    public async Task Should_Not_Send_Prepare_And_Insert_Barrier_Without_Db_Transaction()
+    public async Task Should_Not_Send_Prepare_And_Insert_Barrier_Without_DbContext()
     {
         var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
 
         job.AddStep<FakeExecutableStep>();
 
-        await Should.ThrowAsync<SteppingException>(() => job.PrepareAndInsertBarrierAsync(), "DB Transaction not set.");
+        (await Should.ThrowAsync<SteppingException>(() => job.PrepareAndInsertBarrierAsync()))
+            .Message.ShouldBe("DB context not set.");
     }
 
     [Fact]
@@ -61,7 +62,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     {
         var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
 
-        await Should.ThrowAsync<SteppingException>(() => job.SubmitAsync(), "Steps not set.");
+        (await Should.ThrowAsync<SteppingException>(() => job.SubmitAsync())).Message.ShouldBe("Steps not set.");
     }
 
     [Fact]
@@ -139,8 +140,8 @@ public class DistributedJobTests : SteppingCoreTestBase
         job.AddStep<FakeExecutableStep>();
 
         await Should.NotThrowAsync(() => job.PrepareAndInsertBarrierAsync());
-        await Should.ThrowAsync<SteppingException>(() => job.PrepareAndInsertBarrierAsync(),
-            "Duplicate sending prepare to TM.");
+        (await Should.ThrowAsync<SteppingException>(() => job.PrepareAndInsertBarrierAsync()))
+            .Message.ShouldBe("Duplicate sending prepare to TM.");
     }
 
     [Fact]
@@ -151,7 +152,8 @@ public class DistributedJobTests : SteppingCoreTestBase
         job.AddStep<FakeExecutableStep>();
 
         await Should.NotThrowAsync(() => job.SubmitAsync());
-        await Should.ThrowAsync<SteppingException>(() => job.SubmitAsync(), "Duplicate sending submit to TM.");
+        (await Should.ThrowAsync<SteppingException>(() => job.SubmitAsync()))
+            .Message.ShouldBe("Duplicate sending submit to TM.");
     }
 
     [Fact]
@@ -162,7 +164,8 @@ public class DistributedJobTests : SteppingCoreTestBase
         job.AddStep<FakeExecutableStep>();
 
         await Should.NotThrowAsync(() => job.StartAsync());
-        await Should.ThrowAsync<SteppingException>(() => job.StartAsync(), "Duplicate sending submit to TM.");
+        (await Should.ThrowAsync<SteppingException>(() => job.StartAsync()))
+            .Message.ShouldBe("Duplicate sending submit to TM.");
 
         var dbContext = new FakeSteppingDbContext(true);
 
@@ -171,6 +174,7 @@ public class DistributedJobTests : SteppingCoreTestBase
         transJob.AddStep<FakeExecutableStep>();
 
         await Should.NotThrowAsync(() => transJob.StartAsync());
-        await Should.ThrowAsync<SteppingException>(() => transJob.StartAsync(), "Duplicate sending prepare to TM.");
+        (await Should.ThrowAsync<SteppingException>(() => transJob.StartAsync()))
+            .Message.ShouldBe("Duplicate sending prepare to TM.");
     }
 }

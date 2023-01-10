@@ -163,7 +163,8 @@ public class MemoryTransactionStoreTests : SteppingTmProvidersLocalTmCoreTestBas
 
         await TransactionStore.CreateAsync(existModel);
 
-        await Should.ThrowAsync<SteppingException>(async () => await TransactionStore.CreateAsync(existModel));
+        (await Should.ThrowAsync<SteppingException>(async () => await TransactionStore.CreateAsync(existModel)))
+            .Message.ShouldBe($"Local transaction '{existModel.Gid}' exists.");
     }
 
     [Fact]
@@ -214,7 +215,8 @@ public class MemoryTransactionStoreTests : SteppingTmProvidersLocalTmCoreTestBas
 
         existModel.ConcurrencyStamp = Guid.NewGuid().ToString("N");
 
-        await Should.ThrowAsync<SteppingException>(async () => await TransactionStore.UpdateAsync(existModel));
+        (await Should.ThrowAsync<SteppingException>(async () => await TransactionStore.UpdateAsync(existModel)))
+            .Message.ShouldBe($"Local transaction '{existModel.Gid}' update failed.");
     }
 
     protected async Task<TmTransactionModel> GenerateTmTransactionModelAsync(DateTime? creationTime = null)

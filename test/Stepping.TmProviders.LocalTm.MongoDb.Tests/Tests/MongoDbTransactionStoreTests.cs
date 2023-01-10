@@ -217,7 +217,8 @@ public class MongoDbTransactionStoreTests : SteppingTmProvidersLocalTmMongoDbTes
 
         existModel.ConcurrencyStamp = Guid.NewGuid().ToString("N");
 
-        await Should.ThrowAsync<SteppingException>(async () => await TransactionStore.UpdateAsync(existModel));
+        (await Should.ThrowAsync<SteppingException>(async () => await TransactionStore.UpdateAsync(existModel)))
+            .Message.ShouldBe($"Local transaction {existModel.ConcurrencyStamp} concurrency stamp is not match!");
     }
 
     protected async Task<TmTransactionModel> GenerateTmTransactionModelAsync(DateTime? creationTime = null)
