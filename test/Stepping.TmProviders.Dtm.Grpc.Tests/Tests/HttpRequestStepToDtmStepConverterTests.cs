@@ -46,11 +46,9 @@ public class HttpRequestStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpc
 
         (await HttpRequestStepToDtmStepConverter.CanConvertAsync(step)).ShouldBeTrue();
 
-        await Should.ThrowAsync<SteppingException>(() =>
-            HttpRequestStepToDtmStepConverter.ConvertAsync(
-                RequestGitHubGetOrganizationStep.RequestGitHubGetOrganizationStepName, step.Args),
-            "DTM doesn't support GET with payload."
-        );
+        (await Should.ThrowAsync<SteppingException>(() => HttpRequestStepToDtmStepConverter.ConvertAsync(
+            RequestGitHubGetOrganizationStep.RequestGitHubGetOrganizationStepName, step.Args)))
+            .Message.ShouldBe("DTM doesn't support GET with payload.");
     }
 
     [Fact]
@@ -91,8 +89,8 @@ public class HttpRequestStepToDtmStepConverterTests : SteppingTmProvidersDtmGrpc
     {
         var args = new HttpRequestStepArgs("https://fakeurl.com", HttpMethod.Delete);
 
-        await Should.ThrowAsync<SteppingException>(
-            () => HttpRequestStepToDtmStepConverter.ConvertAsync(HttpRequestStep.HttpRequestStepName, args),
-            "DTM support only GET and POST methods for HTTP request.");
+        (await Should.ThrowAsync<SteppingException>(
+            () => HttpRequestStepToDtmStepConverter.ConvertAsync(HttpRequestStep.HttpRequestStepName, args)))
+            .Message.ShouldBe("DTM support only GET and POST methods for HTTP request.");
     }
 }

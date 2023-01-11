@@ -53,8 +53,8 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(false);
 
-        await Should.ThrowAsync<SteppingException>(() => DistributedJobFactory.CreateJobAsync("my-gid", dbContext),
-            "Specified DB context should be with a transaction.");
+        (await Should.ThrowAsync<SteppingException>(() => DistributedJobFactory.CreateJobAsync("my-gid", dbContext)))
+            .Message.ShouldBe("Specified DB context should be with a transaction.");
     }
 
     [Fact]
@@ -94,8 +94,8 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(false);
 
-        await Should.ThrowAsync<SteppingException>(
-            () => DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext),
-            "Specified DB context should be with a transaction.");
+        (await Should.ThrowAsync<SteppingException>(
+                () => DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext)))
+            .Message.ShouldBe("Specified DB context should be with a transaction.");
     }
 }
