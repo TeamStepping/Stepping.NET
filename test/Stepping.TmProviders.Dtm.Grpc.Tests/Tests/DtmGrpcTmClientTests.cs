@@ -38,10 +38,10 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         job.AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input")));
 
         job.SetBranchHeader("header1", "header1_value");
-        job.SetPassthroughHeader("header1");
         job.SetWaitResult(true);
         job.SetRetryInterval(123);
         job.SetTimeoutToFail(456);
+        job.SetRetryLimit(100);
 
         await FakeDtmGrpcTmClient.PrepareAsync(job);
 
@@ -80,9 +80,9 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         headers[DtmRequestHeaderNames.TenantId].ShouldBe(string.Empty);
         headers[DtmRequestHeaderNames.CustomInfo].ShouldBe("some-info");
 
-        dtmRequest.TransOptions.PassthroughHeaders.ShouldContain("header1");
         dtmRequest.TransOptions.RetryInterval.ShouldBe(123);
         dtmRequest.TransOptions.TimeoutToFail.ShouldBe(456);
+        dtmRequest.TransOptions.RetryLimit.ShouldBe(100);
         dtmRequest.TransOptions.WaitResult.ShouldBeTrue();
         dtmRequest.TransOptions.RequestTimeout.ShouldBe(Options.BranchRequestTimeout);
     }
@@ -97,10 +97,10 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         job.AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input")));
 
         job.SetBranchHeader("header1", "header1_value");
-        job.SetPassthroughHeader("header1");
         job.SetWaitResult(true);
         job.SetRetryInterval(123);
         job.SetTimeoutToFail(456);
+        job.SetRetryLimit(100);
 
         await FakeDtmGrpcTmClient.SubmitAsync(job);
 
@@ -126,9 +126,9 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
 
         headers["header1"].ShouldBe("header1_value");
 
-        dtmRequest.TransOptions.PassthroughHeaders.ShouldContain("header1");
         dtmRequest.TransOptions.RetryInterval.ShouldBe(123);
         dtmRequest.TransOptions.TimeoutToFail.ShouldBe(456);
+        dtmRequest.TransOptions.RetryLimit.ShouldBe(100);
         dtmRequest.TransOptions.WaitResult.ShouldBeTrue();
         dtmRequest.TransOptions.RequestTimeout.ShouldBe(Options.BranchRequestTimeout);
     }

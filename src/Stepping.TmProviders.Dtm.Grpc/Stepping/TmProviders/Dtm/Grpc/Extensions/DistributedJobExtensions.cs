@@ -53,11 +53,11 @@ public static class DistributedJobExtensions
         return job;
     }
 
-    public static IDistributedJob SetPassthroughHeader(this IDistributedJob job, string name)
+    public static IDistributedJob SetRetryLimit(this IDistributedJob job, long retryLimit)
     {
         var options = job.GetOrCreateDtmConfigurations();
 
-        options.PassthroughHeaders.Add(name);
+        options.RetryLimit = retryLimit;
 
         return job;
     }

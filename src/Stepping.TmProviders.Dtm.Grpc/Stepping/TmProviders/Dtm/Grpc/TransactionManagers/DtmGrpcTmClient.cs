@@ -105,11 +105,11 @@ public class DtmGrpcTmClient : ITmClient
             WaitResult = configurations.WaitResult,
             TimeoutToFail = configurations.TimeoutToFail,
             RetryInterval = configurations.RetryInterval,
-            RequestTimeout = Options.BranchRequestTimeout
+            RequestTimeout = Options.BranchRequestTimeout,
+            RetryLimit = configurations.RetryLimit
         };
 
         transOptions.BranchHeaders.Add(configurations.BranchHeaders);
-        transOptions.PassthroughHeaders.Add(configurations.PassthroughHeaders);
 
         var dtmSteps = new List<Dictionary<string, string>>();
         var dtmBinPayloads = new List<ByteString>();
