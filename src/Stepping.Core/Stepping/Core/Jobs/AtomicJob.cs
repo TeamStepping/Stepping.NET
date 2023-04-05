@@ -6,7 +6,7 @@ using Stepping.Core.TransactionManagers;
 
 namespace Stepping.Core.Jobs;
 
-public class DistributedJob : IAdvancedDistributedJob
+public class AtomicJob : IAdvancedAtomicJob
 {
     public virtual string Gid { get; }
     public virtual List<IStep> Steps { get; } = new();
@@ -25,7 +25,7 @@ public class DistributedJob : IAdvancedDistributedJob
     /// You should set <see cref="DbContext"/> for eventual consistency
     /// when the current session has DB-write operations in the DB transaction.
     /// </summary>
-    internal DistributedJob(
+    internal AtomicJob(
         string gid,
         ISteppingDbContext? dbContext,
         IServiceProvider serviceProvider)
@@ -44,14 +44,14 @@ public class DistributedJob : IAdvancedDistributedJob
         }
     }
 
-    public virtual IDistributedJob AddStep<TStep>(TStep step) where TStep : IStep
+    public virtual IAtomicJob AddStep<TStep>(TStep step) where TStep : IStep
     {
         Steps.Add(step);
 
         return this;
     }
 
-    public virtual IDistributedJob AddStep<TStep>() where TStep : IStepWithoutArgs
+    public virtual IAtomicJob AddStep<TStep>() where TStep : IStepWithoutArgs
     {
         Steps.Add(StepResolver.Resolve<TStep>());
 

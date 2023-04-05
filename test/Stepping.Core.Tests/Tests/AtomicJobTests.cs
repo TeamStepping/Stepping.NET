@@ -7,19 +7,19 @@ using Xunit;
 
 namespace Stepping.Core.Tests.Tests;
 
-public class DistributedJobTests : SteppingCoreTestBase
+public class AtomicJobTests : SteppingCoreTestBase
 {
-    protected IDistributedJobFactory DistributedJobFactory { get; }
+    protected IAtomicJobFactory AtomicJobFactory { get; }
 
-    public DistributedJobTests()
+    public AtomicJobTests()
     {
-        DistributedJobFactory = ServiceProvider.GetRequiredService<IDistributedJobFactory>();
+        AtomicJobFactory = ServiceProvider.GetRequiredService<IAtomicJobFactory>();
     }
 
     [Fact]
     public async Task Should_Add_Steps()
     {
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateJobAsync("my-gid");
 
         await job
             .AddStep<FakeExecutableStep>() // Executable step
@@ -36,7 +36,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Not_Send_Prepare_And_Insert_Barrier_Without_DbContext()
     {
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid");
 
         job.AddStep<FakeExecutableStep>();
 
@@ -49,7 +49,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
@@ -60,7 +60,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Not_Submit_Job_Without_A_Step()
     {
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid");
 
         (await Should.ThrowAsync<SteppingException>(() => job.SubmitAsync())).Message.ShouldBe("Steps not set.");
     }
@@ -68,7 +68,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Submit_Job()
     {
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid");
 
         job.AddStep<FakeExecutableStep>();
 
@@ -82,7 +82,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
@@ -99,7 +99,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Start_Job_Without_Db_Transaction()
     {
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateJobAsync("my-gid");
 
         job.AddStep<FakeExecutableStep>();
 
@@ -116,7 +116,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid", dbContext);
+        var job = await AtomicJobFactory.CreateJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
@@ -135,7 +135,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.AddStep<FakeExecutableStep>();
 
@@ -147,7 +147,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Not_Allow_Duplicate_Sending_Submit()
     {
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid");
 
         job.AddStep<FakeExecutableStep>();
 
@@ -159,7 +159,7 @@ public class DistributedJobTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Not_Allow_Duplicate_Invoking_ExecuteAsync()
     {
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateJobAsync("my-gid");
 
         job.AddStep<FakeExecutableStep>();
 
@@ -169,7 +169,7 @@ public class DistributedJobTests : SteppingCoreTestBase
 
         var dbContext = new FakeSteppingDbContext(true);
 
-        var transJob = await DistributedJobFactory.CreateJobAsync("my-gid", dbContext);
+        var transJob = await AtomicJobFactory.CreateJobAsync("my-gid", dbContext);
 
         transJob.AddStep<FakeExecutableStep>();
 

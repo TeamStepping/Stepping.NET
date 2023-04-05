@@ -1,6 +1,6 @@
 ﻿namespace Stepping.Core.Jobs;
 
-public interface IDistributedJobGidGenerator
+public interface IAtomicJobGidGenerator
 {
     Task<string> CreateAsync();
 }

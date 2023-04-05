@@ -1,6 +1,6 @@
 ﻿namespace Stepping.Core.Jobs;
 
-public interface IAdvancedDistributedJob : IDistributedJob
+public interface IAdvancedAtomicJob : IAtomicJob
 {
     /// <summary>
     /// Send "prepare" to TM, insert a barrier record to DB.

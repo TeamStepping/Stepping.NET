@@ -37,7 +37,7 @@ public class DtmGrpcTmClient : ITmClient
         DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
 
-    public virtual async Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public virtual async Task PrepareAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         if (job.PrepareSent)
         {
@@ -60,7 +60,7 @@ public class DtmGrpcTmClient : ITmClient
         await method(dtmRequest, CreateGrpcCallOptions(cancellationToken));
     }
 
-    public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public virtual async Task SubmitAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         if (job.SubmitSent)
         {
@@ -70,7 +70,7 @@ public class DtmGrpcTmClient : ITmClient
         await InvokeDtmServerAsync(DtmClient.SubmitAsync, await BuildDtmRequestAsync(job), cancellationToken);
     }
 
-    protected virtual async Task AddDbContextLookupInfoHeadersAsync(IDistributedJob job)
+    protected virtual async Task AddDbContextLookupInfoHeadersAsync(IAtomicJob job)
     {
         var headers = job.GetDtmJobConfigurations().BranchHeaders;
 
@@ -91,7 +91,7 @@ public class DtmGrpcTmClient : ITmClient
             .WithDeadline(DateTime.UtcNow.AddMilliseconds(Options.DtmServerRequestTimeout));
     }
 
-    protected virtual async Task<DtmRequest> BuildDtmRequestAsync(IDistributedJob job)
+    protected virtual async Task<DtmRequest> BuildDtmRequestAsync(IAtomicJob job)
     {
         var configurations = job.GetDtmJobConfigurations();
 

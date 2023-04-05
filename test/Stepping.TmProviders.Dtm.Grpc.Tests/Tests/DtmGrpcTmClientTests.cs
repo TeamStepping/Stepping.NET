@@ -17,21 +17,21 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
 {
     protected SteppingDtmGrpcOptions Options { get; }
     protected IConnectionStringHasher ConnectionStringHasher { get; }
-    protected IDistributedJobFactory DistributedJobFactory { get; }
+    protected IAtomicJobFactory AtomicJobFactory { get; }
     protected FakeDtmGrpcTmClient FakeDtmGrpcTmClient { get; }
 
     public DtmGrpcTmClientTests()
     {
         Options = ServiceProvider.GetRequiredService<IOptions<SteppingDtmGrpcOptions>>().Value;
         ConnectionStringHasher = ServiceProvider.GetRequiredService<IConnectionStringHasher>();
-        DistributedJobFactory = ServiceProvider.GetRequiredService<IDistributedJobFactory>();
+        AtomicJobFactory = ServiceProvider.GetRequiredService<IAtomicJobFactory>();
         FakeDtmGrpcTmClient = (FakeDtmGrpcTmClient)ServiceProvider.GetRequiredService<ITmClient>();
     }
 
     [Fact]
     public async Task Should_Send_Prepare()
     {
-        var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
+        var job = await AtomicJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
             new FakeSteppingDbContext(true, "some-info"));
 
         job.AddStep<FakeExecutableStep>();
@@ -90,7 +90,7 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
     [Fact]
     public async Task Should_Send_Submit()
     {
-        var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
+        var job = await AtomicJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
             new FakeSteppingDbContext(true));
 
         job.AddStep<FakeExecutableStep>();
