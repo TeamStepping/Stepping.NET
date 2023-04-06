@@ -50,11 +50,11 @@ public static class SteppingServiceCollectionExtensions
         services.TryAddTransient<ISteppingJsonSerializer, NewtonsoftSteppingJsonSerializer>();
         services.TryAddTransient<NewtonsoftSteppingJsonSerializer>();
 
-        services.TryAddTransient<IDistributedJobGidGenerator, DistributedJobGidGenerator>();
-        services.TryAddTransient<DistributedJobGidGenerator>();
+        services.TryAddTransient<IAtomicJobGidGenerator, AtomicJobGidGenerator>();
+        services.TryAddTransient<AtomicJobGidGenerator>();
 
-        services.TryAddTransient<IDistributedJobFactory, DistributedJobFactory>();
-        services.TryAddTransient<DistributedJobFactory>();
+        services.TryAddTransient<IAtomicJobFactory, AtomicJobFactory>();
+        services.TryAddTransient<AtomicJobFactory>();
 
         services.TryAddTransient<IStepArgsSerializer, JsonStepArgsSerializer>();
         services.TryAddTransient<JsonStepArgsSerializer>();

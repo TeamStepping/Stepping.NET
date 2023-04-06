@@ -4,7 +4,7 @@ using Stepping.Core.TransactionManagers;
 
 namespace Stepping.Core.Jobs;
 
-public interface IDistributedJob
+public interface IAtomicJob
 {
     string Gid { get; }
 
@@ -21,12 +21,12 @@ public interface IDistributedJob
     /// <summary>
     /// Add a step for the job to do in order.
     /// </summary>
-    IDistributedJob AddStep<TStep>(TStep step) where TStep : IStep;
+    IAtomicJob AddStep<TStep>(TStep step) where TStep : IStep;
 
     /// <summary>
     /// Add a step for the job to do in order.
     /// </summary>
-    IDistributedJob AddStep<TStep>() where TStep : IStepWithoutArgs;
+    IAtomicJob AddStep<TStep>() where TStep : IStepWithoutArgs;
 
     /// <summary>
     /// Send "prepare" to TM, insert a barrier record to DB, commit the DB transaction, and send "submit" to TM.

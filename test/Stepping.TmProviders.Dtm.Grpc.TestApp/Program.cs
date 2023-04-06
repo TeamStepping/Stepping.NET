@@ -20,9 +20,9 @@ var app = builder.Build();
 
 app.MapGrpcService<SteppingService>();
 
-var distributedJobFactory = app.Services.GetRequiredService<IDistributedJobFactory>();
+var atomicJobFactory = app.Services.GetRequiredService<IAtomicJobFactory>();
 
-var job = await distributedJobFactory.CreateJobAsync();
+var job = await atomicJobFactory.CreateJobAsync();
 
 job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
 job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(

@@ -9,9 +9,9 @@ Stepping 是一个基于 [BASE](https://en.wikipedia.org/wiki/Eventual_consisten
 
 我们已为以下语言提供了文档：[English](./README.md)，[简体中文](./README.zh-CN.md)。
 
-## Stepping 中 `Job` 和 `Step` 是什么?
+## `AtomicJob` 和 `Step` 是什么?
 
-`Job` 是一个分布式事务单元，而 `Step` 是 job 中一个特定的任务。
+`AtomicJob` 是一个分布式原子作业单元，而 `Step` 是 job 中一个特定的任务。
 
 一个 job（作业）包含了一个或多个 step（步骤），事务管理器会按顺序执行步骤。如果步骤 1 失败了，它将重试直到成功，然后开始执行步骤 2。
 
@@ -40,7 +40,7 @@ Stepping 也支持“多租户且多数据库”的场景，这意味着无论�
 事务管理器会最终完成添加的步骤：
 
 ```csharp
-var job = await distributedJobFactory.CreateJobAsync();
+var job = await atomicJobFactory.CreateJobAsync();
 
 job.AddStep(new RequestBank1TransferOutStep(args)); // 带参数的步骤
 job.AddStep<RequestBank2TransferInStep>(); // 不带参数的步骤
@@ -61,7 +61,7 @@ var order = new Order(args);
 db.Orders.Add(order);
 await db.SaveChangesAsync();
 
-var job = await distributedJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
+var job = await atomicJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
 
 job.AddStep(new SendOrderCreatedEmailStep(order));
 job.AddStep(new SendOrderCreatedSmsStep(order));

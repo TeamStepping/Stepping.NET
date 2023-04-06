@@ -5,12 +5,12 @@ namespace Stepping.TestBase.Fakes;
 
 public class FakeTmClient : ITmClient
 {
-    public Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public Task PrepareAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
 
-    public Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public Task SubmitAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }

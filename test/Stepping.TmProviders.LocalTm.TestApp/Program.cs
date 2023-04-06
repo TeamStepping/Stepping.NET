@@ -22,9 +22,9 @@ Task.Run(async () =>
     await Task.Delay(TimeSpan.FromSeconds(2));
     using var scope = app.Services.CreateScope();
 
-    var distributedJobFactory = scope.ServiceProvider.GetRequiredService<IDistributedJobFactory>();
+    var atomicJobFactory = scope.ServiceProvider.GetRequiredService<IAtomicJobFactory>();
 
-    var job = await distributedJobFactory.CreateJobAsync();
+    var job = await atomicJobFactory.CreateJobAsync();
 
     job.AddStep<PrintToConsoleStep>(); // ExecutableStep + gRPC endpoint
     job.AddStep(new HttpRequestStep(new HttpRequestStepArgs(

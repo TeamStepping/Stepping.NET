@@ -7,19 +7,19 @@ using Xunit;
 
 namespace Stepping.Core.Tests.Tests;
 
-public class DistributedJobFactoryTests : SteppingCoreTestBase
+public class AtomicJobFactoryTests : SteppingCoreTestBase
 {
-    protected IDistributedJobFactory DistributedJobFactory { get; }
+    protected IAtomicJobFactory AtomicJobFactory { get; }
 
-    public DistributedJobFactoryTests()
+    public AtomicJobFactoryTests()
     {
-        DistributedJobFactory = ServiceProvider.GetRequiredService<IDistributedJobFactory>();
+        AtomicJobFactory = ServiceProvider.GetRequiredService<IAtomicJobFactory>();
     }
 
     [Fact]
     public async Task Should_Create_Job()
     {
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateJobAsync("my-gid");
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
@@ -29,7 +29,7 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Create_Job_Without_Gid_Input()
     {
-        var job = await DistributedJobFactory.CreateJobAsync();
+        var job = await AtomicJobFactory.CreateJobAsync();
 
         job.ShouldNotBeNull();
         job.Gid.ShouldNotBeNullOrWhiteSpace();
@@ -41,7 +41,7 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateJobAsync("my-gid", dbContext);
+        var job = await AtomicJobFactory.CreateJobAsync("my-gid", dbContext);
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
@@ -53,14 +53,14 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(false);
 
-        (await Should.ThrowAsync<SteppingException>(() => DistributedJobFactory.CreateJobAsync("my-gid", dbContext)))
+        (await Should.ThrowAsync<SteppingException>(() => AtomicJobFactory.CreateJobAsync("my-gid", dbContext)))
             .Message.ShouldBe("Specified DB context should be with a transaction.");
     }
 
     [Fact]
     public async Task Should_Create_Advanced_Job()
     {
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid");
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid");
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
@@ -70,7 +70,7 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     [Fact]
     public async Task Should_Create_Advanced_Job_Without_Gid_Input()
     {
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync();
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync();
 
         job.ShouldNotBeNull();
         job.Gid.ShouldNotBeNullOrWhiteSpace();
@@ -82,7 +82,7 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
     {
         var dbContext = new FakeSteppingDbContext(true);
 
-        var job = await DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
+        var job = await AtomicJobFactory.CreateAdvancedJobAsync("my-gid", dbContext);
 
         job.ShouldNotBeNull();
         job.Gid.ShouldBe("my-gid");
@@ -95,7 +95,7 @@ public class DistributedJobFactoryTests : SteppingCoreTestBase
         var dbContext = new FakeSteppingDbContext(false);
 
         (await Should.ThrowAsync<SteppingException>(
-                () => DistributedJobFactory.CreateAdvancedJobAsync("my-gid", dbContext)))
+                () => AtomicJobFactory.CreateAdvancedJobAsync("my-gid", dbContext)))
             .Message.ShouldBe("Specified DB context should be with a transaction.");
     }
 }

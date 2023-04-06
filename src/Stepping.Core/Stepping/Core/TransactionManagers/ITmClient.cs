@@ -4,7 +4,7 @@ namespace Stepping.Core.TransactionManagers;
 
 public interface ITmClient
 {
-    Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default);
+    Task PrepareAsync(IAtomicJob job, CancellationToken cancellationToken = default);
 
-    Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default);
+    Task SubmitAsync(IAtomicJob job, CancellationToken cancellationToken = default);
 }
