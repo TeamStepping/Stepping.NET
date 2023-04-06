@@ -65,7 +65,7 @@ public class LocalTmManager : ILocalTmManager
         DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
 
-    public virtual async Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public virtual async Task PrepareAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         var steps = await LocalTmStepConverter.ConvertAsync(job.Steps);
         var steppingDbContextLookupInfo = await DbContextLookupInfoProvider.GetAsync(job.DbContext!);
@@ -77,7 +77,7 @@ public class LocalTmManager : ILocalTmManager
         Logger.LogInformation("Local transaction '{gid}' prepared.", job.Gid);
     }
 
-    public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public virtual async Task SubmitAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         var tmTransactionModel = await FindAsync(job.Gid, cancellationToken);
 
@@ -124,7 +124,7 @@ public class LocalTmManager : ILocalTmManager
         }
     }
 
-    public virtual Task ProcessSubmittedAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public virtual Task ProcessSubmittedAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         return ProcessSubmittedAsync(job.Gid, cancellationToken);
     }

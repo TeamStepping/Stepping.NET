@@ -3,14 +3,14 @@ using Stepping.TmProviders.Dtm.Grpc.TransactionManagers;
 
 namespace Stepping.TmProviders.Dtm.Grpc.Extensions;
 
-public static class DistributedJobExtensions
+public static class AtomicJobExtensions
 {
-    public static DtmJobConfigurations GetDtmJobConfigurations(this IDistributedJob job)
+    public static DtmJobConfigurations GetDtmJobConfigurations(this IAtomicJob job)
     {
         return job.GetOrCreateDtmConfigurations();
     }
 
-    public static IDistributedJob SetWaitResult(this IDistributedJob job, bool waitResult)
+    public static IAtomicJob SetWaitResult(this IAtomicJob job, bool waitResult)
     {
         var options = job.GetOrCreateDtmConfigurations();
 
@@ -19,7 +19,7 @@ public static class DistributedJobExtensions
         return job;
     }
 
-    public static IDistributedJob SetRetryInterval(this IDistributedJob job, long retryInterval)
+    public static IAtomicJob SetRetryInterval(this IAtomicJob job, long retryInterval)
     {
         var options = job.GetOrCreateDtmConfigurations();
 
@@ -28,7 +28,7 @@ public static class DistributedJobExtensions
         return job;
     }
 
-    public static IDistributedJob SetTimeoutToFail(this IDistributedJob job, long timeoutToFail)
+    public static IAtomicJob SetTimeoutToFail(this IAtomicJob job, long timeoutToFail)
     {
         var options = job.GetOrCreateDtmConfigurations();
 
@@ -37,7 +37,7 @@ public static class DistributedJobExtensions
         return job;
     }
 
-    public static IDistributedJob SetBranchHeader(this IDistributedJob job, string name, string? value)
+    public static IAtomicJob SetBranchHeader(this IAtomicJob job, string name, string? value)
     {
         var options = job.GetOrCreateDtmConfigurations();
 
@@ -53,7 +53,7 @@ public static class DistributedJobExtensions
         return job;
     }
 
-    public static IDistributedJob SetPassthroughHeader(this IDistributedJob job, string name)
+    public static IAtomicJob SetPassthroughHeader(this IAtomicJob job, string name)
     {
         var options = job.GetOrCreateDtmConfigurations();
 
@@ -62,7 +62,7 @@ public static class DistributedJobExtensions
         return job;
     }
 
-    private static DtmJobConfigurations GetOrCreateDtmConfigurations(this IDistributedJob job)
+    private static DtmJobConfigurations GetOrCreateDtmConfigurations(this IAtomicJob job)
     {
         job.TmOptions ??= new DtmJobConfigurations();
 

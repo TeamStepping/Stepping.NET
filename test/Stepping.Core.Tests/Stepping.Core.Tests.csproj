@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\..\common.testing.props"/>
+    <Import Project="..\..\common.testing.props" />
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)"/>
-        <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
+        <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj" />
     </ItemGroup>
 
 </Project>

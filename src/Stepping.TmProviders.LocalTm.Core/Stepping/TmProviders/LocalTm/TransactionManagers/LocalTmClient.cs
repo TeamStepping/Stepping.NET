@@ -23,12 +23,12 @@ public class LocalTmClient : ITmClient
         DbContextLookupInfoProvider = dbContextLookupInfoProvider;
     }
 
-    public virtual async Task PrepareAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public virtual async Task PrepareAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         await LocalTmManager.PrepareAsync(job, cancellationToken);
     }
 
-    public virtual async Task SubmitAsync(IDistributedJob job, CancellationToken cancellationToken = default)
+    public virtual async Task SubmitAsync(IAtomicJob job, CancellationToken cancellationToken = default)
     {
         await LocalTmManager.SubmitAsync(job, cancellationToken);
 

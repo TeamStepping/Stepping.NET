@@ -22,7 +22,7 @@ var order = new Order(args);
 db.Orders.Add(order);
 await db.SaveChangesAsync();
 
-var job = await distributedJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
+var job = await atomicJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
 
 job.AddStep(new SendOrderCreatedEmailStep(order));
 job.AddStep(new SendOrderCreatedSmsStep(order));
@@ -30,7 +30,7 @@ job.AddStep(new SendOrderCreatedSmsStep(order));
 await job.StartAsync(); // it will commit the DB transaction
 ```
 
-Use methods of `IAdvancedDistributedJob`: (it's equivalent to the above)
+Use methods of `IAdvancedAtomicJob`: (it's equivalent to the above)
 
 ```csharp
 var db = serviceProvider.GetRequiredService<MyDbContext>();
@@ -41,7 +41,7 @@ var order = new Order(args);
 db.Orders.Add(order);
 await db.SaveChangesAsync();
 
-var job = await distributedJobFactory.CreateAdvancedJobAsync(new EfCoreSteppingDbContext(db));
+var job = await atomicJobFactory.CreateAdvancedJobAsync(new EfCoreSteppingDbContext(db));
 
 job.AddStep(new SendOrderCreatedEmailStep(order));
 job.AddStep(new SendOrderCreatedSmsStep(order));
@@ -72,7 +72,7 @@ var order = new Order(args);
 var collection = steppingDbContext.Database.GetCollection<Order>("Orders");
 await collection.InsertOneAsync(order);
 
-var job = await distributedJobFactory.CreateJobAsync(steppingDbContext);
+var job = await atomicJobFactory.CreateJobAsync(steppingDbContext);
 
 job.AddStep(new SendOrderCreatedEmailStep(order));
 job.AddStep(new SendOrderCreatedSmsStep(order));
@@ -80,7 +80,7 @@ job.AddStep(new SendOrderCreatedSmsStep(order));
 await job.StartAsync(); // it will commit the DB transaction
 ```
 
-Use methods of `IAdvancedDistributedJob`: (it's equivalent to the above)
+Use methods of `IAdvancedAtomicJob`: (it's equivalent to the above)
 
 ```csharp
 var client = new MongoClient(connectionString);
@@ -95,7 +95,7 @@ var order = new Order(args);
 var collection = steppingDbContext.Database.GetCollection<Order>("Orders");
 await collection.InsertOneAsync(order);
 
-var job = await distributedJobFactory.CreateJobAsync(steppingDbContext);
+var job = await atomicJobFactory.CreateJobAsync(steppingDbContext);
 
 job.AddStep(new SendOrderCreatedEmailStep(order));
 job.AddStep(new SendOrderCreatedSmsStep(order));

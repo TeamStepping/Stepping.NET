@@ -16,7 +16,7 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
     protected ILocalTmManager LocalTmManager { get; }
     protected ITransactionStore TransactionStore { get; }
     protected ISteppingClock SteppingClock { get; }
-    protected IDistributedJobFactory DistributedJobFactory { get; }
+    protected IAtomicJobFactory AtomicJobFactory { get; }
     protected ILocalTmStepConverter LocalTmStepConverter { get; }
     protected ISteppingDbContextLookupInfoProvider SteppingDbContextLookupInfoProvider { get; }
     protected IDbBarrierInserter DbBarrierInserter { get; }
@@ -27,7 +27,7 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
         LocalTmManager = ServiceProvider.GetRequiredService<LocalTmManager>();
         TransactionStore = ServiceProvider.GetRequiredService<ITransactionStore>();
         SteppingClock = ServiceProvider.GetRequiredService<ISteppingClock>();
-        DistributedJobFactory = ServiceProvider.GetRequiredService<IDistributedJobFactory>();
+        AtomicJobFactory = ServiceProvider.GetRequiredService<IAtomicJobFactory>();
         LocalTmStepConverter = ServiceProvider.GetRequiredService<ILocalTmStepConverter>();
         SteppingDbContextLookupInfoProvider = ServiceProvider.GetRequiredService<ISteppingDbContextLookupInfoProvider>();
         DbBarrierInserter = ServiceProvider.GetRequiredService<IDbBarrierInserter>();
@@ -59,7 +59,7 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
     [Fact]
     public async Task Should_Create_Submit()
     {
-        var job = await DistributedJobFactory.CreateJobAsync();
+        var job = await AtomicJobFactory.CreateJobAsync();
         job.AddStep<FakeExecutableStep>();
         job.AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input")));
 
@@ -194,15 +194,15 @@ public class LocalTmManagerTests : SteppingTmProvidersLocalTmCoreTestBase
         model.UpdateTime.ShouldBe(existModel.UpdateTime);
     }
 
-    protected async Task<IDistributedJob> PrepareAsync(
-        Action<IDistributedJob>? setupDistributedJob = null,
+    protected async Task<IAtomicJob> PrepareAsync(
+        Action<IAtomicJob>? setupAtomicJob = null,
         bool insertBarrier = true)
     {
-        var job = await DistributedJobFactory.CreateJobAsync(Guid.NewGuid().ToString(), new FakeSteppingDbContext(true, "some-info"));
+        var job = await AtomicJobFactory.CreateJobAsync(Guid.NewGuid().ToString(), new FakeSteppingDbContext(true, "some-info"));
         job.AddStep<FakeExecutableStep>();
         job.AddStep(new FakeWithArgsExecutableStep(new FakeArgs("my-input")));
 
-        setupDistributedJob?.Invoke(job);
+        setupAtomicJob?.Invoke(job);
 
         if (insertBarrier)
         {

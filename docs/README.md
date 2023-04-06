@@ -9,9 +9,9 @@ Stepping is a distributed [BASE](https://en.wikipedia.org/wiki/Eventual_consiste
 
 We have provided documentation for the following languages: [English](./README.md), [简体中文](./README.zh-CN.md).
 
-## What are `Job` and `Step` in Stepping?
+## What are `AtomicJob` and `Step`?
 
-`Job` is a distributed transaction unit, and `Step` is a specific task inside a job.
+`AtomicJob` is a distributed atomic job unit, and `Step` is a specific task inside a job.
 
 A job contains one or many steps, and the transaction manager will execute them in order. If step 1 fails, it will be retried until success, and then step 2 starts to execute.
 
@@ -40,7 +40,7 @@ Stepping also supports the "multi-tenant with multi-DB" scenario, meaning it wor
 The transaction manager will eventually complete the added steps:
 
 ```csharp
-var job = await distributedJobFactory.CreateJobAsync();
+var job = await atomicJobFactory.CreateJobAsync();
 
 job.AddStep(new RequestBank1TransferOutStep(args)); // step with args
 job.AddStep<RequestBank2TransferInStep>(); // step without args
@@ -61,7 +61,7 @@ var order = new Order(args);
 db.Orders.Add(order);
 await db.SaveChangesAsync();
 
-var job = await distributedJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
+var job = await atomicJobFactory.CreateJobAsync(new EfCoreSteppingDbContext(db));
 
 job.AddStep(new SendOrderCreatedEmailStep(order));
 job.AddStep(new SendOrderCreatedSmsStep(order));
