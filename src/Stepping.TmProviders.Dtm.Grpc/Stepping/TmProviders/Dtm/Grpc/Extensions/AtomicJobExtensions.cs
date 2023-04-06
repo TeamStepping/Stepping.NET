@@ -53,11 +53,11 @@ public static class AtomicJobExtensions
         return job;
     }
 
-    public static IAtomicJob SetPassthroughHeader(this IAtomicJob job, string name)
+    public static IAtomicJob SetRetryLimit(this IAtomicJob job, long retryLimit)
     {
         var options = job.GetOrCreateDtmConfigurations();
 
-        options.PassthroughHeaders.Add(name);
+        options.RetryLimit = retryLimit;
 
         return job;
     }

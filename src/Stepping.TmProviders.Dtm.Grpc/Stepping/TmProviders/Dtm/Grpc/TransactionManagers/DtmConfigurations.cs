@@ -12,5 +12,5 @@ public class DtmJobConfigurations : ITmJobConfigurations
 
     public Dictionary<string, string> BranchHeaders { get; set; } = new();
 
-    public HashSet<string> PassthroughHeaders { get; set; } = new();
+    public long RetryLimit { get; set; }
 }
