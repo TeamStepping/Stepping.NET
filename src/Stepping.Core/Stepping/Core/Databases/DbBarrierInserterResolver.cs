@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Stepping.Core.Exceptions;
+using Stepping.Core.Options;
 
 namespace Stepping.Core.Databases;
 
@@ -29,10 +31,17 @@ public class DbBarrierInserterResolver : IDbBarrierInserterResolver
             {
                 if (CachedTypes is null)
                 {
-                    var inserters = ServiceProvider.GetRequiredService<IEnumerable<IDbBarrierInserter>>();
+                    var cacheTypes = new Dictionary<string, Type>();
 
-                    var cacheTypes = inserters.ToDictionary(inserter => inserter.DbProviderName,
-                        inserter => inserter.GetType());
+                    using var scope = ServiceProvider.CreateScope();
+
+                    var options = ServiceProvider.GetRequiredService<IOptions<SteppingOptions>>().Value;
+
+                    foreach (var inserterType in options.DbBarrierInserters)
+                    {
+                        var inserter = (IDbBarrierInserter)ServiceProvider.GetRequiredService(inserterType);
+                        cacheTypes.TryAdd(inserter.DbProviderName, inserterType);
+                    }
 
                     CachedTypes = cacheTypes;
                 }

@@ -30,6 +30,7 @@ public abstract class SteppingTestBase
         services.AddStepping(options =>
         {
             options.RegisterSteps(typeof(SteppingTestBase).Assembly);
+            options.RegisterDbBarrierInserters(typeof(FakeDbBarrierInserter));
         });
 
         services.AddLogging();
