@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Stepping.Core.Databases;
+using Stepping.Core.Options;
 using Stepping.DbProviders.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,11 @@ public static class SteppingMongoDbServiceCollectionExtensions
         Action<SteppingMongoDbOptions> setupAction)
     {
         services.AddSteppingMongoDbServices();
+
+        services.Configure<SteppingOptions>(options =>
+        {
+            options.RegisterDbBarrierInserters(typeof(MongoDbBarrierInserter));
+        });
 
         services.Configure(setupAction);
 

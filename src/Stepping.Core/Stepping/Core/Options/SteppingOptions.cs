@@ -17,6 +17,8 @@ public class SteppingOptions
 
     public HashSet<Type> StepTypes { get; } = new();
 
+    public HashSet<Type> DbBarrierInserters { get; } = new();
+
     public void RegisterSteps(params Assembly[] assemblies)
     {
         var stepTypes = assemblies.Where(assembly => !assembly.IsDynamic)
@@ -32,6 +34,14 @@ public class SteppingOptions
         foreach (var stepType in stepTypes)
         {
             StepTypes.Add(stepType);
+        }
+    }
+
+    public void RegisterDbBarrierInserters(params Type[] dbBarrierInserterTypes)
+    {
+        foreach (var dbBarrierInserterType in dbBarrierInserterTypes)
+        {
+            DbBarrierInserters.Add(dbBarrierInserterType);
         }
     }
 }
