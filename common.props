@@ -17,8 +17,8 @@
     <ItemGroup>
         <None Include="$(MSBuildThisFileDirectory)/icon.png" Pack="true" PackagePath="/" Visible="false"/>
         <None Include="$(MSBuildThisFileDirectory)/docs/README.md" Pack="true" PackagePath="/" Visible="false"/>
-        <PackageReference Include="ConfigureAwait.Fody" Version="3.3.1" PrivateAssets="All"/>
-        <PackageReference Include="Fody" Version="6.6.3">
+        <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="All"/>
+        <PackageReference Include="Fody" Version="6.8.0">
             <PrivateAssets>All</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>

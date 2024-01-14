@@ -6,11 +6,11 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackagesVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftPackagesVersion)"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)"/>
-        <PackageReference Include="NSubstitute" Version="4.3.0"/>
-        <PackageReference Include="Shouldly" Version="4.0.3"/>
-        <PackageReference Include="xunit" Version="2.4.1"/>
-        <PackageReference Include="xunit.extensibility.execution" Version="2.4.1"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5"/>
+        <PackageReference Include="NSubstitute" Version="5.1.0"/>
+        <PackageReference Include="Shouldly" Version="4.2.1"/>
+        <PackageReference Include="xunit" Version="2.6.5"/>
+        <PackageReference Include="xunit.extensibility.execution" Version="2.6.5"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6"/>
         <ProjectReference Include="..\..\src\Stepping.Core\Stepping.Core.csproj"/>
     </ItemGroup>
 

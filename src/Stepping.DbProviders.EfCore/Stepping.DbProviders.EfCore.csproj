@@ -3,7 +3,7 @@
     <Import Project="..\..\common.props" />
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0;net6.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net8.0;net6.0;netstandard2.1</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace />
@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Dapper" Version="$(DapperVersion)" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfCoreVersion)" Condition="'$(TargetFramework)' == 'net7.0'"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfCoreVersion)" Condition="'$(TargetFramework)' == 'net8.0'"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfCoreVersionForNet6)" Condition="'$(TargetFramework)' == 'net6.0'"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfCoreVersionForNetStandard21)" Condition="'$(TargetFramework)' == 'netstandard2.1'"/>
     </ItemGroup>
