@@ -59,4 +59,4 @@ jobs:
 
       - name: Codecov
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
