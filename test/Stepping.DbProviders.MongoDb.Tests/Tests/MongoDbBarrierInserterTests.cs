@@ -100,7 +100,9 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         sessionHandle1.Dispose();
 
 #if NETCOREAPP3_1
+#pragma warning disable xUnit1031
         task.Wait(CancellationToken.None);
+#pragma warning restore xUnit1031
 #else
         await task.WaitAsync(CancellationToken.None);
 #endif
@@ -143,7 +145,9 @@ public class MongoDbBarrierInserterTests : SteppingDbProvidersMongoTestBase
         sessionHandle1.Dispose();
 
 #if NETCOREAPP3_1
+#pragma warning disable xUnit1031
         task.Wait(CancellationToken.None);
+#pragma warning restore xUnit1031
 #else
         await task.WaitAsync(CancellationToken.None);
 #endif
