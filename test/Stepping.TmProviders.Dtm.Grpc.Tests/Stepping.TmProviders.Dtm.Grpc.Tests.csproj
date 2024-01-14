@@ -3,7 +3,7 @@
     <Import Project="..\..\common.testing.props"/>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.Core.Testing" Version="2.46.3"/>
+        <PackageReference Include="Grpc.Core.Testing" Version="2.46.6" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)"/>
         <ProjectReference Include="..\..\src\Stepping.TmProviders.Dtm.Grpc\Stepping.TmProviders.Dtm.Grpc.csproj"/>
         <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj"/>
