@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>net9.0;net8.0;net6.0</TargetFrameworks>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" Condition="'$(TargetFramework)' == 'net8.0'"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNet9)" Condition="'$(TargetFramework)' == 'net9.0'"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNet8)" Condition="'$(TargetFramework)' == 'net8.0'"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNet6)" Condition="'$(TargetFramework)' == 'net6.0'"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNetStandard21)" Condition="'$(TargetFramework)' == 'netcoreapp3.1'"/>
         <ProjectReference Include="..\..\src\Stepping.TmProviders.LocalTm.EfCore\Stepping.TmProviders.LocalTm.EfCore.csproj" />
         <ProjectReference Include="..\..\src\Stepping.TmProviders.LocalTm\Stepping.TmProviders.LocalTm.csproj" />
     </ItemGroup>

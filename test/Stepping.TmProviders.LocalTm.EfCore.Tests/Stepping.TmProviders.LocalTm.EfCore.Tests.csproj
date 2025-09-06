@@ -3,9 +3,9 @@
     <Import Project="..\..\common.testing.props"/>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" Condition="'$(TargetFramework)' == 'net8.0'"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNet9)" Condition="'$(TargetFramework)' == 'net9.0'"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNet8)" Condition="'$(TargetFramework)' == 'net8.0'"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNet6)" Condition="'$(TargetFramework)' == 'net6.0'"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersionForNetStandard21)" Condition="'$(TargetFramework)' == 'netcoreapp3.1'"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)"/>
         <ProjectReference Include="..\..\src\Stepping.TmProviders.LocalTm.EfCore\Stepping.TmProviders.LocalTm.EfCore.csproj"/>
         <ProjectReference Include="..\Stepping.TestBase\Stepping.TestBase.csproj"/>

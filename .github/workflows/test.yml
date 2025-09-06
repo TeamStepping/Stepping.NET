@@ -18,18 +18,18 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-latest]
+        os: [ubuntu-22.04, windows-latest]
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     if: ${{ !github.event.pull_request.draft }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            3.1.x
             6.0.x
             7.0.x
+            9.0.x
 
       - name: Install dependencies
         run: dotnet restore
@@ -59,4 +59,6 @@ jobs:
 
       - name: Codecov
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

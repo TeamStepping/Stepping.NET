@@ -97,13 +97,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
         await transaction1.DisposeAsync();
         await dbContext1.DisposeAsync();
 
-#if NETCOREAPP3_1
-#pragma warning disable xUnit1031
-        task.Wait(CancellationToken.None);
-#pragma warning restore xUnit1031
-#else
         await task.WaitAsync(CancellationToken.None);
-#endif
 
         result.ShouldBeFalse();
     }
@@ -143,13 +137,7 @@ public class EfCoreDbBarrierInserterTests : SteppingDbProvidersEfCoreTestBase
         await transaction1.DisposeAsync();
         await dbContext1.DisposeAsync();
 
-#if NETCOREAPP3_1
-#pragma warning disable xUnit1031
-        task.Wait(CancellationToken.None);
-#pragma warning restore xUnit1031
-#else
         await task.WaitAsync(CancellationToken.None);
-#endif
 
         result.ShouldBeTrue();
     }

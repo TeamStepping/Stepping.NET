@@ -1,15 +1,15 @@
 <Project>
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net6.0;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net9.0;net8.0;net6.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>10.0</LangVersion>
+        <LangVersion>latest</LangVersion>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="6.0.0">
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
