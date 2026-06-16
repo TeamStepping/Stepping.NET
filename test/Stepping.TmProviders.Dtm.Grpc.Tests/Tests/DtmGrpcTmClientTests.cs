@@ -132,4 +132,37 @@ public class DtmGrpcTmClientTests : SteppingTmProvidersDtmGrpcTestBase
         dtmRequest.TransOptions.WaitResult.ShouldBeTrue();
         dtmRequest.TransOptions.RequestTimeout.ShouldBe(Options.BranchRequestTimeout);
     }
+
+    [Fact]
+    public async Task Should_Add_ActionApiToken_Header_When_Configured()
+    {
+        Options.ActionApiToken = "my-action-api-token";
+
+        var job = await AtomicJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
+            new FakeSteppingDbContext(true));
+        job.AddStep<FakeExecutableStep>();
+
+        await FakeDtmGrpcTmClient.PrepareAsync(job);
+
+        var headers = FakeDtmGrpcTmClient.LastInvoking!.Value.Item2.TransOptions.BranchHeaders;
+        headers.ShouldContainKey(DtmRequestHeaderNames.ActionApiToken);
+        headers[DtmRequestHeaderNames.ActionApiToken].ShouldBe("my-action-api-token");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public async Task Should_Not_Add_ActionApiToken_Header_When_Not_Configured(string? actionApiToken)
+    {
+        Options.ActionApiToken = actionApiToken;
+
+        var job = await AtomicJobFactory.CreateJobAsync(Guid.NewGuid().ToString(),
+            new FakeSteppingDbContext(true));
+        job.AddStep<FakeExecutableStep>();
+
+        await FakeDtmGrpcTmClient.PrepareAsync(job);
+
+        var headers = FakeDtmGrpcTmClient.LastInvoking!.Value.Item2.TransOptions.BranchHeaders;
+        headers.ShouldNotContainKey(DtmRequestHeaderNames.ActionApiToken);
+    }
 }
