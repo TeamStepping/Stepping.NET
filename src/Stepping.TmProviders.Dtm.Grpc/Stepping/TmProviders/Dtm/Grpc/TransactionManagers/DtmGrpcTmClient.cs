@@ -95,7 +95,7 @@ public class DtmGrpcTmClient : ITmClient
     {
         var configurations = job.GetDtmJobConfigurations();
 
-        if (Options.ActionApiToken is not null or "")
+        if (Options.ActionApiToken is not (null or ""))
         {
             configurations.BranchHeaders.TryAdd(DtmRequestHeaderNames.ActionApiToken, Options.ActionApiToken);
         }
